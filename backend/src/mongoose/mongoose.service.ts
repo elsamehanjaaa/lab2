@@ -5,12 +5,14 @@ import { Model, Document, Types } from 'mongoose';
 export class MongooseService {
   // Get all data from a model
   async getAllData<T extends Document>(model: Model<T>): Promise<T[]> {
-    try {
+    
+    try {console.log(await model.find().exec());
       return await model.find().exec();
     } catch (error) {
       console.error('Error fetching all data:', error.message);
       throw error;
     }
+    
   }
 
   // Get data by ID from a model

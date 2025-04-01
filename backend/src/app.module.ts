@@ -7,6 +7,7 @@ import { JwtStrategy } from './jwt-strategy/jwt-strategy';
 import { MongooseModule } from '@nestjs/mongoose';
 import { MongooseService } from './mongoose/mongoose.service';
 import { ConfigModule } from '@nestjs/config';
+import { CoursesModule } from './courses/courses.module';
 import * as dotenv from 'dotenv';
 dotenv.config();
 
@@ -15,6 +16,7 @@ dotenv.config();
     ConfigModule.forRoot(),
     AuthModule,
     MongooseModule.forRoot(process.env.MONGODB_URI as string),
+    CoursesModule,
   ],
   controllers: [AppController],
   providers: [AppService, SupabaseService, JwtStrategy, MongooseService],
