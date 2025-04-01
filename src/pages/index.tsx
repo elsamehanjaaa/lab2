@@ -1,8 +1,31 @@
-import Home from "../components/Home"; // Importing the Home component
+import Block from "@/components/Block";
+import Hero from "@/components/Hero";
+import React from "react";
+import { LibraryBig, User, AlarmClock } from "lucide-react";
+const index = () => {
+  return (
+    <main>
+      <Hero />
 
-// MainPage is the default export page component for Next.js
-const MainPage: React.FC = () => {
-  return <Home />; // Return the Home component
+      <div className="flex justify-center space-x-8 py-12">
+        <Block
+          icon={LibraryBig}
+          title="60+ UX Courses"
+          description="The automated process all your website tasks."
+        />
+        <Block
+          icon={User}
+          title="Expert Instructors"
+          description="The automated process all your website tasks."
+        />
+        <Block
+          icon={AlarmClock}
+          title="Life time access"
+          description="The automated process all your website tasks."
+        />
+      </div>
+    </main>
+  );
 };
 
-export default MainPage; // Ensure the component is exported as default
+export default index;
