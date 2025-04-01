@@ -4,11 +4,12 @@ import Link from "next/link"; // Import Link from next/link for navigation
 
 const Home: React.FC = () => {
   return (
-    <div className="container mx-auto px-4">
-      {/* Header Section */}
-      <header className="py-8 text-center bg-blue-600 text-white">
-        {/* Logo with navigation */}
-        <div className="flex justify-center items-center space-x-6">
+    <div>
+      {/* Full Width Header Section */}
+      <header className="py-9 bg-blue-600 text-white w-full">
+        {/* Logo and Navigation */}
+        <div className="flex justify-between items-center px-4 max-w-screen-xl mx-auto">
+          {/* Logo on the left */}
           <Link href="/home">
             <Image
               src="/path-to-your-logo.png" // Replace with your logo image path
@@ -19,8 +20,8 @@ const Home: React.FC = () => {
             />
           </Link>
 
-          {/* Navigation Menu */}
-          <nav className="space-x-4 text-lg">
+          {/* Navigation Menu on the right */}
+          <nav className="space-x-5 text-lg ml-auto">
             <Link href="/home" className="hover:text-yellow-300">
               Home
             </Link>
@@ -31,7 +32,7 @@ const Home: React.FC = () => {
               Blog
             </Link>
             <Link href="/contact" className="hover:text-yellow-300">
-              Contact
+              Contact Us
             </Link>
           </nav>
         </div>
