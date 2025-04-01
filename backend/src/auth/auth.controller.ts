@@ -42,7 +42,7 @@ export class AuthController {
       const token = await this.authService.login(user.user);
 
       response.cookie('access_token', token.access_token, {
-        httpOnly: true,
+        httpOnly: false,
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'strict',
         maxAge: 60 * 60 * 1000, // 1 hour
@@ -87,9 +87,14 @@ export class AuthController {
       throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
     }
 
-    // Return only the necessary user details (avoid circular references)
-    const { id, email } = request.user as any; // Adjust according to your user structure
+    // Destructure to extract only necessary user details
+    const { id, email, username } = request.user as any; // Adjust according to your user structure
 
-    return { message: 'You have access!', user: { id, email } };
+    // Return the user details with a 200 OK status
+    return {
+      statusCode: HttpStatus.OK, // Explicit OK status
+      message: 'Request successful',
+      user: { id, email, username }, // Only returning necessary user info
+    };
   }
 }

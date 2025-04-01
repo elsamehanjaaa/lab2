@@ -6,7 +6,9 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.use(cookieParser());
   app.enableCors({
-    origin: '*', // Change to your frontend URL
+
+    origin: 'http://localhost:3000', // Your Next.js frontend URL
+
     credentials: true,
   });
   await app.listen(process.env.PORT ?? 5000);
