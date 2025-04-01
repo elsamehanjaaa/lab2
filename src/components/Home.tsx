@@ -1,12 +1,40 @@
 import React from "react";
+import Image from "next/image";
+import Link from "next/link"; // Import Link from next/link for navigation
 
 const Home: React.FC = () => {
   return (
     <div className="container mx-auto px-4">
       {/* Header Section */}
       <header className="py-8 text-center bg-blue-600 text-white">
-        <h1 className="text-4xl font-bold">Welcome to My Website</h1>
-        <p className="mt-2 text-lg">This is a simple home page built with Next.js and TypeScript.</p>
+        {/* Logo with navigation */}
+        <div className="flex justify-center items-center space-x-6">
+          <Link href="/home">
+            <Image
+              src="/path-to-your-logo.png" // Replace with your logo image path
+              alt="Logo"
+              width={120}
+              height={30}
+              className="h-full w-auto"
+            />
+          </Link>
+
+          {/* Navigation Menu */}
+          <nav className="space-x-4 text-lg">
+            <Link href="/home" className="hover:text-yellow-300">
+              Home
+            </Link>
+            <Link href="/about" className="hover:text-yellow-300">
+              About
+            </Link>
+            <Link href="/blog" className="hover:text-yellow-300">
+              Blog
+            </Link>
+            <Link href="/contact" className="hover:text-yellow-300">
+              Contact
+            </Link>
+          </nav>
+        </div>
       </header>
 
       {/* Main Content Section */}
