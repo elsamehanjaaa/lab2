@@ -1,7 +1,13 @@
 import React from "react";
 
+// 1) Importoni ikonat (nëse përdorni Heroicons)
+import { BookOpenIcon, UserIcon, ClockIcon } from "@heroicons/react/outline";
+
+// 2) Importoni komponentin Block
+import Block from "./Block"; // ose rruga e saktë: "../components/Blocks"
+
 const Hero = () => {
-  // Shembull kategorish
+  // Kategoritë
   const categories = [
     { title: "ChatGPT", learners: "4M+" },
     { title: "Data Science", learners: "7M+" },
@@ -13,7 +19,7 @@ const Hero = () => {
     { title: "NLP", learners: "811,403" },
   ];
 
-  // Shembull kurset
+  // Kurset
   const courses = [
     {
       image: "/images/course1.png",
@@ -88,6 +94,28 @@ const Hero = () => {
         </div>
       </div>
 
+      {/* --- 3 Blocks Section: poshtë Hero-s, sipër kategorive --- */}
+      <div className="bg-gray-100 py-12">
+        {/* Rresht me 3 Block */}
+        <div className="container mx-auto flex flex-col md:flex-row justify-center items-center gap-8">
+          <Block
+            icon={BookOpenIcon}
+            title="60+ UX Courses"
+            description="The automated process all your website tasks."
+          />
+          <Block
+            icon={UserIcon}
+            title="Expert Instructors"
+            description="The automated process all your website tasks."
+          />
+          <Block
+            icon={ClockIcon}
+            title="Life time access"
+            description="The automated process all your website tasks."
+          />
+        </div>
+      </div>
+
       {/* Categories Section */}
       <div className="px-6 md:px-20 py-8 bg-gray-50">
         <div className="flex flex-wrap gap-3 justify-center md:justify-start">
@@ -96,7 +124,10 @@ const Hero = () => {
               key={i}
               className="bg-white hover:bg-gray-100 text-gray-700 px-4 py-2 rounded-full shadow-sm hover:shadow-md font-medium transition transform hover:-translate-y-0.5"
             >
-              {cat.title} <span className="text-sm text-gray-500">({cat.learners} learners)</span>
+              {cat.title}{" "}
+              <span className="text-sm text-gray-500">
+                ({cat.learners} learners)
+              </span>
             </button>
           ))}
         </div>
@@ -153,7 +184,8 @@ const Hero = () => {
       {/* Trusted By Section */}
       <div className="bg-gray-50 px-6 md:px-20 py-8 text-center">
         <h2 className="text-xl md:text-2xl font-semibold mb-8">
-          Trusted by over 16,000 companies and millions of learners around the world
+          Trusted by over 16,000 companies and millions of learners around the
+          world
         </h2>
         <div className="flex flex-wrap justify-center items-center gap-8">
           {brandLogos.map((logo, i) => (
