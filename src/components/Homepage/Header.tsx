@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Underline, User } from "lucide-react";
+import { User } from "lucide-react";
 
 const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -36,20 +36,6 @@ const Header = () => {
           setIsLoggedIn(false);
         }
       } catch {}
-      try {
-        const res = await fetch("http://localhost:5000/auth/protected", {
-          method: "POST",
-          credentials: "include",
-        });
-        const result = await res.json();
-        if (res.ok) {
-          setUser(result.user.username);
-          setIsLoggedIn(true);
-        } else {
-          setUser("");
-          setIsLoggedIn(false);
-        }
-      } catch {}
     };
 
     const interval = setInterval(getUser, 1000);
@@ -64,9 +50,7 @@ const Header = () => {
     if (res.ok) {
       setIsLoggedIn(false);
       setUser(undefined);
-      window.location.reload(); // Refresh the page after logout
-      setUser(undefined);
-      window.location.reload(); // Refresh the page after logout
+      window.location.reload();
     }
   };
 
