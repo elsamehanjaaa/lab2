@@ -1,9 +1,6 @@
 import React from "react";
-
-// 1) Importoni ikonat (nëse përdorni Heroicons)
+import Link from "next/link";
 import { BookOpenIcon, UserIcon, ClockIcon } from "@heroicons/react/outline";
-
-// 2) Importoni komponentin Block
 import Block from "./Block"; // ose rruga e saktë: "../components/Blocks"
 
 const Hero = () => {
@@ -175,9 +172,9 @@ const Hero = () => {
           ))}
         </div>
         <div className="flex justify-center mt-6">
-          <button className="text-blue-600 hover:underline font-semibold">
+        <Link href="/courses" className="text-blue-600 hover:underline font-semibold">
             Show all Data Science courses
-          </button>
+        </Link>
         </div>
       </div>
 

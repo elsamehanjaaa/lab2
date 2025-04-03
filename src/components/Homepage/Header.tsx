@@ -78,70 +78,83 @@ const Header = () => {
             className="h-full w-auto"
           />
         </Link>
-        <nav className="space-x-5 text-lg ml-auto flex">
-          <Link href="/home" className="hover:text-yellow-300">
-            Home
-          </Link>
-          <Link href="/about" className="hover:text-yellow-300">
-            About
-          </Link>
-          <Link href="/blog" className="hover:text-yellow-300">
-            Blog
-          </Link>
-          <Link href="/contact" className="hover:text-yellow-300">
-            Contact Us
-          </Link>
-          {isLoggedIn && user ? (
-            <div className="flex flex-col items-end">
-              <div className="cursor-pointer" onClick={handleDropdown}>
-                <User />
+        <nav className="flex items-center justify-end space-x-6 text-base">
+      <Link
+        href="/home"
+        className="text-white hover:text-yellow-300 transition-colors duration-300"
+      >
+        Home
+      </Link>
+      <Link
+        href="/about"
+        className="text-white hover:text-yellow-300 transition-colors duration-300"
+      >
+        About
+      </Link>
+      <Link
+        href="/blog"
+        className="text-white hover:text-yellow-300 transition-colors duration-300"
+      >
+        Blog
+      </Link>
+      <Link
+        href="/contact"
+        className="text-white hover:text-yellow-300 transition-colors duration-300"
+      >
+        Contact Us
+      </Link>
+
+      {isLoggedIn && user ? (
+        <div className="relative">
+          <button
+            className="text-white hover:text-yellow-300 transition-colors duration-300"
+            onClick={handleDropdown}
+          >
+            <User />
+          </button>
+          {isDropdownOpen && (
+            <div className="absolute right-0 mt-2 w-48 bg-white text-black shadow-lg rounded-lg overflow-hidden z-10">
+              <div className="px-4 py-2 border-b text-center font-medium">
+                {user}
               </div>
-              <div
-                className={`${
-                  isDropdownOpen ? "block" : "hidden"
-                } absolute bg-white text-black z-10 rounded-lg shadow-lg mt-8 w-56`}
-              >
-                <span className="w-full h-9 flex justify-center items-center">
-                  {user}
-                </span>
-                <hr className="mb-2" />
-                <Link
-                  href="/profile"
-                  className="block px-4 py-2 hover:bg-gray-200"
-                >
-                  Profile
-                </Link>
-                <Link
-                  href="/settings"
-                  className="block px-4 py-2 hover:bg-gray-200"
-                >
-                  Settings
-                </Link>
-                <div
-                  className="block px-4 py-2 hover:bg-gray-200 cursor-pointer"
-                  onClick={handleLogout}
-                >
-                  Logout
-                </div>
-              </div>
-            </div>
-          ) : (
-            <div>
               <Link
-                href="/login"
-                className="border-2 border-white px-4 py-2 rounded-lg hover:bg-white hover:text-[#edb4a9]"
+                href="/profile"
+                className="block px-4 py-2 hover:bg-gray-100 transition"
               >
-                Log In
+                Profile
               </Link>
               <Link
-                href="/signup"
-                className="border-2 bg-white px-4 py-2 rounded-lg border-white hover:bg-transparent text-[#edb4a9] hover:text-white"
+                href="/settings"
+                className="block px-4 py-2 hover:bg-gray-100 transition"
               >
-                Sign Up
+                Settings
               </Link>
+              <button
+                onClick={handleLogout}
+                className="w-full text-left px-4 py-2 hover:bg-gray-100 transition"
+              >
+                Logout
+              </button>
             </div>
           )}
-        </nav>
+        </div>
+      ) : (
+        <div className="flex items-center gap-3">
+          <Link
+            href="/login"
+            className="border-2 border-white px-4 py-1 rounded-lg text-white hover:bg-white hover:text-[#edb4a9] transition duration-300"
+          >
+            Log In
+          </Link>
+          <Link
+            href="/signup"
+            className="border-2 border-white bg-white px-4 py-1 rounded-lg text-[#edb4a9] hover:bg-transparent hover:text-white transition duration-300"
+          >
+            Sign Up
+          </Link>
+        </div>
+      )}
+    </nav>
       </div>
     </header>
   );
