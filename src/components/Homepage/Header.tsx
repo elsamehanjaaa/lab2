@@ -6,7 +6,7 @@ import { User } from "lucide-react";
 const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [user, setUser] = useState<string | undefined>();
+  const [user, setUser] = useState(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   useEffect(() => {
@@ -22,7 +22,6 @@ const Header = () => {
 
   useEffect(() => {
     const getUser = async () => {
-<<<<<<< HEAD
       const res = await fetch("http://localhost:3000/auth/protected", {
         method: "POST",
         credentials: "include",
@@ -36,22 +35,6 @@ const Header = () => {
       } else {
         setIsLoggedIn(false);
       }
-=======
-      try {
-        const res = await fetch("http://localhost:5000/auth/protected", {
-          method: "POST",
-          credentials: "include",
-        });
-        const result = await res.json();
-        if (res.ok) {
-          setUser(result.user.username);
-          setIsLoggedIn(true);
-        } else {
-          setUser("");
-          setIsLoggedIn(false);
-        }
-      } catch {}
->>>>>>> 329742e3191005fa1e6f08bbdd5e23818c803724
     };
 
     const interval = setInterval(getUser, 1000);
@@ -65,8 +48,7 @@ const Header = () => {
     });
     if (res.ok) {
       setIsLoggedIn(false);
-      setUser(undefined);
-      window.location.reload();
+      setUser(null);
     }
   };
 
@@ -97,7 +79,6 @@ const Header = () => {
           />
         </Link>
         <nav className="flex items-center justify-end space-x-6 text-base">
-<<<<<<< HEAD
       <Link
         href="/"
         className="text-white hover:text-yellow-300 transition-colors duration-300"
@@ -126,88 +107,54 @@ const Header = () => {
       {isLoggedIn && user ? (
         <div className="relative">
           <button
-=======
-          <Link
-            href="/home"
->>>>>>> 329742e3191005fa1e6f08bbdd5e23818c803724
             className="text-white hover:text-yellow-300 transition-colors duration-300"
+            onClick={handleDropdown}
           >
-            Home
-          </Link>
-          <Link
-            href="/about"
-            className="text-white hover:text-yellow-300 transition-colors duration-300"
-          >
-            About
-          </Link>
-          <Link
-            href="/blog"
-            className="text-white hover:text-yellow-300 transition-colors duration-300"
-          >
-            Blog
-          </Link>
-          <Link
-            href="/contact"
-            className="text-white hover:text-yellow-300 transition-colors duration-300"
-          >
-            Contact Us
-          </Link>
-
-          {user === undefined ? (
-            <div className="flex justify-center items-center">
-              <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-white"></div>
-            </div>
-          ) : isLoggedIn && user ? (
-            <div className="relative">
+            <User />
+          </button>
+          {isDropdownOpen && (
+            <div className="absolute right-0 mt-2 w-48 bg-white text-black shadow-lg rounded-lg overflow-hidden z-10">
+              <div className="px-4 py-2 border-b text-center font-medium">
+                {user}
+              </div>
+              <Link
+                href="/profile"
+                className="block px-4 py-2 hover:bg-gray-100 transition"
+              >
+                Profile
+              </Link>
+              <Link
+                href="/settings"
+                className="block px-4 py-2 hover:bg-gray-100 transition"
+              >
+                Settings
+              </Link>
               <button
-                className="text-white hover:text-yellow-300 transition-colors duration-300"
-                onClick={handleDropdown}
+                onClick={handleLogout}
+                className="w-full text-left px-4 py-2 hover:bg-gray-100 transition"
               >
-                <User />
+                Logout
               </button>
-              {isDropdownOpen && (
-                <div className="absolute right-0 mt-2 w-48 bg-white text-black shadow-lg rounded-lg overflow-hidden z-10">
-                  <div className="px-4 py-2 border-b text-center font-medium">
-                    {user}
-                  </div>
-                  <Link
-                    href="/profile"
-                    className="block px-4 py-2 hover:bg-gray-100 transition"
-                  >
-                    Profile
-                  </Link>
-                  <Link
-                    href="/settings"
-                    className="block px-4 py-2 hover:bg-gray-100 transition"
-                  >
-                    Settings
-                  </Link>
-                  <button
-                    onClick={handleLogout}
-                    className="w-full text-left px-4 py-2 hover:bg-gray-100 transition"
-                  >
-                    Logout
-                  </button>
-                </div>
-              )}
-            </div>
-          ) : (
-            <div className="flex items-center gap-3">
-              <Link
-                href="/login"
-                className="border-2 border-white px-4 mr-2 py-1 rounded-lg text-white hover:bg-white hover:text-[#edb4a9]   transition-all duration-200 ease-out"
-              >
-                Log In
-              </Link>
-              <Link
-                href="/signup"
-                className="border-2 border-white bg-white px-4 py-1 rounded-lg text-[#edb4a9] hover:bg-transparent hover:text-white   transition-all duration-200 ease-out"
-              >
-                Sign Up
-              </Link>
             </div>
           )}
-        </nav>
+        </div>
+      ) : (
+        <div className="flex items-center gap-3">
+          <Link
+            href="/login"
+            className="border-2 border-white px-4 py-1 rounded-lg text-white hover:bg-white hover:text-[#edb4a9] transition duration-300"
+          >
+            Log In
+          </Link>
+          <Link
+            href="/signup"
+            className="border-2 border-white bg-white px-4 py-1 rounded-lg text-[#edb4a9] hover:bg-transparent hover:text-white transition duration-300"
+          >
+            Sign Up
+          </Link>
+        </div>
+      )}
+    </nav>
       </div>
     </header>
   );

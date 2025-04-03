@@ -2,7 +2,7 @@ import React from "react";
 import Link from "next/link";
 import { BookOpenIcon, UserIcon, ClockIcon } from "@heroicons/react/outline";
 import Block from "./Block"; // ose rruga e saktë: "../components/Blocks"
-
+import Image from "next/image";
 const Hero = () => {
   // Kategoritë
   const categories = [
@@ -138,7 +138,9 @@ const Hero = () => {
               key={i}
               className="bg-white rounded-xl shadow hover:shadow-lg overflow-hidden transform transition hover:-translate-y-1"
             >
-              <img
+              <Image
+              width={500}
+              height={500}
                 src={course.image}
                 alt={course.title}
                 className="w-full h-48 object-cover"
@@ -174,7 +176,7 @@ const Hero = () => {
         <div className="flex justify-center mt-6">
         <Link href="/courses" className="text-blue-600 hover:underline font-semibold">
             Show all Data Science courses
-        </Link>
+</Link>
         </div>
       </div>
 
@@ -186,106 +188,15 @@ const Hero = () => {
         </h2>
         <div className="flex flex-wrap justify-center items-center gap-8">
           {brandLogos.map((logo, i) => (
-            <img
+            <Image
+            width={500}
+            height={500}
               key={i}
               src={logo}
               alt="Brand Logo"
               className="h-10 object-contain grayscale hover:grayscale-0 transition"
             />
           ))}
-        </div>
-      </div>
-
-      <Head>
-        <title>Learning Goals UI</title>
-        <link
-          href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
-          rel="stylesheet"
-        />
-      </Head>
-      <div className="bg-gray-50 font-sans min-h-screen py-10">
-        <div className="max-w-7xl mx-auto px-4">
-          <h2 className="text-3xl font-semibold text-gray-800 mb-10">
-            Learning focused on your goals
-          </h2>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-            <div className="space-y-6">
-              <div className="border-2 border-purple-500 rounded-lg p-6 hover:shadow-lg transition-shadow">
-                <h3 className="font-semibold text-lg">Hands-on training</h3>
-                <p className="text-sm text-gray-600">
-                  Upskill effectively with AI-powered coding exercises, practice tests, and quizzes.
-                </p>
-              </div>
-
-              <div className="border border-gray-200 rounded-lg p-6 hover:shadow-lg transition-shadow">
-                <h3 className="font-semibold text-lg">Certification prep</h3>
-                <p className="text-sm text-gray-600">
-                  Prep for industry-recognized certifications by solving real-world challenges and earn badges along the way.
-                </p>
-                <a href="#" className="text-purple-600 text-sm font-semibold">
-                  Explore courses &rarr;
-                </a>
-              </div>
-
-              <div className="border border-gray-200 rounded-lg p-6 hover:shadow-lg transition-shadow">
-                <h3 className="font-semibold text-lg">
-                  Insights and analytics{' '}
-                  <span className="text-xs bg-purple-100 text-purple-700 px-2 py-1 rounded">
-                    Enterprise Plan
-                  </span>
-                </h3>
-                <p className="text-sm text-gray-600">
-                  Fast-track goals with advanced insights plus a dedicated customer success team to help drive effective learning.
-                </p>
-                <a href="#" className="text-purple-600 text-sm font-semibold">
-                  Find out more &rarr;
-                </a>
-              </div>
-
-              <div className="border border-gray-200 rounded-lg p-6 hover:shadow-lg transition-shadow">
-                <h3 className="font-semibold text-lg">
-                  Customizable content{' '}
-                  <span className="text-xs bg-purple-100 text-purple-700 px-2 py-1 rounded">
-                    Enterprise Plan
-                  </span>
-                </h3>
-                <p className="text-sm text-gray-600">
-                  Create tailored learning paths for team and organization goals and even host your own content and resources.
-                </p>
-                <a href="#" className="text-purple-600 text-sm font-semibold">
-                  Find out more &rarr;
-                </a>
-              </div>
-            </div>
-
-            <div className="bg-white shadow-lg rounded-lg overflow-hidden">
-              <div className="bg-purple-100 px-6 py-4">
-                <h3 className="font-semibold text-gray-800">Containerization</h3>
-                <p className="text-sm text-gray-500">30 questions</p>
-              </div>
-              <div className="p-6">
-                <h2 className="text-xl font-semibold mb-4">Your score: 159</h2>
-                <div className="mb-4">
-                  <img
-                    src="https://via.placeholder.com/400x150"
-                    alt="Chart placeholder"
-                    className="rounded"
-                  />
-                </div>
-                <p className="text-sm text-gray-600 mb-6">
-                  Your performance was better than <strong>88%</strong> of Udemy learners who have completed this assessment.
-                </p>
-
-                <div className="border-t pt-4">
-                  <p className="text-sm font-semibold">Your answers</p>
-                  <p className="text-sm text-gray-500">
-                    Review your answers. Learn from these explanations of correct and incorrect response options.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
     </>
