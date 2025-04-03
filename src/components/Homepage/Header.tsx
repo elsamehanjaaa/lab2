@@ -58,7 +58,7 @@ const Header = () => {
 
   return (
     <header
-      className={`py-6 w-full fixed top-0 transition-colors duration-300 z-50 backdrop-blur-md backdrop-filter bg-white/30 ${
+      className={`py-6 w-full fixed top-0 transition-colors duration-300 z-50 backdrop-blur-md backdrop-filter bg-[#8ae0ea] ${
         isScrolled ? "shadow-md" : ""
       } text-white `}
     >
@@ -92,10 +92,10 @@ const Header = () => {
         About
       </Link>
       <Link
-        href="/blog"
+        href="/courses"
         className="text-white hover:text-yellow-300 transition-colors duration-300"
       >
-        Blog
+        Courses
       </Link>
       <Link
         href="/contact"

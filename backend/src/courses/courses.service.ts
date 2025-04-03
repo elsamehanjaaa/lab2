@@ -20,7 +20,7 @@ export class CoursesService {
   }
 
   async findAll() {
-    return await this.mongooseService.getAllData(this.CoursesModel);
+    return await this.mongooseService.getAllData(this.CoursesModel)
   }
 
   findOne(id: number) {
