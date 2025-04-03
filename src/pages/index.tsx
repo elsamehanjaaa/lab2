@@ -1,5 +1,5 @@
-import Block from "@/components/Block";
-import Hero from "@/components/Hero";
+import Block from "@/components/Homepage/Block";
+import Hero from "@/components/Homepage/Hero";
 import React from "react";
 import { LibraryBig, User, AlarmClock } from "lucide-react";
 const index = () => {
