@@ -1,7 +1,17 @@
 import React, { useEffect, useState } from 'react';
 
+interface Course {
+  image: string;
+  title: string;
+  rating: number;
+  reviews: string;
+  price: string;
+  oldPrice?: string;
+  bestSeller?: boolean;
+}
+
 const CoursesPage = () => {
-  const [courses, setCourses] = useState([]);
+  const [courses, setCourses] = useState<Course[]>([]);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
 
@@ -13,22 +23,28 @@ const CoursesPage = () => {
           headers: { "Content-Type": "application/json" },
           credentials: "include",
         });
-
+  
         if (!res.ok) throw new Error(`HTTP Error! Status: ${res.status}`);
-
+  
         const result = await res.json();
         setCourses(result);
       } catch (error) {
-        setError(error.message);
-        console.error("Fetch error:", error);
+        if (error instanceof Error) {
+          setError(error.message);
+          console.error("Fetch error:", error);
+        } else {
+          setError("An unknown error occurred");
+          console.error("Unknown error:", error);
+        }
       } finally {
         setLoading(false);
       }
     }
-
+  
     getAll();
   }, []);
-
+  
+  
   if (loading) {
     return <div className="text-center mt-20">Loading...</div>;
   }
@@ -43,7 +59,10 @@ const CoursesPage = () => {
 
       <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
         {courses.map((course, i) => (
-          <div key={i} className="bg-white rounded-xl shadow overflow-hidden transition-transform hover:-translate-y-1">
+          <div
+            key={i}
+            className="bg-white rounded-xl shadow overflow-hidden transition-transform hover:-translate-y-1"
+          >
             <img src={course.image} alt={course.title} className="w-full h-48 object-cover" />
             <div className="p-4">
               <h3 className="font-semibold mb-2">{course.title}</h3>
