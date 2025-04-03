@@ -29,4 +29,15 @@ export class AuthService {
       access_token: this.jwtService.sign(payload),
     };
   }
+
+  async signup(username: string, email: string, password: string) {
+    const { user, session } = await this.supabaseService.signup(
+      username,
+      email,
+      password,
+    );
+    if (!user) throw new UnauthorizedException('Invalid credentials');
+
+    return { user, session };
+  }
 }

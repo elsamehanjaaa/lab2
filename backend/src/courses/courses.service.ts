@@ -9,15 +9,18 @@ import { Courses } from '../schemas/courses.schema';
 
 @Injectable()
 export class CoursesService {
-  constructor(private readonly supabaseService: SupabaseService, private readonly mongooseService: MongooseService, @InjectModel(Courses.name) private readonly CoursesModel: Model<Courses>,) {}
+  constructor(
+    private readonly supabaseService: SupabaseService,
+    private readonly mongooseService: MongooseService,
+    @InjectModel(Courses.name) private readonly CoursesModel: Model<Courses>,
+  ) {}
 
-
- async create(createCourseDto: CreateCourseDto) {
-    return await this.supabaseService.insertData("courses", createCourseDto);
+  async create(createCourseDto: CreateCourseDto) {
+    return await this.supabaseService.insertData('courses', createCourseDto);
   }
 
   async findAll() {
-    return await this.supabaseService.getData('courses')
+    return await this.mongooseService.getAllData(this.CoursesModel);
   }
 
   findOne(id: number) {

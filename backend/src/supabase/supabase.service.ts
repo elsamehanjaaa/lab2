@@ -23,6 +23,21 @@ export class SupabaseService {
     if (error) throw error;
     return data;
   }
+
+  async signup(username: string, email: string, password: string) {
+    const { data, error } = await this.supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: {
+          full_name: username,
+        },
+      },
+    });
+    if (error) throw error;
+
+    return data;
+  }
   async getData(table: string) {
     const { data, error } = await this.supabase.from(table).select();
     if (error) throw error;
