@@ -22,7 +22,7 @@ const Header = () => {
 
   useEffect(() => {
     const getUser = async () => {
-      const res = await fetch("http://localhost:5000/auth/protected", {
+      const res = await fetch("http://localhost:3000/auth/protected", {
         method: "POST",
         credentials: "include",
       });
@@ -42,7 +42,7 @@ const Header = () => {
   }, []);
 
   const handleLogout = async () => {
-    const res = await fetch("http://localhost:5000/auth/logout", {
+    const res = await fetch("http://localhost:3000/auth/logout", {
       method: "post",
       credentials: "include",
     });
@@ -80,7 +80,7 @@ const Header = () => {
         </Link>
         <nav className="flex items-center justify-end space-x-6 text-base">
       <Link
-        href="/home"
+        href="/"
         className="text-white hover:text-yellow-300 transition-colors duration-300"
       >
         Home
