@@ -14,6 +14,7 @@ export class MongooseService {
   }
 
   // Get data by ID from a model
+  
   async getDataById<T extends Document>(
     model: Model<T>,
     id: string,
@@ -27,7 +28,23 @@ export class MongooseService {
       throw error;
     }
   }
-
+  
+  async getDataByName<T extends Document>(
+    model: Model<T>,
+    name: string,
+  ){
+    try {
+      const data = await model.findOne({ name }).exec();
+      if (!data) {
+        return {};
+      }
+        return data;
+    } catch (error) {
+      console.error(`Error fetching data by name ${name}:`, error.message);
+      throw error;
+    }
+  }
+  
   // Insert data into a model
   async insertData<T extends Document>(
     model: Model<T>,

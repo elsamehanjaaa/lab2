@@ -19,9 +19,14 @@ export class CategoriesService {
     return await this.mongooseService.getAllData(this.CategoriesModel)
   }
 
+  async findByName(name: string) {
+    return await this.mongooseService.getDataByName(this.CategoriesModel, name);
+  }
+  
   findOne(id: number) {
     return `This action returns a #${id} category`;
   }
+
 
   update(id: number, updateCategoryDto: UpdateCategoryDto) {
     return `This action updates a #${id} category`;

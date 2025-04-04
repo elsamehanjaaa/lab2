@@ -17,7 +17,6 @@ const Index = () => {
         });
 
         if (!res.ok) throw new Error(`HTTP Error! Status: ${res.status}`);
-
         const result = await res.json();
         console.log(result);
         setCourses(result);
@@ -36,10 +35,6 @@ const Index = () => {
 
       <Categories/>
 
-      {/* Content Section */}
-      <div className="p-8 min-h-[1000px]">
-        {/* Course list or other content goes here */}
-      </div>
     </div>
   );
 };

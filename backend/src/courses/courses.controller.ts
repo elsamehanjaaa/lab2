@@ -2,6 +2,7 @@ import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/commo
 import { CoursesService } from './courses.service';
 import { CreateCourseDto } from './dto/create-course.dto';
 import { UpdateCourseDto } from './dto/update-course.dto';
+import { CheckCategoryDto } from 'src/categories/dto/check-category.dto';
 
 @Controller('courses')
 export class CoursesController {
@@ -21,6 +22,12 @@ export class CoursesController {
   findOne(@Param('id') id: string) {
     return this.coursesService.findOne(+id);
   }
+
+  @Post('getCoursesByCategory')
+  async getByName(@Body() body: any) {
+    return this.coursesService.getCoursesByCategory(body.id);
+  }
+
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateCourseDto: UpdateCourseDto) {

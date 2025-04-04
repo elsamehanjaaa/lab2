@@ -58,7 +58,7 @@ const Categories = () => {
           {visibleCategories.map((category, i) => (
             <a
               key={i} // Add a key to the elements for better React handling
-              href="#"
+              href={`/courses/${category.name.replaceAll(" ", "-")}`}
               className="text-white hover:bg-white hover:text-[#e9ada4] px-4 py-2 rounded-l-full rounded-r-full transition-all flex-grow text-center"
             >
               {category.name}
@@ -81,7 +81,7 @@ const Categories = () => {
                   {hiddenCategories.map((category, i) => (
                     <a
                       key={i} // Add a key to the elements for better React handling
-                      href="#"
+                      href={`/courses/${category.name.replaceAll(" ", "-")}`}
                       className="block px-4 py-2 hover:bg-white hover:text-[#e9ada4] rounded-lg"
                     >
                       {category.name}

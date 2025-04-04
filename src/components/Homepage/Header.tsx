@@ -22,7 +22,7 @@ const Header = () => {
 
   useEffect(() => {
     const getUser = async () => {
-      const res = await fetch("http://localhost:3000/auth/protected", {
+      const res = await fetch("http://localhost:5000/auth/protected", {
         method: "POST",
         credentials: "include",
       });
