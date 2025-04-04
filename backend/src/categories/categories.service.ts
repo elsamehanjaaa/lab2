@@ -27,7 +27,6 @@ export class CategoriesService {
     return `This action returns a #${id} category`;
   }
 
-
   update(id: number, updateCategoryDto: UpdateCategoryDto) {
     return `This action updates a #${id} category`;
   }
