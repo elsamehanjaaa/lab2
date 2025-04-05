@@ -44,11 +44,7 @@ export class CoursesService {
   }
 
   async findAll() {
-<<<<<<< Updated upstream
     return await this.mongooseService.getAllData(this.CoursesModel);
-=======
-    return await this.mongooseService.getAllData(this.CoursesModel)
->>>>>>> Stashed changes
   }
 
   async getCoursesByCategory(categoryId: string): Promise<Courses[]> {

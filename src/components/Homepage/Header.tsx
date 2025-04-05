@@ -86,7 +86,7 @@ const Header = () => {
         Home
       </Link>
       <Link
-        href="/about"
+        href="/About"
         className="text-white hover:text-yellow-300 transition-colors duration-300"
       >
         About
