@@ -56,6 +56,43 @@ export default function AboutPage() {
           </div>
         </div>
       </div>
+      <div className="bg-purple-700 text-white py-20 px-6">
+      <div className="max-w-6xl mx-auto text-center">
+        <h2 className="text-4xl md:text-5xl font-bold mb-6">
+          Creating impact around the world
+        </h2>
+        <p className="text-lg md:text-xl mb-12 max-w-3xl mx-auto">
+          With our global catalog spanning the latest skills and topics, people and organizations everywhere are able to adapt to change and thrive.
+        </p>
+
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-8 text-center">
+          <div>
+            <p className="text-3xl font-extrabold">77M</p>
+            <p className="mt-2 text-sm">Learners</p>
+          </div>
+          <div>
+            <p className="text-3xl font-extrabold">80K</p>
+            <p className="mt-2 text-sm">Instructors</p>
+          </div>
+          <div>
+            <p className="text-3xl font-extrabold">250K</p>
+            <p className="mt-2 text-sm">Courses</p>
+          </div>
+          <div>
+            <p className="text-3xl font-extrabold">1B+</p>
+            <p className="mt-2 text-sm">Course enrollments</p>
+          </div>
+          <div>
+            <p className="text-3xl font-extrabold">75</p>
+            <p className="mt-2 text-sm">Languages</p>
+          </div>
+          <div>
+            <p className="text-3xl font-extrabold">17K</p>
+            <p className="mt-2 text-sm">Enterprise customers</p>
+          </div>
+        </div>
+      </div>
+    </div>
     </>
   )
 }
