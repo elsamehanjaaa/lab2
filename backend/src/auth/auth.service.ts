@@ -40,4 +40,9 @@ export class AuthService {
 
     return { user, session };
   }
+  async checkUsername(username: string) {
+    const user = await this.supabaseService.checkUsername(username);
+
+    return { user };
+  }
 }

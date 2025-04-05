@@ -14,7 +14,8 @@ export class CoursesService {
     private readonly supabaseService: SupabaseService,
     private readonly mongooseService: MongooseService,
     @InjectModel(Courses.name) private readonly CoursesModel: Model<Courses>,
-    @InjectModel(Categories.name) private readonly CategoriesModel: Model<Categories>, // Inject Categories model
+    @InjectModel(Categories.name)
+    private readonly CategoriesModel: Model<Categories>, // Inject Categories model
   ) {}
 
   async create(createCourseDto: CreateCourseDto) {
@@ -59,8 +60,6 @@ export class CoursesService {
       throw new Error('Error fetching courses: ' + error.message);
     }
   }
-
-  
 
   findOne(id: number) {
     return `This action returns a #${id} course`;
