@@ -93,6 +93,65 @@ export default function AboutPage() {
         </div>
       </div>
     </div>
+    <div className="bg-white py-20 px-6 text-center">
+      <div className="max-w-4xl mx-auto mb-12">
+        <p className="text-lg md:text-xl text-gray-800">
+          We help organizations of all types and sizes prepare for what's next — wherever it leads. 
+          Our curated business and tech courses empower companies, institutions, and nonprofits 
+          to thrive by putting learning at the heart of their strategies.
+        </p>
+        <button className="mt-6 bg-black text-white px-6 py-3 rounded-md font-semibold hover:bg-gray-900 transition">
+          Learn more
+        </button>
+      </div>
+
+      <div className="grid md:grid-cols-3 gap-12 max-w-6xl mx-auto text-left">
+        {/* Testimonial 1 */}
+        <div>
+          <p className="text-4xl text-purple-600 mb-2">“”</p>
+          <p className="text-lg text-gray-900 mb-6">
+            Courses fit us perfectly. Their team continuously delivers fresh, up-to-date content that’s easy to deploy and tailored to our needs.
+          </p>
+          <div>
+            <p className="font-bold">Varun Patil</p>
+            <p className="text-sm text-gray-600">Senior Manager of HR Development</p>
+            <a href="#" className="text-purple-700 font-semibold mt-2 inline-block">
+              Read the Synechron case study →
+            </a>
+          </div>
+        </div>
+
+        {/* Testimonial 2 */}
+        <div>
+          <p className="text-4xl text-purple-600 mb-2">“”</p>
+          <p className="text-lg text-gray-900 mb-6">
+            Overall, it was a major success. I regularly received messages about how valuable the Courses platform was for our teams.
+          </p>
+          <div>
+            <p className="font-bold">Alfred Helmerich</p>
+            <p className="text-sm text-gray-600">Executive Training Manager</p>
+            <a href="#" className="text-purple-700 font-semibold mt-2 inline-block">
+              Read the NTT DATA case study →
+            </a>
+          </div>
+        </div>
+
+        {/* Testimonial 3 */}
+        <div>
+          <p className="text-4xl text-purple-600 mb-2">“”</p>
+          <p className="text-lg text-gray-900 mb-6">
+            Courses adapted quickly to our business needs and delivered global impact. It’s the best solution we’ve found for upskilling our employees.
+          </p>
+          <div>
+            <p className="font-bold">Luz Santillana Romero</p>
+            <p className="text-sm text-gray-600">Development and Engagement Director</p>
+            <a href="#" className="text-purple-700 font-semibold mt-2 inline-block">
+              Read the Indra case study →
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
     </>
   )
 }
