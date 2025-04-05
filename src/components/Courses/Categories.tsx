@@ -3,6 +3,7 @@ import React, { useEffect, useState, useRef } from "react";
 // Define the type for each category
 interface Category {
   name: string;
+  slug: string;
 }
 
 const Categories = () => {
@@ -51,14 +52,16 @@ const Categories = () => {
       <div
         ref={navRef}
         className={`inset-x-0 bg-[#e9ada4] m-0 p-0 transition-all ${
-          isSticky ? "fixed top-[70px] left-0 w-full shadow-lg z-50" : "relative"
+          isSticky
+            ? "fixed top-[70px] left-0 w-full shadow-lg z-50"
+            : "relative"
         }`}
       >
         <nav className="flex justify-between py-2 text-white">
           {visibleCategories.map((category, i) => (
             <a
               key={i} // Add a key to the elements for better React handling
-              href={`/courses/${category.name.replaceAll(" ", "-")}`}
+              href={`/courses/${category.slug}`}
               className="text-white hover:bg-white hover:text-[#e9ada4] px-4 py-2 rounded-l-full rounded-r-full transition-all flex-grow text-center"
             >
               {category.name}
@@ -81,7 +84,7 @@ const Categories = () => {
                   {hiddenCategories.map((category, i) => (
                     <a
                       key={i} // Add a key to the elements for better React handling
-                      href={`/courses/${category.name.replaceAll(" ", "-")}`}
+                      href={`/courses/${category.slug}`}
                       className="block px-4 py-2 hover:bg-white hover:text-[#e9ada4] rounded-lg"
                     >
                       {category.name}

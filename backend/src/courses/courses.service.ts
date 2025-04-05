@@ -29,17 +29,27 @@ export class CoursesService {
     }
 
     let categories: Types.ObjectId[] = [];
-    if (createCourseDto.categories) {
-      categories = createCourseDto.categories.map((category) => {
-        return new Types.ObjectId(category);
-      });
+    if (createCourseDto.categories && createCourseDto.categories.length > 0) {
+      const categoryIds = createCourseDto.categories;
+
+      const categoriesFromDb = (await this.CategoriesModel.find(
+        { categoryId: { $in: categoryIds } },
+        { _id: 1 },
+      ).exec()) as { _id: Types.ObjectId }[];
+
+      categories = categoriesFromDb.map((category) => category._id);
     }
 
-    await this.mongooseService.insertData(this.CoursesModel, {
+    const mongo = await this.mongooseService.insertData(this.CoursesModel, {
       ...createCourseDto,
       categories: categories,
       courseId: data[0].id,
     });
+
+    if (!mongo) {
+      console.error('Error inserting data:', error);
+      throw error;
+    }
 
     return data;
   }
@@ -61,8 +71,8 @@ export class CoursesService {
     }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} course`;
+  async findOne(id: string) {
+    return await this.CoursesModel.findOne({ courseId: id }).exec();
   }
 
   update(id: number, updateCourseDto: UpdateCourseDto) {

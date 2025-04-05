@@ -12,23 +12,23 @@ const CategoryPage = () => {
   const { category } = router.query;
 
   useEffect(() => {
+    if (!category) return;
     async function getAll() {
+      console.log(category);
       try {
-        const categoryName = category?.toString().replaceAll("-", " ");
         const res = await fetch(
           "http://localhost:5000/categories/checkCategoryName",
           {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             credentials: "include",
-            body: JSON.stringify({ name: categoryName }),
+            body: JSON.stringify({ slug: category }),
           }
         );
 
         if (!res.ok) throw new Error(`HTTP Error! Status: ${res.status}`);
         const result = await res.json();
         setCategoryId(result._id);
-        console.log(result._id);
       } catch (error) {
         console.error("Fetch error:", error);
       }

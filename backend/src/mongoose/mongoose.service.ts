@@ -3,7 +3,6 @@ import { Model, Document, Types } from 'mongoose';
 
 @Injectable()
 export class MongooseService {
-  // Get all data from a model
   async getAllData<T extends Document>(model: Model<T>): Promise<T[]> {
     try {
       return await model.find().exec();
@@ -14,7 +13,7 @@ export class MongooseService {
   }
 
   // Get data by ID from a model
-  
+
   async getDataById<T extends Document>(
     model: Model<T>,
     id: string,
@@ -28,23 +27,38 @@ export class MongooseService {
       throw error;
     }
   }
-  
-  async getDataByName<T extends Document>(
-    model: Model<T>,
-    name: string,
-  ){
+
+  async getDataByName<T extends Document>(model: Model<T>, slug: string) {
     try {
-      const data = await model.findOne({ name }).exec();
+      const data = await model.findOne({ slug }).exec();
       if (!data) {
         return {};
       }
-        return data;
+      return data;
     } catch (error) {
-      console.error(`Error fetching data by name ${name}:`, error.message);
+      console.error(`Error fetching data by name ${slug}:`, error.message);
       throw error;
     }
   }
-  
+  async getDataBySQLId<T extends Document>(
+    model: Model<T>,
+    categoryId: number,
+  ) {
+    try {
+      const data = await model.findOne({ categoryId }).exec();
+      if (!data) {
+        return {};
+      }
+      return data;
+    } catch (error) {
+      console.error(
+        `Error fetching data by name ${categoryId}:`,
+        error.message,
+      );
+      throw error;
+    }
+  }
+
   // Insert data into a model
   async insertData<T extends Document>(
     model: Model<T>,

@@ -9,20 +9,25 @@ import { Categories } from '../schemas/categories.schema';
 
 @Injectable()
 export class CategoriesService {
-  constructor(private readonly supabaseService: SupabaseService, private readonly mongooseService: MongooseService, @InjectModel(Categories.name) private readonly CategoriesModel: Model<Categories>,) {}
-  
+  constructor(
+    private readonly supabaseService: SupabaseService,
+    private readonly mongooseService: MongooseService,
+    @InjectModel(Categories.name)
+    private readonly CategoriesModel: Model<Categories>,
+  ) {}
+
   create(createCategoryDto: CreateCategoryDto) {
     return 'This action adds a new category';
   }
 
   async findAll() {
-    return await this.mongooseService.getAllData(this.CategoriesModel)
+    return await this.mongooseService.getAllData(this.CategoriesModel);
   }
 
-  async findByName(name: string) {
-    return await this.mongooseService.getDataByName(this.CategoriesModel, name);
+  async findByName(slug: string) {
+    return await this.mongooseService.getDataByName(this.CategoriesModel, slug);
   }
-  
+
   findOne(id: number) {
     return `This action returns a #${id} category`;
   }

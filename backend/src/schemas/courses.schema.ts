@@ -4,7 +4,7 @@ import { Document, Types } from 'mongoose';
 @Schema()
 export class Courses extends Document {
   @Prop({ required: true, unique: true })
-  courseId: number;
+  courseId: string;
   @Prop()
   title: string;
 

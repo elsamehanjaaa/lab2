@@ -1,4 +1,3 @@
-
 import Hero from "@/components/Homepage/Hero";
 import React from "react";
 

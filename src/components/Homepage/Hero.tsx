@@ -139,8 +139,8 @@ const Hero = () => {
               className="bg-white rounded-xl shadow hover:shadow-lg overflow-hidden transform transition hover:-translate-y-1"
             >
               <Image
-              width={500}
-              height={500}
+                width={500}
+                height={500}
                 src={course.image}
                 alt={course.title}
                 className="w-full h-48 object-cover"
@@ -174,9 +174,12 @@ const Hero = () => {
           ))}
         </div>
         <div className="flex justify-center mt-6">
-        <Link href="/courses" className="text-blue-600 hover:underline font-semibold">
+          <Link
+            href="/courses"
+            className="text-blue-600 hover:underline font-semibold"
+          >
             Show all Data Science courses
-</Link>
+          </Link>
         </div>
       </div>
 
@@ -189,8 +192,8 @@ const Hero = () => {
         <div className="flex flex-wrap justify-center items-center gap-8">
           {brandLogos.map((logo, i) => (
             <Image
-            width={500}
-            height={500}
+              width={500}
+              height={500}
               key={i}
               src={logo}
               alt="Brand Logo"
