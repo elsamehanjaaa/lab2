@@ -58,7 +58,15 @@ export class AuthController {
       );
     }
   }
+  @Post('checkUsername')
+  async checkUsername(
+    @Body() body: { username: string },
+    @Res() response: Response,
+  ) {
+    const data = await this.authService.checkUsername(body.username);
 
+    response.status(HttpStatus.OK).json(data.user);
+  }
   @Post('signup')
   async signup(
     @Body() body: { username: string; email: string; password: string },

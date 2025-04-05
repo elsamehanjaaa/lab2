@@ -38,6 +38,18 @@ export class SupabaseService {
 
     return data;
   }
+  async checkUsername(username: string) {
+    // List all users
+    const { data, error } = await this.supabase.auth.admin.listUsers();
+
+    if (error) throw error;
+
+    const user = data.users.find(
+      (user) => user.user_metadata?.full_name === username,
+    );
+    return user ? true : false;
+  }
+
   async getData(table: string) {
     const { data, error } = await this.supabase.from(table).select();
     if (error) throw error;

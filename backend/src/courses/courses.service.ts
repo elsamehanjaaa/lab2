@@ -14,7 +14,8 @@ export class CoursesService {
     private readonly supabaseService: SupabaseService,
     private readonly mongooseService: MongooseService,
     @InjectModel(Courses.name) private readonly CoursesModel: Model<Courses>,
-    @InjectModel(Categories.name) private readonly CategoriesModel: Model<Categories>, // Inject Categories model
+    @InjectModel(Categories.name)
+    private readonly CategoriesModel: Model<Categories>, // Inject Categories model
   ) {}
 
   async create(createCourseDto: CreateCourseDto) {
@@ -44,11 +45,7 @@ export class CoursesService {
   }
 
   async findAll() {
-<<<<<<< Updated upstream
     return await this.mongooseService.getAllData(this.CoursesModel);
-=======
-    return await this.mongooseService.getAllData(this.CoursesModel)
->>>>>>> Stashed changes
   }
 
   async getCoursesByCategory(categoryId: string): Promise<Courses[]> {
@@ -63,8 +60,6 @@ export class CoursesService {
       throw new Error('Error fetching courses: ' + error.message);
     }
   }
-
-  
 
   findOne(id: number) {
     return `This action returns a #${id} course`;
