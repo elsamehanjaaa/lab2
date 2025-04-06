@@ -4,7 +4,7 @@ export default function Document() {
   return (
     <Html lang="en">
       <Head />
-      <body className="antialiased mt-20">
+      <body className="antialiased mt-16">
         <Main />
         <NextScript />
       </body>

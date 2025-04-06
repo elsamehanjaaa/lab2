@@ -93,7 +93,7 @@ export default function SignUpModal({ onClose }: { onClose: () => void }) {
       const result = await res.json();
 
       if (res.ok) {
-        router.push("/login");
+        router.refresh();
         onClose(); // close modal
       } else {
         throw new Error(result.message || "Sign up failed");

@@ -4,6 +4,8 @@ import {
   IsArray,
   ArrayNotEmpty,
   IsPositive,
+  IsDate,
+  IsBoolean,
 } from 'class-validator';
 
 export class CreateCourseDto {
@@ -17,8 +19,14 @@ export class CreateCourseDto {
   @IsPositive()
   price: number;
 
+  @IsBoolean()
+  status: boolean = true;
+
   @IsNumber()
   rating: number;
+
+  @IsDate()
+  created_at: Date = new Date();
 
   @IsArray()
   @ArrayNotEmpty()

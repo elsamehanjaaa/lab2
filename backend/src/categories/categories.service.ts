@@ -16,8 +16,38 @@ export class CategoriesService {
     private readonly CategoriesModel: Model<Categories>,
   ) {}
 
-  create(createCategoryDto: CreateCategoryDto) {
-    return 'This action adds a new category';
+  async create(createCategoryDto: CreateCategoryDto) {
+    const generateSlug = (name: string): string => {
+      return name
+        .toLowerCase() // Make the name lowercase
+        .replace(/\s+/g, '-') // Replace spaces with dashes
+        .replace(/&/g, 'and') // Replace "&" with "and"
+        .replace(/[^a-z0-9\-]/g, '') // Remove any characters that are not letters, numbers, or dashes
+        .trim(); // Trim any leading/trailing spaces
+    };
+
+    // Generate the slug
+    createCategoryDto.slug = generateSlug(createCategoryDto.name);
+    const { data, error } = await this.supabaseService.insertData(
+      'categories',
+      createCategoryDto,
+    );
+    if (error) {
+      console.error('Error inserting data:', error);
+      throw error;
+    }
+
+    const mongo = await this.mongooseService.insertData(this.CategoriesModel, {
+      ...createCategoryDto,
+      _id: data[0].id,
+    });
+
+    if (!mongo) {
+      console.error('Error inserting data:', error);
+      throw error;
+    }
+
+    return data;
   }
 
   async findAll() {
@@ -28,15 +58,33 @@ export class CategoriesService {
     return await this.mongooseService.getDataByName(this.CategoriesModel, slug);
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} category`;
+  async findOne(id: string) {
+    return await this.mongooseService.getDataById(this.CategoriesModel, id);
   }
 
-  update(id: number, updateCategoryDto: UpdateCategoryDto) {
-    return `This action updates a #${id} category`;
+  async update(id: string, updateCategoryDto: UpdateCategoryDto) {
+    const { data, error } = await this.supabaseService.updateData(
+      'categories',
+      updateCategoryDto,
+      id,
+    );
+    if (error) {
+      console.error('Error inserting data:', error);
+      throw error;
+    }
+
+    const mongo = await this.mongooseService.updateData(
+      this.CategoriesModel,
+      id,
+      updateCategoryDto,
+    );
+
+    if (!mongo) {
+      throw Error('Error inserting data into MongoDB');
+    }
   }
 
-  remove(id: number) {
+  remove(id: string) {
     return `This action removes a #${id} category`;
   }
 }

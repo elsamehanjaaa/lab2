@@ -19,7 +19,6 @@ const Index = () => {
 
         if (!res.ok) throw new Error(`HTTP Error! Status: ${res.status}`);
         const result = await res.json();
-        console.log(result);
         setCourses(result);
       } catch (error) {
         console.error("Fetch error:", error);
@@ -34,7 +33,7 @@ const Index = () => {
       <TopSection title="Our Courses" text1="1000+" text2="Courses Available" />
 
       <Categories />
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid mt-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {courses.length > 0 &&
           courses.map((course: any, index: number) => <Card course={course} />)}
       </div>

@@ -1,20 +1,31 @@
 import { Schema, Prop, SchemaFactory } from '@nestjs/mongoose';
-import { Document, Types } from 'mongoose';
+import { Document, Double } from 'mongoose';
 
-@Schema()
+@Schema({ versionKey: false })
 export class Courses extends Document {
-  @Prop({ required: true, unique: true })
-  courseId: string;
+  @Prop()
+  declare _id: string;
+
   @Prop()
   title: string;
 
   @Prop()
   description: string;
+
   @Prop({ required: true, type: Number })
   price: number;
 
-  @Prop({ type: [{ type: Types.ObjectId, ref: 'Categories' }] })
-  categories: Types.ObjectId[];
+  @Prop({ default: true }) // ✅ Default true
+  status: boolean;
+
+  @Prop()
+  rating: number;
+
+  @Prop({ type: [{ type: Number, ref: 'Categories' }] })
+  categories: number[];
+
+  @Prop({ type: String, default: () => new Date().toISOString() }) // ✅ Default to current date
+  created_at: Date;
 }
 
 export const CoursesSchema = SchemaFactory.createForClass(Courses);

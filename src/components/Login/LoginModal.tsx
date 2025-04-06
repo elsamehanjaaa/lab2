@@ -34,7 +34,6 @@ export default function LoginModal({ onClose }: { onClose: () => void }) {
       const result = await res.json();
 
       if (res.ok) {
-        router.push("/");
         router.refresh();
         onClose(); // Close modal on success
       } else {

@@ -14,13 +14,10 @@ export class MongooseService {
 
   // Get data by ID from a model
 
-  async getDataById<T extends Document>(
-    model: Model<T>,
-    id: string,
-  ): Promise<T> {
+  async getDataById<T extends Document>(model: Model<T>, id: string) {
     try {
       const data = await model.findById(id).exec();
-      if (!data) throw new Error('Data not found');
+      if (!data) return {};
       return data;
     } catch (error) {
       console.error(`Error fetching data by ID ${id}:`, error.message);
@@ -66,7 +63,6 @@ export class MongooseService {
   ): Promise<T> {
     try {
       const newData = new model(data);
-      console.log(newData);
 
       return await newData.save();
     } catch (error) {
@@ -78,12 +74,12 @@ export class MongooseService {
   // Update data by ID in a model
   async updateData<T extends Document>(
     model: Model<T>,
-    id: Object,
+    id: string,
     update: Partial<T>,
   ): Promise<T> {
     try {
       const updatedData = await model
-        .findOneAndUpdate(id, update, { new: true })
+        .findOneAndUpdate({ _id: id }, update, { new: true })
         .exec();
       if (!updatedData) throw new Error('Data not found for update');
       return updatedData;

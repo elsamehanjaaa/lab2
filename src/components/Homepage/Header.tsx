@@ -32,7 +32,7 @@ const Header = () => {
     };
 
     const token = getTokenFromCookies();
-    if (!token) return () => clearInterval(interval);
+    if (!token) return;
     const getUser = async () => {
       const res = await fetch("http://localhost:5000/auth/protected", {
         method: "POST",

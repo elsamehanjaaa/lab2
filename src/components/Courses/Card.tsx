@@ -9,7 +9,7 @@ interface Course {
   status: boolean;
   created_at: string;
   slug: string;
-  courseId: string;
+  _id: string;
 }
 
 const Card = ({ course }: { course: Course }) => {
@@ -26,7 +26,7 @@ const Card = ({ course }: { course: Course }) => {
   };
   return (
     <Link
-      href={`/course/${course.slug}/${course.courseId}`}
+      href={`/course/${course.slug}/${course._id}`}
       className="bg-white rounded-2xl shadow-md p-6 hover:shadow-lg transition duration-300 ease-in-out"
     >
       <h2 className="text-xl font-bold mb-2">{course.title}</h2>

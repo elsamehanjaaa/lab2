@@ -13,9 +13,7 @@ export class CoursesService {
   constructor(
     private readonly supabaseService: SupabaseService,
     private readonly mongooseService: MongooseService,
-    @InjectModel(Courses.name) private readonly CoursesModel: Model<Courses>,
-    @InjectModel(Categories.name)
-    private readonly CategoriesModel: Model<Categories>, // Inject Categories model
+    @InjectModel(Courses.name) private readonly CoursesModel: Model<Courses>, // Inject Categories model
   ) {}
 
   async create(createCourseDto: CreateCourseDto) {
@@ -28,27 +26,14 @@ export class CoursesService {
       throw error;
     }
 
-    let categories: Types.ObjectId[] = [];
-    if (createCourseDto.categories && createCourseDto.categories.length > 0) {
-      const categoryIds = createCourseDto.categories;
-
-      const categoriesFromDb = (await this.CategoriesModel.find(
-        { categoryId: { $in: categoryIds } },
-        { _id: 1 },
-      ).exec()) as { _id: Types.ObjectId }[];
-
-      categories = categoriesFromDb.map((category) => category._id);
-    }
-
     const mongo = await this.mongooseService.insertData(this.CoursesModel, {
       ...createCourseDto,
-      categories: categories,
-      courseId: data[0].id,
+      categories: createCourseDto.categories,
+      _id: data[0].id,
     });
 
     if (!mongo) {
-      console.error('Error inserting data:', error);
-      throw error;
+      throw Error('Error inserting data into MongoDB');
     }
 
     return data;
@@ -72,14 +57,34 @@ export class CoursesService {
   }
 
   async findOne(id: string) {
-    return await this.CoursesModel.findOne({ courseId: id }).exec();
+    return await this.CoursesModel.findOne({ _id: id }).exec();
   }
 
-  update(id: number, updateCourseDto: UpdateCourseDto) {
-    return `This action updates a #${id} course`;
+  async update(id: string, updateCourseDto: UpdateCourseDto) {
+    const { data, error } = await this.supabaseService.updateData(
+      'courses',
+      updateCourseDto,
+      id,
+    );
+    if (error) {
+      console.error('Error inserting data:', error);
+      throw error;
+    }
+
+    const mongo = await this.mongooseService.updateData(this.CoursesModel, id, {
+      ...updateCourseDto,
+      categories: updateCourseDto.categories,
+    });
+
+    if (!mongo) {
+      throw Error('Error inserting data into MongoDB');
+    }
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} course`;
+  async remove(id: string) {
+    await this.supabaseService.deleteData('courses', id.toString());
+    await this.mongooseService.deleteData(this.CoursesModel, id.toString());
+
+    return { message: 'Course deleted successfully' };
   }
 }
