@@ -83,15 +83,15 @@ const Header = () => {
           ></div>
         )}
         <div className="flex justify-between items-center px-4 max-w-screen-xl mx-auto">
-          <Link href="/">
-            <Image
-              src="/icons/c11178ab-3730-473a-bf40-45a5ac808f78.png"
-              alt="Logo"
-              width={120}
-              height={30}
-              className="h-full w-auto"
-            />
-          </Link>
+        <Link href="/">
+  <Image
+    src="/icons/30786f1e-5c02-4f02-8365-671e26262182.png"
+    alt="Logo"
+    width={60}  // më e vogël
+    height={60}
+    className="h-10 w-auto"  // ose mund të bësh `h-8` për edhe më të vogël
+  />
+</Link>
           <nav className="flex items-center justify-end space-x-6 text-base">
             <Link
               href="/"
