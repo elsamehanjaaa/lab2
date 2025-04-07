@@ -72,7 +72,7 @@ const Header = () => {
   return (
     <>
       <header
-        className={`py-6 w-full fixed top-0 transition-colors duration-300 z-50 backdrop-blur-md backdrop-filter bg-[#4e7fe7] ${
+        className={`py-6 w-full fixed top-0 transition-colors duration-300 z-50 backdrop-blur-md backdrop-filter bg-[#74a0ff] ${
           isScrolled ? "shadow-md" : ""
         } text-white `}
       >
@@ -85,7 +85,7 @@ const Header = () => {
         <div className="flex justify-between items-center px-4 max-w-screen-xl mx-auto">
           <Link href="/">
             <Image
-              src="/icons/logo.webp"
+              src="/icons/c11178ab-3730-473a-bf40-45a5ac808f78.png"
               alt="Logo"
               width={120}
               height={30}
@@ -95,25 +95,25 @@ const Header = () => {
           <nav className="flex items-center justify-end space-x-6 text-base">
             <Link
               href="/"
-              className="text-white hover:text-pink-600 transition-colors duration-300"
+              className="text-white hover:text-[#edb4a9] transition-colors duration-300"
             >
               Home
             </Link>
             <Link
               href="/about"
-              className="text-white hover:text-yellow-300 transition-colors duration-300"
+              className="text-white hover:text-[#edb4a9] transition-colors duration-300"
             >
               About
             </Link>
             <Link
               href="/courses"
-              className="text-white hover:text-yellow-300 transition-colors duration-300"
+              className="text-white hover:text-[#edb4a9]  transition-colors duration-300"
             >
               Courses
             </Link>
             <Link
               href="/contactus"
-              className="text-white hover:text-yellow-300 transition-colors duration-300"
+              className="text-white hover:text-[#edb4a9]  transition-colors duration-300"
             >
               Contact Us
             </Link>
@@ -121,7 +121,7 @@ const Header = () => {
             {isLoggedIn && user ? (
               <div className="relative">
                 <button
-                  className="text-white hover:text-yellow-300 transition-colors duration-300"
+                  className="text-white hover:text-pink-600  transition-colors duration-300"
                   onClick={handleDropdown}
                 >
                   <User />
