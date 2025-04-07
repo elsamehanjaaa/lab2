@@ -11,10 +11,13 @@ import { CategoriesModule } from 'src/categories/categories.module';
 @Module({
   imports: [
     CategoriesModule,
-    MongooseModule.forFeature([{ name: Courses.name, schema: CoursesSchema }]), // ✅ Register Course model
+    MongooseModule.forFeature([{ name: Courses.name, schema: CoursesSchema }]),
   ],
   controllers: [CoursesController],
   providers: [CoursesService, SupabaseService, MongooseService],
-  exports: [CoursesService],
+  exports: [
+    CoursesService,
+    MongooseModule, // ✅ Export MongooseModule to share CoursesModel
+  ],
 })
 export class CoursesModule {}

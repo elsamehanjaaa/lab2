@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateCourseDto } from './dto/create-course.dto';
 import { UpdateCourseDto } from './dto/update-course.dto';
 import { SupabaseService } from 'src/supabase/supabase.service';
@@ -17,6 +17,18 @@ export class CoursesService {
   ) {}
 
   async create(createCourseDto: CreateCourseDto) {
+    const generateSlug = (title: string): string => {
+      return title
+        .toLowerCase() // Make the title lowercase
+        .replace(/\s+/g, '-') // Replace spaces with dashes
+        .replace(/&/g, 'and') // Replace "&" with "and"
+        .replace(/[^a-z0-9\-]/g, '') // Remove any characters that are not letters, numbers, or dashes
+        .trim(); // Trim any leading/trailing spaces
+    };
+
+    // Generate the slug
+
+    createCourseDto.slug = generateSlug(createCourseDto.title);
     const { data, error } = await this.supabaseService.insertData(
       'courses',
       createCourseDto,

@@ -6,6 +6,7 @@ import {
   Patch,
   Param,
   Delete,
+  NotFoundException,
 } from '@nestjs/common';
 import { CoursesService } from './courses.service';
 import { CreateCourseDto } from './dto/create-course.dto';
@@ -28,7 +29,13 @@ export class CoursesController {
 
   @Get(':id')
   async findOne(@Param('id') id: string) {
-    return await this.coursesService.findOne(id);
+    const course = await this.coursesService.findOne(id);
+
+    if (!course) {
+      throw new NotFoundException(`Course with ID '${id}' not found`);
+    }
+
+    return course;
   }
 
   @Post('getCoursesByCategory')

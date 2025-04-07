@@ -72,26 +72,20 @@ const Header = () => {
   return (
     <>
       <header
-        className={`py-6 w-full fixed top-0 transition-colors duration-300 z-50 backdrop-blur-md backdrop-filter bg-[#74a0ff] ${
+        className={`py-6 w-full fixed top-0 transition-colors duration-300 z-10 backdrop-blur-md backdrop-filter bg-[#74a0ff] ${
           isScrolled ? "shadow-md" : ""
         } text-white `}
       >
-        {isDropdownOpen && (
-          <div
-            className="fixed inset-0 z-10"
-            onClick={() => setIsDropdownOpen(false)}
-          ></div>
-        )}
         <div className="flex justify-between items-center px-4 max-w-screen-xl mx-auto">
-        <Link href="/">
-  <Image
-    src="/icons/30786f1e-5c02-4f02-8365-671e26262182.png"
-    alt="Logo"
-    width={60}  // më e vogël
-    height={60}
-    className="h-10 w-auto"  // ose mund të bësh `h-8` për edhe më të vogël
-  />
-</Link>
+          <Link href="/">
+            <Image
+              src="/icons/30786f1e-5c02-4f02-8365-671e26262182.png"
+              alt="Logo"
+              width={60} // më e vogël
+              height={60}
+              className="h-10 w-auto" // ose mund të bësh `h-8` për edhe më të vogël
+            />
+          </Link>
           <nav className="flex items-center justify-end space-x-6 text-base">
             <Link
               href="/"
@@ -127,10 +121,16 @@ const Header = () => {
                   <User />
                 </button>
                 {isDropdownOpen && (
-                  <div className="absolute right-0 mt-2 w-48 bg-white text-black shadow-lg rounded-lg overflow-hidden z-10">
+                  <div className="z-30 absolute right-0 mt-2 w-48 bg-white text-black shadow-lg rounded-lg overflow-hidden">
                     <div className="px-4 py-2 border-b text-center font-medium">
                       {user}
                     </div>
+                    <Link
+                      href="/myCourses"
+                      className="block px-4 py-2 hover:bg-gray-100 transition"
+                    >
+                      My Courses
+                    </Link>
                     <Link
                       href="/profile"
                       className="block px-4 py-2 hover:bg-gray-100 transition"
@@ -172,6 +172,7 @@ const Header = () => {
           </nav>
         </div>
       </header>
+
       {showSignup && <SignupModal onClose={() => setShowSignup(false)} />}
       {showLogin && <LoginModal onClose={() => setShowLogin(false)} />}
     </>

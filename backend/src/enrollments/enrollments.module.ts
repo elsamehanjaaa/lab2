@@ -5,12 +5,14 @@ import { EnrollmentsController } from './enrollments.controller';
 import { Enrollments, EnrollmentsSchema } from '../schemas/enrollments.schema';
 import { MongooseService } from 'src/mongoose/mongoose.service';
 import { SupabaseService } from 'src/supabase/supabase.service';
+import { CoursesModule } from 'src/courses/courses.module'; // ✅
 
 @Module({
   imports: [
     MongooseModule.forFeature([
       { name: Enrollments.name, schema: EnrollmentsSchema },
-    ]), // ✅ Register Course model
+    ]),
+    CoursesModule, // ✅ Import the module that exports CoursesModel
   ],
   controllers: [EnrollmentsController],
   providers: [EnrollmentsService, SupabaseService, MongooseService],

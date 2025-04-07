@@ -6,14 +6,17 @@ import { InjectModel } from '@nestjs/mongoose';
 import { MongooseService } from 'src/mongoose/mongoose.service';
 import { Model } from 'mongoose';
 import { Enrollments } from 'src/schemas/enrollments.schema';
+import { Courses } from 'src/schemas/courses.schema';
 
 @Injectable()
 export class EnrollmentsService {
+  CourseModel: any;
   constructor(
     private readonly supabaseService: SupabaseService,
     private readonly mongooseService: MongooseService,
     @InjectModel(Enrollments.name)
     private readonly EnrollmentsModel: Model<Enrollments>,
+    @InjectModel(Courses.name) private readonly CoursesModel: Model<Courses>, // Inject Categories model
   ) {}
   async create(createEnrollmentDto: CreateEnrollmentDto) {
     const { data, error } = await this.supabaseService.insertData(
@@ -45,6 +48,16 @@ export class EnrollmentsService {
 
   async findOne(id: string) {
     return await this.mongooseService.getDataById(this.EnrollmentsModel, id);
+  }
+  async getEnrollmentsByUser(id: string) {
+    const enrollments = await this.EnrollmentsModel.find({ user_id: id });
+
+    const courseIds = enrollments.map((e) => e.course_id);
+    console.log(courseIds);
+
+    const courses = await this.CoursesModel.find({ _id: { $in: courseIds } });
+
+    return courses;
   }
 
   async remove(id: string) {

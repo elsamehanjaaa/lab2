@@ -26,6 +26,9 @@ export class Courses extends Document {
 
   @Prop({ type: String, default: () => new Date().toISOString() }) // ✅ Default to current date
   created_at: Date;
+
+  @Prop()
+  slug: string;
 }
 
 export const CoursesSchema = SchemaFactory.createForClass(Courses);

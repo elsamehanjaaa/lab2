@@ -32,4 +32,7 @@ export class CreateCourseDto {
   @ArrayNotEmpty()
   @IsNumber({}, { each: true })
   categories: number[] = [];
+
+  @IsString()
+  slug: string;
 }
