@@ -159,4 +159,59 @@ export default function AboutPage() {
       </div>
     </>
   );
+  import React from "react";
+import { Button } from "@/components/ui/button";
+
+export default function Home() {
+  return (
+    <main className="min-h-screen bg-white p-8">
+      <section className="text-center mb-16">
+        <h1 className="text-4xl font-bold mb-4">Online Courses with Udemy</h1>
+        <p className="text-lg text-gray-600">
+          Learn anything, anytime, anywhere from top instructors.
+        </p>
+      </section>
+
+      <section className="grid grid-cols-3 gap-8">
+        <div className="border-t-4 border-purple-600 p-6 shadow rounded-2xl">
+          <h2 className="text-2xl font-bold mb-2">Work with us</h2>
+          <p className="text-gray-700 mb-4">
+            At Udemy, we’re all learners and instructors. We live out our values every day to create a culture that is diverse, inclusive, and committed to helping employees thrive.
+          </p>
+          <Button variant="ghost" className="text-purple-600">Join our team</Button>
+        </div>
+
+        <div className="border-t-4 border-purple-600 p-6 shadow rounded-2xl">
+          <h2 className="text-2xl font-bold mb-2">See our research</h2>
+          <p className="text-gray-700 mb-4">
+            We’re committed to improving lives through learning. Dig into our original research to learn about the forces that are shaping the modern workplace.
+          </p>
+          <Button variant="ghost" className="text-purple-600">Learn more</Button>
+        </div>
+
+        <div className="border-t-4 border-teal-600 p-6 shadow rounded-2xl">
+          <h2 className="text-2xl font-bold mb-2">Read our blog</h2>
+          <p className="text-gray-700 mb-4">
+            Want to know what we’ve been up to lately? Check out the Udemy blog to get the scoop on the latest news, ideas and projects, and more.
+          </p>
+          <Button variant="ghost" className="text-teal-600">Read now</Button>
+        </div>
+      </section>
+
+      <section className="mt-24 text-center">
+        <h3 className="text-xl text-gray-700 mb-4">Trusted by leading companies</h3>
+        <div className="flex flex-wrap justify-center gap-8 grayscale">
+          {[
+            "google", "microsoft", "amazon", "meta",
+            "linkedin", "ibm", "salesforce",
+            "adobe", "intel"
+          ].map((name) => (
+            <div key={name} className="w-24 h-12 bg-gray-100 rounded flex items-center justify-center">
+              <span className="text-gray-400 font-semibold capitalize">{name}</span>
+            </div>
+          ))}
+        </div>
+      </section>
+    </main>
+  );
 }
