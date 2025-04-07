@@ -1,0 +1,15 @@
+// src/components/LogoPreview.tsx
+
+import Image from 'next/image';
+
+const logos = [
+  'coursera.png',
+  'edx.png',
+  'khanacademy.png',
+  'duolingo.png',
+  'udacity.png',
+  'codecademy.png',
+  'pluralsight.png',
+  'skillshare.png',
+  'linkedinlearning.png',
+];
