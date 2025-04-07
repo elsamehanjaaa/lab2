@@ -106,7 +106,7 @@ export default function ContactUs() {
                     <div>
                       <h3 className="font-semibold text-lg">Address</h3>
                       <p className="text-muted-foreground">
-                        Rr. Universiteti AAB
+                        Rr. Kolegji UBT
                         <br />
                         Prishtinë, 10000
                         <br />
