@@ -127,8 +127,8 @@ const Hero: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section */}
-      <div className="relative bg-gradient-to-r from-indigo-500 to-purple-500 text-white overflow-hidden">
-        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&w=2000&q=80')] opacity-10 bg-cover bg-center" />
+      <div className="relative bg-gradient-to-r from-blue-500 to-pink-500 text-white overflow-hidden">
+        <div className="absolute inset-0 bg-[url('/images/background.png')] opacity-30 bg-cover bg-center" />
         <div className="relative max-w-7xl mx-auto px-4 py-32 sm:px-6 lg:px-8">
           <div className="max-w-2xl">
             <h1 className="text-5xl md:text-6xl font-extrabold leading-tight mb-6">
@@ -232,7 +232,7 @@ const Hero: React.FC = () => {
             ))}
           </div>
           <div className="text-center mt-12">
-            <button className="text-indigo-600 hover:text-indigo-700 font-semibold hover:underline">
+            <button href="/courses" className="text-indigo-600 hover:text-indigo-700 font-semibold hover:underline">
               Show all Data Science courses →
             </button>
           </div>

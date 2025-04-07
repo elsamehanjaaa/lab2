@@ -72,7 +72,7 @@ const Header = () => {
   return (
     <>
       <header
-        className={`py-6 w-full fixed top-0 transition-colors duration-300 z-50 backdrop-blur-md backdrop-filter bg-[#8ae0ea] ${
+        className={`py-6 w-full fixed top-0 transition-colors duration-300 z-50 backdrop-blur-md backdrop-filter bg-[#4e7fe7] ${
           isScrolled ? "shadow-md" : ""
         } text-white `}
       >
@@ -95,7 +95,7 @@ const Header = () => {
           <nav className="flex items-center justify-end space-x-6 text-base">
             <Link
               href="/"
-              className="text-white hover:text-yellow-300 transition-colors duration-300"
+              className="text-white hover:text-pink-600 transition-colors duration-300"
             >
               Home
             </Link>
