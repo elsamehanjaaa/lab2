@@ -112,7 +112,7 @@ const Header = () => {
               Courses
             </Link>
             <Link
-              href="/contact"
+              href="/contactus"
               className="text-white hover:text-yellow-300 transition-colors duration-300"
             >
               Contact Us

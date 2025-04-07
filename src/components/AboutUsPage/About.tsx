@@ -96,7 +96,7 @@ export default function AboutPage() {
     <div className="bg-white py-20 px-6 text-center">
       <div className="max-w-4xl mx-auto mb-12">
         <p className="text-lg md:text-xl text-gray-800">
-          We help organizations of all types and sizes prepare for what's next — wherever it leads. 
+          We help organizations of all types and sizes prepare for what is next — wherever it leads. 
           Our curated business and tech courses empower companies, institutions, and nonprofits 
           to thrive by putting learning at the heart of their strategies.
         </p>
