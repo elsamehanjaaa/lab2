@@ -108,6 +108,9 @@ const plans = [
   }
 ];
 
+
+
+
 function Block({ icon: Icon, title, description }: {icon: React.ElementType; title: string; description: string }) {
   return (
     <div className="flex-1 p-8 bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
@@ -324,6 +327,13 @@ const Hero: React.FC = () => {
         </div>
       </div>
     </div>
+    
+
+    
+  
+
+    
+     
   );
 };
 
