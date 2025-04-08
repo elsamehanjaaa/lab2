@@ -36,10 +36,12 @@ const Dropdown = ({
   );
 };
 
-const CourseFilters = () => {
+const CourseFilters = ({ onCategoryChange }: { onCategoryChange: (id: string) => void }) => {
   const [selectedRating, setSelectedRating] = useState<number | null>(null);
   const [categories, setCategories] = useState<any[]>([]); // Add categories state
   const [selectedPrice, setSelectedPrice] = useState<string>(""); // Price state
+
+
 
   // Fetch categories from API
   useEffect(() => {
@@ -52,7 +54,12 @@ const CourseFilters = () => {
       setCategories(result);
     };
     getCategories();
+    
   }, []);
+
+  const handleTopicChange = (category: any) => {
+    onCategoryChange(category._id);
+  };
 
   const handleRatingChange = (rating: number) => {
     setSelectedRating(rating);
@@ -103,15 +110,15 @@ const CourseFilters = () => {
       {/* Topics Dropdown */}
       <Dropdown title="Topic">
         <div className="space-y-2 max-h-48 overflow-y-auto"> 
-          {categories.map((category, index) => ( // Render all categories
-            <a
-              key={index}
-              href={`/courses/${category.slug}`}
-              className="block text-black hover:bg-[#e9ada4] hover:text-white px-4 py-2 rounded-md transition-all"
-            >
-              {category.name}
-            </a>
-          ))}
+        {categories.map((category) => (
+          <div
+            key={category.id}
+            onClick={() => handleTopicChange(category)}
+            className="block text-black hover:bg-[#e9ada4] hover:text-white px-4 py-2 rounded-md transition-all cursor-pointer"
+          >
+            {category.name}
+          </div>
+        ))}
         </div>
       </Dropdown>
 
