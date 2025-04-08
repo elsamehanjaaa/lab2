@@ -1,5 +1,7 @@
 // app/about/page.tsx
 import Image from 'next/image'
+import Link from 'next/link';
+
 
 export default function AboutPage() {
   return (
@@ -157,6 +159,76 @@ export default function AboutPage() {
           </div>
         </div>
       </div>
+      <div className="bg-white py-16 px-6">
+      <div className="max-w-6xl mx-auto">
+        {/* Logos */}
+        <div className="bg-gray-100 rounded-xl py-10 px-4 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6 items-center justify-items-center mb-16">
+          {[
+            'coursera.png',
+            'edx.png',
+            'khanacademy.png',
+            'udacity.png',
+            'duolingo.png',
+            'codecademy.png',
+            'pluralsight.png',
+            'skillshare.png',
+            'linkedinlearning.png',
+          ].map((logo, index) => (
+            <img
+              key={index}
+              src={`/logos/${logo}`}
+              alt={logo}
+              className="h-10 grayscale hover:grayscale-0 transition"
+            />
+          ))}
+        </div>
+
+        {/* 3 Columns */}
+        <div className="grid md:grid-cols-3 gap-10 text-center md:text-left">
+          {/* Work with us */}
+          <div>
+            <h3 className="text-xl font-bold border-b-4 border-purple-500 inline-block mb-4">
+              Work with us
+            </h3>
+            <p className="mb-4 text-gray-600">
+              We’re building the future of online learning. Our team is
+              passionate about education, diversity, and helping people thrive.
+            </p>
+            <Link href="#" className="text-purple-600 font-semibold">
+              Join our team →
+            </Link>
+          </div>
+
+          {/* See our research */}
+          <div>
+            <h3 className="text-xl font-bold border-b-4 border-purple-700 inline-block mb-4">
+              See our research
+            </h3>
+            <p className="mb-4 text-gray-600">
+              Explore insights about learning, productivity, and the modern
+              workplace through our latest research.
+            </p>
+            <Link href="#" className="text-purple-700 font-semibold">
+              Learn more →
+            </Link>
+          </div>
+
+          {/* Blog */}
+          <div>
+            <h3 className="text-xl font-bold border-b-4 border-teal-600 inline-block mb-4">
+              Read our blog
+            </h3>
+            <p className="mb-4 text-gray-600">
+              Stay updated with our ideas, news, and learning tips from the
+              world of education and tech.
+            </p>
+            <Link href="#" className="text-teal-600 font-semibold">
+              Read now →
+            </Link>
+          </div>
+        </div>
+      </div>
+    </div>
     </>
   );
 }
