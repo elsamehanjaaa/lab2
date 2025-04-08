@@ -1,5 +1,6 @@
-import React from 'react';
-import { BookOpen, User, Clock, Check } from 'lucide-react';
+import React from "react";
+import { BookOpen, User, Clock, Check } from "lucide-react";
+import Link from "next/link";
 
 // Sample data
 const categories = [
@@ -10,50 +11,54 @@ const categories = [
   { title: "Deep Learning", learners: "2M+" },
   { title: "AI", learners: "4M+" },
   { title: "Statistics", learners: "1M+" },
-  { title: "NLP", learners: "811,403" }
+  { title: "NLP", learners: "811,403" },
 ];
 
 const courses = [
   {
-    image: "https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&w=800&q=80",
+    image:
+      "https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&w=800&q=80",
     title: "The Complete AI Guide: Learn ChatGPT, Generative AI & More",
     rating: 4.5,
     reviews: "45,903",
     price: "€9.99",
     oldPrice: "€54.99",
-    bestSeller: true
+    bestSeller: true,
   },
   {
-    image: "https://images.unsplash.com/photo-1677442136184-d74f8d98c1b7?auto=format&fit=crop&w=800&q=80",
+    image:
+      "https://images.unsplash.com/photo-1677442136184-d74f8d98c1b7?auto=format&fit=crop&w=800&q=80",
     title: "The Complete AI-Powered Copywriting Course & ChatGPT...",
     rating: 4.3,
     reviews: "1,816",
     price: "€9.99",
-    oldPrice: "€48.99"
+    oldPrice: "€48.99",
   },
   {
-    image: "https://images.unsplash.com/photo-1677442136469-31da8010f192?auto=format&fit=crop&w=800&q=80",
+    image:
+      "https://images.unsplash.com/photo-1677442136469-31da8010f192?auto=format&fit=crop&w=800&q=80",
     title: "ChatGPT, DeepSeek, Grok and 30+ More AI Marketing Assistants",
     rating: 4.5,
     reviews: "533",
     price: "€10.99",
-    oldPrice: "€48.99"
+    oldPrice: "€48.99",
   },
   {
-    image: "https://images.unsplash.com/photo-1677442136472-ae570f4fca3c?auto=format&fit=crop&w=800&q=80",
+    image:
+      "https://images.unsplash.com/photo-1677442136472-ae570f4fca3c?auto=format&fit=crop&w=800&q=80",
     title: "Mastering SEO With ChatGPT: Ultimate Beginner's Guide",
     rating: 4.4,
     reviews: "284",
     price: "€10.99",
-    oldPrice: "€10.99"
-  }
+    oldPrice: "€10.99",
+  },
 ];
 
 const brandLogos = [
   "https://images.unsplash.com/photo-1611162616305-c69b3fa7fbe0?auto=format&fit=crop&w=200&h=80&q=80",
   "https://images.unsplash.com/photo-1611162616475-46b635cb6868?auto=format&fit=crop&w=200&h=80&q=80",
   "https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7?auto=format&fit=crop&w=200&h=80&q=80",
-  "https://images.unsplash.com/photo-1611162618071-b39a2ec055fb?auto=format&fit=crop&w=200&h=80&q=80"
+  "https://images.unsplash.com/photo-1611162618071-b39a2ec055fb?auto=format&fit=crop&w=200&h=80&q=80",
 ];
 
 const plans = [
@@ -68,8 +73,8 @@ const plans = [
       "Access to 12,000+ top courses",
       "Certification prep",
       "Goal-focused recommendations",
-      "AI-powered coding exercises"
-    ]
+      "AI-powered coding exercises",
+    ],
   },
   {
     title: "Team Plan",
@@ -83,8 +88,8 @@ const plans = [
       "Certification prep",
       "Goal-focused recommendations",
       "AI-powered coding exercises",
-      "Analytics and adoption reports"
-    ]
+      "Analytics and adoption reports",
+    ],
   },
   {
     title: "Enterprise Plan",
@@ -103,15 +108,20 @@ const plans = [
       "International course collection featuring 15 languages",
       "Customizable content",
       "Hands-on tech training with add-on",
-      "Strategic implementation services with add-on"
-    ]
-  }
+      "Strategic implementation services with add-on",
+    ],
+  },
 ];
 
-
-
-
-function Block({ icon: Icon, title, description }: {icon: React.ElementType; title: string; description: string }) {
+function Block({
+  icon: Icon,
+  title,
+  description,
+}: {
+  icon: React.ElementType;
+  title: string;
+  description: string;
+}) {
   return (
     <div className="flex-1 p-8 bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
       <div className="inline-block p-3 bg-gradient-to-br from-indigo-50 to-purple-50 rounded-xl mb-4">
@@ -135,7 +145,8 @@ const Hero: React.FC = () => {
               Online Learning Course
             </h1>
             <p className="text-xl md:text-2xl text-indigo-100 mb-8">
-              Build skills with courses, certificates, and degrees online from world-class universities and companies.
+              Build skills with courses, certificates, and degrees online from
+              world-class universities and companies.
             </p>
             <button className="bg-white text-indigo-600 px-8 py-4 rounded-full font-semibold text-lg shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300">
               Get Started
@@ -189,7 +200,9 @@ const Hero: React.FC = () => {
       {/* Courses Section */}
       <div className="bg-white py-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl font-bold mb-12 text-center">Featured Courses</h2>
+          <h2 className="text-3xl font-bold mb-12 text-center">
+            Featured Courses
+          </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {courses.map((course, i) => (
               <div
@@ -232,9 +245,12 @@ const Hero: React.FC = () => {
             ))}
           </div>
           <div className="text-center mt-12">
-            <button href="/courses" className="text-indigo-600 hover:text-indigo-700 font-semibold hover:underline">
+            <Link
+              href="/courses"
+              className="text-indigo-600 hover:text-indigo-700 font-semibold hover:underline"
+            >
               Show all Data Science courses →
-            </button>
+            </Link>
           </div>
         </div>
       </div>
@@ -282,10 +298,18 @@ const Hero: React.FC = () => {
               >
                 <div className="mb-8">
                   <h3 className="text-2xl font-bold mb-2">{plan.title}</h3>
-                  <p className={index === 1 ? "text-indigo-200" : "text-gray-600"}>
+                  <p
+                    className={
+                      index === 1 ? "text-indigo-200" : "text-gray-600"
+                    }
+                  >
                     {plan.subtitle}
                   </p>
-                  <p className={index === 1 ? "text-indigo-200" : "text-gray-600"}>
+                  <p
+                    className={
+                      index === 1 ? "text-indigo-200" : "text-gray-600"
+                    }
+                  >
                     {plan.audience}
                   </p>
                 </div>
@@ -293,7 +317,11 @@ const Hero: React.FC = () => {
                 <div className="mb-8">
                   <p className="text-2xl font-bold">{plan.price}</p>
                   {plan.billingNote && (
-                    <p className={index === 1 ? "text-indigo-200" : "text-gray-500"}>
+                    <p
+                      className={
+                        index === 1 ? "text-indigo-200" : "text-gray-500"
+                      }
+                    >
                       {plan.billingNote}
                     </p>
                   )}
@@ -327,13 +355,6 @@ const Hero: React.FC = () => {
         </div>
       </div>
     </div>
-    
-
-    
-  
-
-    
-     
   );
 };
 

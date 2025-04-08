@@ -8,7 +8,11 @@ export async function middleware(request: NextRequest) {
   const token = request.cookies.get("access_token")?.value;
 
   // Redirect logged-in users away from the login page
-  if (token && request.nextUrl.pathname === "/login") {
+  if (
+    token &&
+    (request.nextUrl.pathname === "/login" ||
+      request.nextUrl.pathname === "/signup")
+  ) {
     return NextResponse.redirect(new URL("/", request.url));
   }
 
