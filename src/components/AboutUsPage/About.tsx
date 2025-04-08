@@ -231,4 +231,24 @@ export default function AboutPage() {
     </div>
     </>
   );
+  return (
+    <>
+      <div className="p-8">
+        <h1 className="text-3xl font-bold mb-4">About Us</h1>
+        <p className="mb-6">
+          We offer high-quality online courses that empower learners to grow and succeed in their careers.
+        </p>
+        <p>Connect with us on social media:</p>
+        <div className="flex space-x-4 mt-4 text-xl">
+          <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer"><FaLinkedin /></a>
+          <a href="https://facebook.com" target="_blank" rel="noopener noreferrer"><FaFacebook /></a>
+          <a href="https://twitter.com" target="_blank" rel="noopener noreferrer"><FaTwitter /></a>
+          <a href="https://instagram.com" target="_blank" rel="noopener noreferrer"><FaInstagram /></a>
+        </div>
+        <div className="mt-6">
+          <Link href="/cookie-policy" className="text-blue-500 underline">Cookie Policy</Link>
+        </div>
+      </div>
+    </>
+  );
 }
