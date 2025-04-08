@@ -7,6 +7,7 @@ import CourseFilters from "@/components/Filterbar";
 const SearchPage = () => {
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const searchParams = useSearchParams();
   const query = searchParams.get("q");
 
@@ -33,8 +34,33 @@ const SearchPage = () => {
     };
 
     fetchCourses();
+    
   }, [query]);
 
+    useEffect(() => {
+      if (!selectedCategory) return;
+
+    const fetchCoursesByTopic = async () => {
+      try {
+        const res = await fetch("http://localhost:5000/courses/getCoursesByCategory", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify({ id: selectedCategory }),
+        });
+
+        if (!res.ok) throw new Error("Failed to fetch");
+        const data = await res.json();
+        setCourses(data);
+      } catch (error) {
+        console.error("Search error:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCoursesByTopic();
+    }, [selectedCategory]);
   return (
     <div>
       <TopSection
@@ -42,10 +68,9 @@ const SearchPage = () => {
         text1={`${courses.length}`}
         text2="Courses Available"
       />
-
       <div className="max-w-6xl mx-auto flex gap-8 mt-8 px-4">
         {/* Filtersss Side */}
-        <CourseFilters />
+        <CourseFilters onCategoryChange={setSelectedCategory} />
 
         {/* courses Side */}
         <div className="w-2/3">
