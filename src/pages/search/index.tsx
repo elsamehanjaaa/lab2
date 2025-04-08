@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Card from "@/components/Courses/Card";
 import TopSection from "@/components/TopSection";
+import CourseFilters from "@/components/Filterbar";
 
 const SearchPage = () => {
   const [courses, setCourses] = useState([]);
@@ -36,19 +37,17 @@ const SearchPage = () => {
 
   return (
     <div>
-      {/* Top Section */}
-      <TopSection title={`Results for: '${query}'`} text1={`${courses.length}`} text2="Courses Available" />
+      <TopSection
+        title={`Results for: '${query}'`}
+        text1={`${courses.length}`}
+        text2="Courses Available"
+      />
 
-      <div className="flex gap-8 mt-8">
-        {/* Left Side - Pink Background */}
-        <div className="w-1/3 bg-pink-500 p-4 text-white rounded-lg">
-          <h2 className="text-2xl font-bold mb-4">Random Text Section</h2>
-          <p className="text-base">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed sit amet accumsan arcu. Nulla facilisi. Mauris vulputate lacus nec malesuada tincidunt. Vivamus auctor erat id quam varius, ut consectetur purus vehicula.
-          </p>
-        </div>
+      <div className="max-w-6xl mx-auto flex gap-8 mt-8 px-4">
+        {/* Filtersss Side */}
+        <CourseFilters />
 
-        {/* Right Side - Course Cards in Rows */}
+        {/* courses Side */}
         <div className="w-2/3">
           {loading ? (
             <p>Loading...</p>
