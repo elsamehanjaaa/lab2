@@ -85,6 +85,30 @@ const Index = () => {
                         className="object-cover rounded-md"
                       />
                     </div>
+
+                    <h2 className="text-2xl font-semibold mb-4">
+                      {course.title}
+                    </h2>
+                    <p className="text-gray-700 mb-4">{course.description}</p>
+
+                    <div className="flex items-center mb-4">
+                      <span className="text-yellow-500 mr-2">★★★★☆</span>
+                      <span className="text-gray-600">{course.rating}</span>
+                    </div>
+
+                    <div className="mb-4">
+                      <span className="text-gray-600">Created by</span>{" "}
+                      <span className="text-blue-600">John Doe</span>
+                    </div>
+
+                    <div className="mb-4">
+                      <span className="text-gray-600">Language:</span>{" "}
+                      <span className="text-blue-600">English</span>
+                    </div>
+
+                    <button className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" onClick={() => router.push(`/course/subscribe/${courseId}`)}>
+                      Enroll Now
+                    </button>
                   </div>
 
                   <h2 className="text-2xl font-semibold mb-4">

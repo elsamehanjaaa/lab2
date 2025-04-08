@@ -4,6 +4,7 @@ import Link from "next/link";
 import { User } from "lucide-react";
 import LoginModal from "../Login/LoginModal";
 import SignupModal from "../Login/SignupModal";
+import Search from "../Search/Search";
 
 const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -86,6 +87,9 @@ const Header = () => {
               className="h-10 w-auto" // ose mund të bësh `h-8` për edhe më të vogël
             />
           </Link>
+
+          <Search/>
+
           <nav className="flex items-center justify-end space-x-6 text-base">
             <Link
               href="/"

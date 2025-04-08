@@ -1,9 +1,10 @@
+// src/courses/courses.service.ts
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateCourseDto } from './dto/create-course.dto';
 import { UpdateCourseDto } from './dto/update-course.dto';
 import { SupabaseService } from 'src/supabase/supabase.service';
 import { MongooseService } from 'src/mongoose/mongoose.service';
-import { Model, Types } from 'mongoose';
+import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { Courses } from '../schemas/courses.schema';
 import { Categories } from '../schemas/categories.schema'; // Import the Categories model
@@ -13,9 +14,11 @@ export class CoursesService {
   constructor(
     private readonly supabaseService: SupabaseService,
     private readonly mongooseService: MongooseService,
-    @InjectModel(Courses.name) private readonly CoursesModel: Model<Courses>, // Inject Categories model
+    @InjectModel(Courses.name) private readonly CoursesModel: Model<Courses>, // Inject Courses model
+    @InjectModel(Categories.name) private readonly CategoriesModel: Model<Categories>, // Inject Categories model
   ) {}
 
+  // Create a new course
   async create(createCourseDto: CreateCourseDto) {
     const generateSlug = (title: string): string => {
       return title
@@ -51,10 +54,12 @@ export class CoursesService {
     return data;
   }
 
+  // Get all courses
   async findAll() {
     return await this.mongooseService.getAllData(this.CoursesModel);
   }
 
+  // Get courses by category ID (old method)
   async getCoursesByCategory(categoryId: string): Promise<Courses[]> {
     try {
       console.log(categoryId);
@@ -68,10 +73,51 @@ export class CoursesService {
     }
   }
 
+  async getCoursesByQuery(query: string): Promise<Courses[]> {
+    try {
+      console.log(query);
+      const courses = await this.CoursesModel.find({
+        title: { $regex: query, $options: 'i' }, // 'i' makes the search case-insensitive
+      }).exec();
+      return courses;
+    } catch (error) {
+      throw new Error('Error fetching courses: ' + error.message);
+    }
+  }
+
+  async searchCoursesByCategoryName(categoryName: string): Promise<Courses[]> {
+    if (!categoryName) {
+      throw new Error('Category name must be provided');
+    }
+    
+  
+    try {
+      // Find category by name
+      const category = await this.CategoriesModel.findOne({
+        name: categoryName,
+      }).exec();
+  
+      if (!category) {
+        throw new Error(`Category "${categoryName}" not found`);
+      }
+  
+      // Get courses that belong to this category ID
+      const courses = await this.CoursesModel.find({
+        categories: { $in: [category._id] },
+      }).exec();
+  
+      return courses;
+    } catch (error) {
+      throw new Error('Error fetching courses: ' + error.message);
+    }
+  }
+
+  // Get a course by ID
   async findOne(id: string) {
     return await this.CoursesModel.findOne({ _id: id }).exec();
   }
 
+  // Update a course
   async update(id: string, updateCourseDto: UpdateCourseDto) {
     const { data, error } = await this.supabaseService.updateData(
       'courses',
@@ -93,6 +139,7 @@ export class CoursesService {
     }
   }
 
+  // Remove a course
   async remove(id: string) {
     await this.supabaseService.deleteData('courses', id.toString());
     await this.mongooseService.deleteData(this.CoursesModel, id.toString());

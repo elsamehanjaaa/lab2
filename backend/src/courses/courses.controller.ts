@@ -11,22 +11,24 @@ import {
 import { CoursesService } from './courses.service';
 import { CreateCourseDto } from './dto/create-course.dto';
 import { UpdateCourseDto } from './dto/update-course.dto';
-import { CheckCategoryDto } from 'src/categories/dto/check-category.dto';
 
 @Controller('courses')
 export class CoursesController {
   constructor(private readonly coursesService: CoursesService) {}
 
+  // Create a new course
   @Post()
   create(@Body() createCourseDto: CreateCourseDto) {
     return this.coursesService.create(createCourseDto);
   }
 
+  // Get all courses
   @Get()
   findAll() {
     return this.coursesService.findAll();
   }
 
+  // Get a course by its ID
   @Get(':id')
   async findOne(@Param('id') id: string) {
     const course = await this.coursesService.findOne(id);
@@ -38,16 +40,24 @@ export class CoursesController {
     return course;
   }
 
+  // Get courses by category ID (old method)
   @Post('getCoursesByCategory')
   async getByName(@Body() body: any) {
     return this.coursesService.getCoursesByCategory(body.id);
   }
 
+  @Post('GetCoursesByQuery')
+  async getCoursesByQuery(@Body() body: any) {
+    return this.coursesService.getCoursesByQuery(body.query);
+  }
+  
+  // Update a course by its ID
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateCourseDto: UpdateCourseDto) {
     return this.coursesService.update(id, updateCourseDto);
   }
 
+  // Remove a course by its ID
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.coursesService.remove(id);
