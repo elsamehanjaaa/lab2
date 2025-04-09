@@ -153,7 +153,7 @@ const Hero = () => {
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrent((prev) => (prev + 1) % testimonials.length);
-    }, 5000); // every 5 seconds
+    }, 5000); 
     return () => clearInterval(interval);
   }, []);
 
