@@ -137,9 +137,17 @@ const testimonials = [
   // More testimonials can be added here
 ];
 
-const Block = ({ icon: Icon, title, description }) => (
-  <div className="flex-1 p-8 bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
-    <div className="inline-block p-3 bg-gradient-to-br from-indigo-50 to-purple-50 rounded-xl mb-4">
+type BlockProps = {
+  icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
+  title: string;
+  description: string;
+};
+
+
+
+const Block: React.FC<BlockProps> = ({ icon: Icon, title, description }) => (
+  <div className="flex-1 p-8 bg-white rounded-2xl shadow-md">
+    <div className="inline-block p-3 bg-gradient-to-br from-indigo-100 to-indigo-200 rounded-full">
       <Icon className="w-8 h-8 text-indigo-600" />
     </div>
     <h3 className="text-xl font-bold mb-2">{title}</h3>
@@ -462,7 +470,7 @@ const Hero = () => {
 
           <h3 className="text-2xl font-bold mb-4 text-center">What our learners say</h3>
           <div className="flex justify-center mb-6">
-            <img
+            <Image
               src ={testimonials[current].image}
               alt={testimonials[current].name}
               className="h-32 w-32 rounded-full object-cover border-4 border-indigo-600"
@@ -499,7 +507,7 @@ const Hero = () => {
           </p>
           <div className="flex items-center mt-6">
             <Image
-              src="/testimonials/alexandre-abitbol.jpg" // Vendos një foto reale në public/ceo.jpg ose përdor një avatar
+              src="/testimonials/alexandre-abitbol.jpg" 
               alt="Dior H"
               width={60}
               height={60}
