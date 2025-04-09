@@ -358,6 +358,81 @@ const Hero = () => {
   </div>
 </div>
 
+<section className="bg-gray-50 py-12 px-4 md:px-12">
+      <h2 className="text-3xl font-bold mb-6">Trending Now</h2>
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-10">
+        {/* ChatGPT section */}
+        <div>
+          <h3 className="text-xl font-bold mb-2">ChatGPT is a top skill</h3>
+          <a href="#" className="text-purple-600 font-medium hover:underline">
+            See ChatGPT courses →
+          </a>
+          <p className="text-gray-500 mt-1">4,345,758 learners</p>
+
+          <button className="mt-6 px-4 py-2 border border-purple-600 text-purple-700 rounded-md hover:bg-purple-50 transition">
+            Show all trending skills →
+          </button>
+        </div>
+
+        {/* Development */}
+        <div>
+          <h4 className="text-lg font-bold mb-3">Development</h4>
+          <ul className="space-y-2">
+            <li>
+              <a href="#" className="text-purple-700 font-medium hover:underline">Python →</a>
+              <p className="text-sm text-gray-500">47,815,126 learners</p>
+            </li>
+            <li>
+              <a href="#" className="text-purple-700 font-medium hover:underline">Web Development →</a>
+              <p className="text-sm text-gray-500">14,015,184 learners</p>
+            </li>
+            <li>
+              <a href="#" className="text-purple-700 font-medium hover:underline">Data Science →</a>
+              <p className="text-sm text-gray-500">7,793,156 learners</p>
+            </li>
+          </ul>
+        </div>
+
+        {/* Design */}
+        <div>
+          <h4 className="text-lg font-bold mb-3">Design</h4>
+          <ul className="space-y-2">
+            <li>
+              <a href="#" className="text-purple-700 font-medium hover:underline">Blender →</a>
+              <p className="text-sm text-gray-500">2,913,078 learners</p>
+            </li>
+            <li>
+              <a href="#" className="text-purple-700 font-medium hover:underline">Graphic Design →</a>
+              <p className="text-sm text-gray-500">4,495,153 learners</p>
+            </li>
+            <li>
+              <a href="#" className="text-purple-700 font-medium hover:underline">UX Design →</a>
+              <p className="text-sm text-gray-500">2,071,077 learners</p>
+            </li>
+          </ul>
+        </div>
+
+        {/* Business */}
+        <div>
+          <h4 className="text-lg font-bold mb-3">Business</h4>
+          <ul className="space-y-2">
+            <li>
+              <a href="#" className="text-purple-700 font-medium hover:underline">Project Management (PMP) →</a>
+              <p className="text-sm text-gray-500">2,570,660 learners</p>
+            </li>
+            <li>
+              <a href="#" className="text-purple-700 font-medium hover:underline">Microsoft Power BI →</a>
+              <p className="text-sm text-gray-500">4,638,884 learners</p>
+            </li>
+            <li>
+              <a href="#" className="text-purple-700 font-medium hover:underline">Project Management →</a>
+              <p className="text-sm text-gray-500">3,984,755 learners</p>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
 
       {/* Testimonials Section */}
       <div className="bg-gray-50 py-24">
@@ -460,10 +535,9 @@ const Hero = () => {
         </div>
       </div>
     </section>
-
-
-
+    
     </div>
+    
   );
 };
 
