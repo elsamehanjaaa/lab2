@@ -27,7 +27,7 @@ const Search = () => {
       value={searchQuery}
       onChange={(e) => setSearchQuery(e.target.value)}
       placeholder="Search courses..."
-      className="px-4 py-1 w-130 focus:outline-none text-white bg-transparent rounded-l-full"
+      className="px-4 py-1 w-100 focus:outline-none text-white bg-transparent rounded-l-full"
     />
     <button
       type="submit"

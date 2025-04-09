@@ -169,13 +169,14 @@ const Hero = () => {
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section */}
       <div className="relative text-white overflow-hidden">
-        <div className="absolute inset-0 bg-[url('/images/homepageimg.webp')] bg-cover bg-center" />
+        <div className="absolute inset-0 bg-[url('/images/course.avif')] bg-cover bg-center opacity-55" />
+        <div className="absolute inset-0 bg-blue-950 opacity-40" />
         <div className="relative max-w-7xl mx-auto px-4 py-32 sm:px-6 lg:px-8">
           <div className="max-w-2xl">
-            <h1 className="text-5xl md:text-6xl font-extrabold leading-tight mb-6">
+            <h1 className="text-5xl md:text-6xl font-extrabold leading-tight mb-6 text-blue-950 hover:text-blue-300 transition duration-300">
               Online Learning Course
             </h1>
-            <p className="text-xl font-semibold md:text-2xl text-blue-600 mb-8">
+            <p className="text-xl font-semibold md:text-2xl text-blue-100 mb-8">
               Build skills with courses, certificates, and degrees online from world-class universities and companies.
             </p>
             <button className="bg-white text-blue-600 px-8 py-4 rounded-full font-semibold text-lg shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300">
@@ -358,7 +359,7 @@ const Hero = () => {
   </div>
 </div>
 
-<section className="bg-gray-50 py-12 px-4 md:px-12">
+ <section className="bg-gray-50 py-12 px-4 md:px-12">
       <h2 className="text-3xl font-bold mb-6">Trending Now</h2>
       <div className="grid grid-cols-1 md:grid-cols-4 gap-10">
         {/* ChatGPT section */}
