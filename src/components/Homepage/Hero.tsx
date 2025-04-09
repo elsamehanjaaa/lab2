@@ -527,10 +527,11 @@ const Hero = () => {
           {/* Decorative image */}
           <div className="absolute bottom-0 right-0 w-1/2 opacity-80 hidden md:block">
             <Image
-              src="/map-illustration.png" // ruaje këtë figurë në /public
+              src="/icons/maps.png" // ruaje këtë figurë në /public
               alt="Map Illustration"
-              width={300}
+              width={230}
               height={200}
+              
             />
           </div>
         </div>
