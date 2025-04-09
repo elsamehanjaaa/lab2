@@ -145,7 +145,7 @@ const testimonials = [
 ];
 
 const Block: React.FC<{
-  icon: React.ComponentType;
+  icon: React.ComponentType<{ className?: string }>;
   title: string;
   description: string;
 }> = ({ icon: Icon, title, description }) => (
