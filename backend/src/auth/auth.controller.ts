@@ -58,6 +58,46 @@ export class AuthController {
       );
     }
   }
+  @Post('checkUsername')
+  async checkUsername(
+    @Body() body: { username: string },
+    @Res() response: Response,
+  ) {
+    const data = await this.authService.checkUsername(body.username);
+
+    response.status(HttpStatus.OK).json(data.user);
+  }
+  @Post('signup')
+  async signup(
+    @Body() body: { username: string; email: string; password: string },
+    @Res() response: Response,
+  ) {
+    try {
+      const user = await this.authService.signup(
+        body.username,
+        body.email,
+        body.password,
+      );
+
+      const token = await this.authService.login(user.user);
+
+      response.cookie('access_token', token.access_token, {
+        httpOnly: false,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict',
+        maxAge: 60 * 60 * 1000, // 1 hour
+      });
+
+      response
+        .status(HttpStatus.OK)
+        .json({ message: 'sign up in successfully' });
+    } catch (error) {
+      throw new HttpException(
+        error.message || 'signup failed',
+        error.status || HttpStatus.UNAUTHORIZED,
+      );
+    }
+  }
 
   @Post('logout')
   async logout(@Res() response: Response) {

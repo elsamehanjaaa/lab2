@@ -8,6 +8,8 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { MongooseService } from './mongoose/mongoose.service';
 import { ConfigModule } from '@nestjs/config';
 import { CoursesModule } from './courses/courses.module';
+import { CategoriesModule } from './categories/categories.module';
+import { EnrollmentsModule } from './enrollments/enrollments.module';
 import * as dotenv from 'dotenv';
 dotenv.config();
 
@@ -17,6 +19,8 @@ dotenv.config();
     AuthModule,
     MongooseModule.forRoot(process.env.MONGODB_URI as string),
     CoursesModule,
+    CategoriesModule,
+    EnrollmentsModule,
   ],
   controllers: [AppController],
   providers: [AppService, SupabaseService, JwtStrategy, MongooseService],

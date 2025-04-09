@@ -23,6 +23,33 @@ export class SupabaseService {
     if (error) throw error;
     return data;
   }
+
+  async signup(username: string, email: string, password: string) {
+    const { data, error } = await this.supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: {
+          full_name: username,
+        },
+      },
+    });
+    if (error) throw error;
+
+    return data;
+  }
+  async checkUsername(username: string) {
+    // List all users
+    const { data, error } = await this.supabase.auth.admin.listUsers();
+
+    if (error) throw error;
+
+    const user = data.users.find(
+      (user) => user.user_metadata?.full_name === username,
+    );
+    return user ? true : false;
+  }
+
   async getData(table: string) {
     const { data, error } = await this.supabase.from(table).select();
     if (error) throw error;
