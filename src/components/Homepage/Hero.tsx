@@ -413,6 +413,53 @@ const Hero = () => {
     </div>
   </div>
 </div>
+<section className="bg-blue-100 pt-8 pb-16">
+
+      <div className="flex flex-col md:flex-row items-center justify-center max-w-6xl mx-auto bg-white shadow-md rounded-xl overflow-hidden">
+        {/* Left Side */}
+        <div className="w-full md:w-1/2 px-10 py-10 bg-green-50">
+          <p className="text-lg italic text-gray-700 mb-6">
+            “Education underpins all social progress. Our aim is to harness technology to make all education and skills training available to anyone, anywhere for free”
+          </p>
+          <div className="flex items-center mt-6">
+            <Image
+              src="/testimonials/alexandre-abitbol.jpg" // Vendos një foto reale në public/ceo.jpg ose përdor një avatar
+              alt="Dior H"
+              width={60}
+              height={60}
+              className="rounded-full object-cover"
+            />
+            <div className="ml-4">
+              <p className="font-semibold text-indigo-700">Dior H</p>
+              <p className="text-sm text-gray-600">Founder & CEO, ONLINE COURSES</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Right Side */}
+        <div className="w-full md:w-1/2 px-10 py-10 bg-blue-50 relative">
+          <h2 className="text-2xl font-semibold mb-2 text-gray-800">ONLINE COURSES</h2>
+          <p className="text-lg text-gray-700 mb-2">
+            Founded in <span className="text-blue-700 font-semibold">KOSOVA</span>
+            <br />
+            Developed Worldwide
+          </p>
+          <p className="mt-4 text-blue-800 font-medium cursor-pointer hover:underline" href="/about">
+            Learn about <strong >Our Story</strong>
+          </p>
+
+          {/* Decorative image */}
+          <div className="absolute bottom-0 right-0 w-1/2 opacity-80 hidden md:block">
+            <Image
+              src="/map-illustration.png" // ruaje këtë figurë në /public
+              alt="Map Illustration"
+              width={300}
+              height={200}
+            />
+          </div>
+        </div>
+      </div>
+    </section>
 
 
 
