@@ -73,18 +73,19 @@ const Header = () => {
   return (
     <>
       <header
-        className={`py-6 w-full fixed top-0 transition-colors duration-300 z-10 backdrop-blur-md backdrop-filter bg-[#74a0ff] ${
+        className={`py-6 w-full fixed top-0 transition-colors duration-300 z-10 backdrop-blur-md backdrop-filter bg-[#7ea6fc] ${
           isScrolled ? "shadow-md" : ""
         } text-white `}
       >
         <div className="flex justify-between items-center px-4 max-w-screen-xl mx-auto">
           <Link href="/">
             <Image
-              src="/icons/30786f1e-5c02-4f02-8365-671e26262182.png"
+              src="/icons/71d96b6b-7e69-400a-9cf9-ad4f2fe843a0.png"
               alt="Logo"
-              width={60} // më e vogël
-              height={60}
-              className="h-10 w-auto" // ose mund të bësh `h-8` për edhe më të vogël
+             width={100}
+             height={100}
+             className="h-12 w-auto"
+             quality={100}
             />
           </Link>
 
@@ -175,10 +176,13 @@ const Header = () => {
             )}
           </nav>
         </div>
+        
       </header>
+      
 
       {showSignup && <SignupModal onClose={() => setShowSignup(false)} />}
       {showLogin && <LoginModal onClose={() => setShowLogin(false)} />}
+      
     </>
   );
 };
