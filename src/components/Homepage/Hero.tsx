@@ -227,7 +227,7 @@ const Hero = () => {
                 className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden group"
               >
                 <div className="relative">
-                  <img
+                  <Image
                     src={course.image}
                     alt={course.title}
                     className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
@@ -271,7 +271,7 @@ const Hero = () => {
           </h2>
           <div className="flex flex-wrap justify-center items-center gap-12">
             {brandLogos.map((logo, i) => (
-              <img
+              <Image
                 key={i}
                 src={logo}
                 alt="Brand Logo"
@@ -463,7 +463,7 @@ const Hero = () => {
           <h3 className="text-2xl font-bold mb-4 text-center">What our learners say</h3>
           <div className="flex justify-center mb-6">
             <img
-              src={testimonials[current].image}
+              src ={testimonials[current].image}
               alt={testimonials[current].name}
               className="h-32 w-32 rounded-full object-cover border-4 border-indigo-600"
             />
@@ -520,7 +520,7 @@ const Hero = () => {
             <br />
             Developed Worldwide
           </p>
-          <p className="mt-4 text-blue-800 font-medium cursor-pointer hover:underline" href="/about">
+          <p className="mt-4 text-blue-800 font-medium cursor-pointer hover:underline"  >
             Learn about <strong >Our Story</strong>
           </p>
 

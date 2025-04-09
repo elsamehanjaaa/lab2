@@ -174,7 +174,7 @@ export default function AboutPage() {
               'skillshare.png',
               'linkedinlearning.png',
             ].map((logo, index) => (
-              <img
+              <Image
                 key={index}
                 src={`/logos/${logo}`}
                 alt={logo}

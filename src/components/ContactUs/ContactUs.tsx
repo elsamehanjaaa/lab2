@@ -18,6 +18,7 @@ export default function ContactUs() {
       alert('Message sent successfully!');
       e.currentTarget.reset();
     } catch(error) {
+      console.error('Error sending message:', error);
       alert('Failed to send message. Please try again.');
     }
   };
