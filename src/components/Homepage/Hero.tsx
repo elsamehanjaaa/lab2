@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import Image from "next/image";
 import { BookOpen, User, Clock, Check } from "lucide-react";
 import Link from "next/link";
 
-// Sample data
+// Data
 const categories = [
   { title: "ChatGPT", learners: "4M+" },
   { title: "Data Science", learners: "7M+" },
@@ -16,8 +17,7 @@ const categories = [
 
 const courses = [
   {
-    image:
-      "https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&w=800&q=80",
+    image: "https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&w=800&q=80",
     title: "The Complete AI Guide: Learn ChatGPT, Generative AI & More",
     rating: 4.5,
     reviews: "45,903",
@@ -26,8 +26,7 @@ const courses = [
     bestSeller: true,
   },
   {
-    image:
-      "https://images.unsplash.com/photo-1677442136184-d74f8d98c1b7?auto=format&fit=crop&w=800&q=80",
+    image: "https://images.unsplash.com/photo-1677442136184-d74f8d98c1b7?auto=format&fit=crop&w=800&q=80",
     title: "The Complete AI-Powered Copywriting Course & ChatGPT...",
     rating: 4.3,
     reviews: "1,816",
@@ -35,8 +34,7 @@ const courses = [
     oldPrice: "€48.99",
   },
   {
-    image:
-      "https://images.unsplash.com/photo-1677442136469-31da8010f192?auto=format&fit=crop&w=800&q=80",
+    image: "https://images.unsplash.com/photo-1677442136469-31da8010f192?auto=format&fit=crop&w=800&q=80",
     title: "ChatGPT, DeepSeek, Grok and 30+ More AI Marketing Assistants",
     rating: 4.5,
     reviews: "533",
@@ -44,8 +42,7 @@ const courses = [
     oldPrice: "€48.99",
   },
   {
-    image:
-      "https://images.unsplash.com/photo-1677442136472-ae570f4fca3c?auto=format&fit=crop&w=800&q=80",
+    image: "https://images.unsplash.com/photo-1677442136472-ae570f4fca3c?auto=format&fit=crop&w=800&q=80",
     title: "Mastering SEO With ChatGPT: Ultimate Beginner's Guide",
     rating: 4.4,
     reviews: "284",
@@ -112,43 +109,64 @@ const plans = [
     ],
   },
 ];
+const testimonials = [
+  {
+    name: "Morgan Ballou",
+    title: "Health and Safety Officer",
+    image: "/testimonial-1.png",
+    quote: "Online learning has changed my mind."
+  },
+  {
+    name: "Ikechukwu Odiaka",
+    title: "Assistant Nurse",
+    image: "/testimonial-2.png",
+    quote: "I got my dream job with Alison."
+  },
+  // More testimonials can be added here
+];
 
-function Block({
-  icon: Icon,
-  title,
-  description,
-}: {
-  icon: React.ElementType;
-  title: string;
-  description: string;
-}) {
-  return (
-    <div className="flex-1 p-8 bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
-      <div className="inline-block p-3 bg-gradient-to-br from-indigo-50 to-purple-50 rounded-xl mb-4">
-        <Icon className="w-8 h-8 text-indigo-600" />
-      </div>
-      <h3 className="text-xl font-bold mb-2">{title}</h3>
-      <p className="text-gray-600">{description}</p>
+const Block = ({ icon: Icon, title, description }) => (
+  <div className="flex-1 p-8 bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+    <div className="inline-block p-3 bg-gradient-to-br from-indigo-50 to-purple-50 rounded-xl mb-4">
+      <Icon className="w-8 h-8 text-indigo-600" />
     </div>
-  );
-}
+    <h3 className="text-xl font-bold mb-2">{title}</h3>
+    <p className="text-gray-600">{description}</p>
+  </div>
+);
 
-const Hero: React.FC = () => {
+const Hero = () => {
+  const [current, setCurrent] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrent((prev) => (prev + 1) % testimonials.length);
+    }, 5000); // every 5 seconds
+    return () => clearInterval(interval);
+  }, []);
+
+  const prevSlide = () => {
+    setCurrent((prev) => (prev - 1 + testimonials.length) % testimonials.length);
+  };
+
+  const nextSlide = () => {
+    setCurrent((prev) => (prev + 1) % testimonials.length);
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section */}
-      <div className="relative  text-white overflow-hidden">
-        <div className="absolute inset-0 bg-[url('/images/background.png')]  bg-cover bg-center" />
+      <div className="relative text-white overflow-hidden">
+        <div className="absolute inset-0 bg-[url('/images/background.png')] bg-cover bg-center" />
         <div className="relative max-w-7xl mx-auto px-4 py-32 sm:px-6 lg:px-8">
           <div className="max-w-2xl">
             <h1 className="text-5xl md:text-6xl font-extrabold leading-tight mb-6">
               Online Learning Course
             </h1>
             <p className="text-xl font-semibold md:text-2xl text-blue-600 mb-8">
-              Build skills with courses, certificates, and degrees online from
-              world-class universities and companies.
+              Build skills with courses, certificates, and degrees online from world-class universities and companies.
             </p>
-            <button className="bg-white text-blue-600  px-8 py-4 rounded-full font-semibold text-lg shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300">
+            <button className="bg-white text-blue-600 px-8 py-4 rounded-full font-semibold text-lg shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300">
               Get Started
             </button>
           </div>
@@ -159,21 +177,9 @@ const Hero: React.FC = () => {
       <div className="bg-white py-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <Block
-              icon={BookOpen}
-              title="60+ UX Courses"
-              description="Access comprehensive courses crafted by industry experts"
-            />
-            <Block
-              icon={User}
-              title="Expert Instructors"
-              description="Learn from professionals with real-world experience"
-            />
-            <Block
-              icon={Clock}
-              title="Lifetime Access"
-              description="Study at your own pace with unlimited course access"
-            />
+            <Block icon={BookOpen} title="60+ UX Courses" description="Access comprehensive courses crafted by industry experts" />
+            <Block icon={User} title="Expert Instructors" description="Learn from professionals with real-world experience" />
+            <Block icon={Clock} title="Lifetime Access" description="Study at your own pace with unlimited course access" />
           </div>
         </div>
       </div>
@@ -200,9 +206,7 @@ const Hero: React.FC = () => {
       {/* Courses Section */}
       <div className="bg-white py-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl font-bold mb-12 text-center">
-            Featured Courses
-          </h2>
+          <h2 className="text-3xl font-bold mb-12 text-center">Featured Courses</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {courses.map((course, i) => (
               <div
@@ -231,24 +235,15 @@ const Hero: React.FC = () => {
                     <span className="text-gray-500">({course.reviews})</span>
                   </div>
                   <div className="flex items-center">
-                    <span className="font-bold text-xl text-indigo-600">
-                      {course.price}
-                    </span>
-                    {course.oldPrice && (
-                      <span className="text-gray-400 line-through ml-2">
-                        {course.oldPrice}
-                      </span>
-                    )}
+                    <span className="font-bold text-xl text-indigo-600">{course.price}</span>
+                    {course.oldPrice && <span className="text-gray-400 line-through ml-2">{course.oldPrice}</span>}
                   </div>
                 </div>
               </div>
             ))}
           </div>
           <div className="text-center mt-12">
-            <Link
-              href="/courses"
-              className="text-indigo-600 hover:text-indigo-700 font-semibold hover:underline"
-            >
+            <Link href="/courses" className="text-indigo-600 hover:text-indigo-700 font-semibold hover:underline">
               Show all Data Science courses →
             </Link>
           </div>
@@ -278,79 +273,110 @@ const Hero: React.FC = () => {
       <div className="bg-white py-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              Accelerate growth — for you or your organization
-            </h2>
-            <p className="text-xl text-gray-600">
-              Reach goals faster with one of our plans or programs
-            </p>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">Accelerate growth — for you or your organization</h2>
+            <p className="text-xl text-gray-600">Reach goals faster with one of our plans or programs</p>
           </div>
-
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {plans.map((plan, index) => (
+            {plans.map((plan, i) => (
               <div
-                key={index}
-                className={`rounded-2xl p-8 transition-all duration-300 hover:shadow-xl ${
-                  index === 1
-                    ? "bg-gradient-to-br from-indigo-600 to-purple-600 text-white shadow-lg transform hover:-translate-y-2"
-                    : "bg-white border border-gray-200 hover:border-indigo-200"
-                }`}
+                key={i}
+                className="bg-indigo-100 p-8 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 text-center"
               >
-                <div className="mb-8">
-                  <h3 className="text-2xl font-bold mb-2">{plan.title}</h3>
-                  <p
-                    className={
-                      index === 1 ? "text-indigo-200" : "text-gray-600"
-                    }
-                  >
-                    {plan.subtitle}
-                  </p>
-                  <p
-                    className={
-                      index === 1 ? "text-indigo-200" : "text-gray-600"
-                    }
-                  >
-                    {plan.audience}
-                  </p>
-                </div>
-
-                <div className="mb-8">
-                  <p className="text-2xl font-bold">{plan.price}</p>
-                  {plan.billingNote && (
-                    <p
-                      className={
-                        index === 1 ? "text-indigo-200" : "text-gray-500"
-                      }
-                    >
-                      {plan.billingNote}
-                    </p>
-                  )}
-                </div>
-
-                <button
-                  className={`w-full py-3 px-6 rounded-xl font-medium transition-all duration-300 ${
-                    index === 1
-                      ? "bg-white text-indigo-600 hover:bg-gray-100"
-                      : "bg-indigo-600 text-white hover:bg-indigo-700"
-                  }`}
-                >
-                  {plan.button}
-                </button>
-
-                <ul className="mt-8 space-y-4">
-                  {plan.features.map((feature, i) => (
-                    <li key={i} className="flex items-start gap-3">
-                      <Check
-                        className={`w-5 h-5 mt-0.5 ${
-                          index === 1 ? "text-indigo-200" : "text-indigo-600"
-                        }`}
-                      />
-                      <span className="text-sm">{feature}</span>
+                <h3 className="text-2xl font-semibold mb-4">{plan.title}</h3>
+                <p className="text-gray-600 mb-4">{plan.subtitle}</p>
+                <p className="font-bold text-xl text-indigo-600 mb-6">{plan.price}</p>
+                <p className="text-sm text-gray-500 mb-8">{plan.billingNote}</p>
+                <ul className="text-left mb-8">
+                  {plan.features.map((feature, j) => (
+                    <li key={j} className="flex items-center mb-2">
+                      <Check className="w-5 h-5 text-indigo-600 mr-3" />
+                      <span>{feature}</span>
                     </li>
                   ))}
                 </ul>
+                <button className="bg-indigo-600 text-white px-8 py-3 rounded-xl hover:bg-indigo-700 transition-all duration-300">
+                  {plan.button}
+                </button>
               </div>
             ))}
+          </div>
+        </div>
+      </div>
+      <div className="bg-gray-50 py-20">
+  <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-2 gap-6">
+    
+    {/* Assessment Section */}
+    <div className="flex items-center bg-green-100 p-6 rounded-lg">
+      <div className="flex-1 space-y-4 text-center md:text-left">
+        <h2 className="text-2xl font-bold text-gray-800">Get to know yourself better!</h2>
+        <p className="text-gray-700">Discover your career strengths & weaknesses</p>
+        <button className="bg-green-600 hover:bg-green-700 text-white font-semibold px-6 py-3 rounded">
+          Take The Free Personality Assessment
+        </button>
+      </div>
+      <div className="hidden md:block ml-6">
+        <Image
+          src="/know-yourself.svg"
+          alt="Puzzle Illustration"
+          width={140}
+          height={140}
+        />
+      </div>
+    </div>
+
+    {/* Resume Section */}
+    <div className="flex items-center bg-green-200 p-6 rounded-lg">
+      <div className="flex-1 space-y-4 text-center md:text-left">
+        <h2 className="text-2xl font-bold text-gray-800">Get hired for your dream job!</h2>
+        <p className="text-gray-700">Build your free resumé in minutes!</p>
+        <button className="bg-green-600 hover:bg-green-700 text-white font-semibold px-6 py-3 rounded">
+          Create My Professional Resumé
+        </button>
+      </div>
+      <div className="hidden md:block ml-6">
+        <Image
+          src="/get-hired-alt.svg"
+          alt="Resume Illustration"
+          width={140}
+          height={140}
+        />
+      </div>
+    </div>
+
+  </div>
+</div>
+
+
+      {/* Testimonials Section */}
+      <div className="bg-gray-50 py-24">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">What our learners say</h2>
+            <p className="text-xl text-gray-600">Real stories from real learners</p>
+          </div>
+          <div className="relative">
+            <div className="absolute inset-0 flex justify-between items-center text-4xl text-indigo-600">
+              <button onClick={prevSlide} className="transform hover:scale-110 transition-all duration-300">
+                &lt;
+              </button>
+              <button onClick={nextSlide} className="transform hover:scale-110 transition-all duration-300">
+                &gt;
+              </button>
+            </div>
+            <div className="bg-white rounded-2xl shadow-lg p-8 text-center">
+              <div className="flex justify-center mb-6">
+                <img
+                  src={testimonials[current].image}
+                  alt={testimonials[current].name}
+                  className="h-24 w-24 rounded-full object-cover mr-4"
+                />
+                <div>
+                  <p className="text-lg font-semibold">{testimonials[current].name}</p>
+                  <p className="text-gray-500">{testimonials[current].title}</p>
+                </div>
+              </div>
+              <p className="text-xl font-medium italic text-gray-700">{testimonials[current].quote}</p>
+            </div>
           </div>
         </div>
       </div>
