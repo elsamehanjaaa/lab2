@@ -529,7 +529,7 @@ const Hero = () => {
             <Image
               src="/icons/maps.png" // ruaje këtë figurë në /public
               alt="Map Illustration"
-              width={230}
+              width={200}
               height={200}
               
             />
