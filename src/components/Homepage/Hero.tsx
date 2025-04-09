@@ -111,15 +111,27 @@ const plans = [
 ];
 const testimonials = [
   {
-    name: "Morgan Ballou",
+    name: "Erjona Ballou",
     title: "Health and Safety Officer",
-    image: "/testimonial-1.png",
+    image: "/testimonials/alexandre-abitbol.jpg",
     quote: "Online learning has changed my mind."
   },
   {
-    name: "Ikechukwu Odiaka",
+    name: "Dior Odiaka",
     title: "Assistant Nurse",
-    image: "/testimonial-2.png",
+    image: "/testimonials/charlotte-triggs-headshot-7ef4504afc244ec99096e5fc0c1a3b63.jpg",
+    quote: "I got my dream job with Alison."
+  },
+  {
+    name: "Elsa Ballou",
+    title: "Health and Safety Officer",
+    image: "/testimonials/alexandre-abitbol.jpg",
+    quote: "Online learning has changed my mind."
+  },
+  {
+    name: "Arion Odiaka",
+    title: "Assistant Nurse",
+    image: "/testimonials/charlotte-triggs-headshot-7ef4504afc244ec99096e5fc0c1a3b63.jpg",
     quote: "I got my dream job with Alison."
   },
   // More testimonials can be added here
@@ -349,37 +361,57 @@ const Hero = () => {
 
       {/* Testimonials Section */}
       <div className="bg-gray-50 py-24">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">What our learners say</h2>
-            <p className="text-xl text-gray-600">Real stories from real learners</p>
-          </div>
-          <div className="relative">
-            <div className="absolute inset-0 flex justify-between items-center text-4xl text-indigo-600">
-              <button onClick={prevSlide} className="transform hover:scale-110 transition-all duration-300">
-                &lt;
-              </button>
-              <button onClick={nextSlide} className="transform hover:scale-110 transition-all duration-300">
-                &gt;
-              </button>
-            </div>
-            <div className="bg-white rounded-2xl shadow-lg p-8 text-center">
-              <div className="flex justify-center mb-6">
-                <img
-                  src={testimonials[current].image}
-                  alt={testimonials[current].name}
-                  className="h-24 w-24 rounded-full object-cover mr-4"
-                />
-                <div>
-                  <p className="text-lg font-semibold">{testimonials[current].name}</p>
-                  <p className="text-gray-500">{testimonials[current].title}</p>
-                </div>
-              </div>
-              <p className="text-xl font-medium italic text-gray-700">{testimonials[current].quote}</p>
-            </div>
-          </div>
-        </div>
+  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+      
+      {/* Testimonials section */}
+      <div className="relative">
+  {/* Arrow buttons */}
+  <div className="absolute top-1/2 transform -translate-y-1/2 left-4 right-4 flex justify-between items-center text-4xl text-indigo-600 z-10">
+    <button
+      onClick={prevSlide}
+      className="transform hover:scale-110 transition-all duration-300 bg-white p-4 rounded-full shadow-lg hover:shadow-xl focus:outline-none"
+    >
+      &lt;
+    </button>
+    <button
+      onClick={nextSlide}
+      className="transform hover:scale-110 transition-all duration-300 bg-white p-4 rounded-full shadow-lg hover:shadow-xl focus:outline-none"
+    >
+      &gt;
+    </button>
+  </div>
+
+  {/* Testimonial Content */}
+  <div className="bg-white rounded-2xl shadow-xl p-10 text-center relative">
+  <h3 className="text-2xl font-bold mb-4 text-center">What our learners say</h3>
+    <div className="flex justify-center mb-6">
+      <img
+        src={testimonials[current].image}
+        alt={testimonials[current].name}
+        className="h-32 w-32 rounded-full object-cover border-4 border-indigo-600"
+      />
+      <div className="ml-6">
+        <p className="text-lg font-semibold text-gray-800">{testimonials[current].name}</p>
+        <p className="text-gray-500">{testimonials[current].title}</p>
       </div>
+    </div>
+    <p className="text-xl font-medium italic text-gray-700">{testimonials[current].quote}</p>
+  </div>
+</div>
+
+
+      {/* Message section */}
+      <div className="flex flex-col justify-center items-center bg-indigo-600 text-white p-8 rounded-xl shadow-lg">
+        <h3 className="text-2xl font-bold mb-4 text-center">Over 45 million learners have used ONLINE COURSES to empower themselves</h3>
+        <p className="text-lg text-center">Join our community today and start learning with real-world skills that will make a difference in your career.</p>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
     </div>
   );
 };
