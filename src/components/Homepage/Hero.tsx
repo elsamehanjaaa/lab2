@@ -169,7 +169,7 @@ const Hero = () => {
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section */}
       <div className="relative text-white overflow-hidden">
-        <div className="absolute inset-0 bg-[url('/images/background.png')] bg-cover bg-center" />
+        <div className="absolute inset-0 bg-[url('/images/homepageimg.webp')] bg-cover bg-center" />
         <div className="relative max-w-7xl mx-auto px-4 py-32 sm:px-6 lg:px-8">
           <div className="max-w-2xl">
             <h1 className="text-5xl md:text-6xl font-extrabold leading-tight mb-6">
