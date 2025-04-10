@@ -1,4 +1,4 @@
-import React, { useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Card from "@/components/Courses/Card";
 import TopSection from "@/components/TopSection";
@@ -83,7 +83,7 @@ const SearchPage = () => {
               ))}
             </div>
           ) : (
-            <p>No courses found for - {query} -</p>
+            <p>No courses found for "{query}"</p>
           )}
         </div>
       </div>
