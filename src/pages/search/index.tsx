@@ -4,10 +4,26 @@ import Card from "@/components/Courses/Card";
 import TopSection from "@/components/TopSection";
 import CourseFilters from "@/components/Filterbar";
 
+// Krijoni interface-n për kursin. Shtoni ose ndryshoni fushat sipas API-së suaj.
+interface Course {
+  _id: string;
+  title: string;
+  description?: string;
+  price?: number; // Shtoni çmimin nëse kërkohet
+  rating?: number; // Shtoni vlerësimin nëse kërkohet
+  status?: string; // Shtoni statusin nëse kërkohet
+  created_at?: string; // Shtoni datën e krijimit nëse kërkohet
+  slug?: string; // Shtoni slug nëse kërkohet
+}
+
+
+
 const SearchPage = () => {
-  const [courses, setCourses] = useState([]);
+  // Deklarojmë 'courses' si array me tipe Course[]
+  const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+
   const searchParams = useSearchParams();
   const query = searchParams.get("q");
 
@@ -24,7 +40,7 @@ const SearchPage = () => {
         });
 
         if (!res.ok) throw new Error("Failed to fetch");
-        const data = await res.json();
+        const data: Course[] = await res.json();
         setCourses(data);
       } catch (error) {
         console.error("Search error:", error);
@@ -34,11 +50,10 @@ const SearchPage = () => {
     };
 
     fetchCourses();
-    
   }, [query]);
 
-    useEffect(() => {
-      if (!selectedCategory) return;
+  useEffect(() => {
+    if (!selectedCategory) return;
 
     const fetchCoursesByTopic = async () => {
       try {
@@ -50,7 +65,7 @@ const SearchPage = () => {
         });
 
         if (!res.ok) throw new Error("Failed to fetch");
-        const data = await res.json();
+        const data: Course[] = await res.json();
         setCourses(data);
       } catch (error) {
         console.error("Search error:", error);
@@ -60,7 +75,8 @@ const SearchPage = () => {
     };
 
     fetchCoursesByTopic();
-    }, [selectedCategory]);
+  }, [selectedCategory]);
+
   return (
     <div>
       <TopSection
@@ -69,21 +85,21 @@ const SearchPage = () => {
         text2="Courses Available"
       />
       <div className="max-w-6xl mx-auto flex gap-8 mt-8 px-4">
-        {/* Filtersss Side */}
+        {/* Filtrat */}
         <CourseFilters onCategoryChange={setSelectedCategory} />
 
-        {/* courses Side */}
+        {/* Lista e kurseve */}
         <div className="w-2/3">
           {loading ? (
             <p>Loading...</p>
           ) : courses.length > 0 ? (
             <div className="grid grid-cols-1 gap-6">
-              {courses.map((course: any, i: number) => (
-                <Card key={i} course={course} />
+              {courses.map((course) => (
+                <Card key={course._id} course={course} />
               ))}
             </div>
           ) : (
-            <p>No courses found for "{query}"</p>
+            <p>No courses found for -{query}-</p>
           )}
         </div>
       </div>

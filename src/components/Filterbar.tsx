@@ -1,7 +1,14 @@
-import Categories from "../components/Courses/Categories"
 import React, { useState, useEffect } from "react";
 import { ChevronDown, ChevronUp, Star } from "lucide-react";
 
+// Fshije importin e panevojshëm (nëse nuk përdoret vërtet):
+// import Categories from "../components/Courses/Categories";
+
+// Tipi për kategoritë (nëse API kthen _id dhe name):
+interface Category {
+  _id: string;
+  name: string;
+}
 
 const Dropdown = ({
   title,
@@ -28,7 +35,7 @@ const Dropdown = ({
             children
           ) : (
             <p className="text-sm leading-relaxed">
-              Zgedhe ni kategori tjeter se hala su ndreq qikjo!
+              Zgjedh ndonjë opsion këtu...
             </p>
           )}
         </div>
@@ -37,14 +44,16 @@ const Dropdown = ({
   );
 };
 
-const CourseFilters = ({ onCategoryChange }: { onCategoryChange: (id: string) => void }) => {
+const CourseFilters = ({
+  onCategoryChange,
+}: {
+  onCategoryChange: (id: string) => void;
+}) => {
   const [selectedRating, setSelectedRating] = useState<number | null>(null);
-  const [categories, setCategories] = useState<Category[]>([]); // Add categories state
-  const [selectedPrice, setSelectedPrice] = useState<string>(""); // Price state
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [selectedPrice, setSelectedPrice] = useState<string>("");
 
-
-
-  // Fetch categories from API
+  // Marr kategoritë nga API
   useEffect(() => {
     const getCategories = async () => {
       const res = await fetch("http://localhost:5000/categories", {
@@ -55,13 +64,9 @@ const CourseFilters = ({ onCategoryChange }: { onCategoryChange: (id: string) =>
       setCategories(result);
     };
     getCategories();
-    
   }, []);
-  type Category = {
-    _id: string;
-    name: string; // or other fields you use
-  };
 
+  // Handlers
   const handleTopicChange = (category: Category) => {
     onCategoryChange(category._id);
   };
@@ -78,15 +83,17 @@ const CourseFilters = ({ onCategoryChange }: { onCategoryChange: (id: string) =>
     <div className="w-1/3 p-4 text-black rounded-lg">
       <h2 className="text-2xl font-bold mb-4">Filters</h2>
 
-      {/* Rating Dropdown with Custom Radio Button */}
+      {/* Rating Dropdown me Radio Buttons custom */}
       <Dropdown title="Rating">
         <div className="space-x-2 text-sm">
           {Array.from({ length: 4 }, (_, index) => {
-            const stars = 4 - index;
+            const stars = 4 - index; // 4, 3, 2, 1
             return (
               <div
                 key={stars}
-                className={`flex items-center gap-2 cursor-pointer ${selectedRating === stars ? "bg-[#e9ada4]" : ""} rounded-md p-2 transition`}
+                className={`flex items-center gap-2 cursor-pointer ${
+                  selectedRating === stars ? "bg-[#e9ada4]" : ""
+                } rounded-md p-2 transition`}
                 onClick={() => handleRatingChange(stars)}
               >
                 <input
@@ -99,12 +106,20 @@ const CourseFilters = ({ onCategoryChange }: { onCategoryChange: (id: string) =>
                 />
                 <label
                   className={`w-4 h-4 rounded-full cursor-pointer
-                    ${selectedRating === stars ? "bg-white border-[white]" : "bg-white border-black"}
-                    border-[1px] transition duration-200 ease-in-out peer-checked:border-[white]`}
+                    ${
+                      selectedRating === stars
+                        ? "bg-white border-white"
+                        : "bg-white border-black"
+                    }
+                    border-[1px] transition duration-200 ease-in-out peer-checked:border-white`}
                 />
                 <span>{stars}</span>
                 {Array.from({ length: stars }, (_, i) => (
-                  <Star key={i} size={16} color={selectedRating === stars ? "#fff" : "#e9ada4"} />
+                  <Star
+                    key={i}
+                    size={16}
+                    color={selectedRating === stars ? "#fff" : "#e9ada4"}
+                  />
                 ))}
               </div>
             );
@@ -114,20 +129,22 @@ const CourseFilters = ({ onCategoryChange }: { onCategoryChange: (id: string) =>
 
       {/* Topics Dropdown */}
       <Dropdown title="Topic">
-        <div className="space-y-2 max-h-48 overflow-y-auto"> 
-        {categories.map((category) => (
-          <div
-            key={category.id}
-            onClick={() => handleTopicChange(category)}
-            className="block text-black hover:bg-[#e9ada4] hover:text-white px-4 py-2 rounded-md transition-all cursor-pointer"
-          >
-            {category.name}
-          </div>
-        ))}
+        <div className="space-y-2 max-h-48 overflow-y-auto">
+          {categories.map((category) => (
+            <div
+              key={category._id}
+              onClick={() => handleTopicChange(category)}
+              className="block text-black hover:bg-[#e9ada4] hover:text-white px-4 py-2 rounded-md transition-all cursor-pointer"
+            >
+              {category.name}
+            </div>
+          ))}
         </div>
       </Dropdown>
 
-      <Dropdown title="Video Duration" />
+      <Dropdown title="Video Duration">
+        {/* Vendos logjikën tuaj për “Video Duration” këtu, nëse keni */}
+      </Dropdown>
 
       {/* Price Dropdown */}
       <Dropdown title="Price">
@@ -150,7 +167,6 @@ const CourseFilters = ({ onCategoryChange }: { onCategoryChange: (id: string) =>
           </div>
         </div>
       </Dropdown>
-
     </div>
   );
 };

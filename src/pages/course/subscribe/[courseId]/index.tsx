@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import Image from "next/image";
@@ -8,6 +7,12 @@ interface Course {
   id: string;
   title: string;
   description: string;
+  // Fushat shtesë si opsionale:
+  price?: number;
+  rating?: number;
+  status?: string;
+  created_at?: string;
+  slug?: string;
 }
 
 interface User {
@@ -20,10 +25,11 @@ const Index = () => {
   const router = useRouter();
   const { courseId } = router.query;
 
-  const [course, setCourse] = useState<Course>();
+  // Mbajmë kursin dhe përdoruesin në state
+  const [course, setCourse] = useState<Course | null>(null);
   const [user, setUser] = useState<User | null>(null);
 
-  // Fetch course by ID
+  // Fetch course by ID (kur change-het courseId)
   useEffect(() => {
     if (!courseId) return;
 
@@ -35,7 +41,10 @@ const Index = () => {
           credentials: "include",
         });
 
-        if (!res.ok) throw new Error(`HTTP Error! Status: ${res.status}`);
+        if (!res.ok) {
+          throw new Error(`HTTP Error! Status: ${res.status}`);
+        }
+
         const result = await res.json();
         setCourse(result);
       } catch (error) {
@@ -49,7 +58,7 @@ const Index = () => {
   // Handle enrollment logic
   async function handleEnrollment() {
     try {
-      // Check if user is authenticated
+      // Kontrollojmë nëse user-i është autentikuar
       const res = await fetch("http://localhost:5000/auth/protected", {
         method: "POST",
         credentials: "include",
@@ -58,6 +67,7 @@ const Index = () => {
       const auth = await res.json();
 
       if (res.ok && auth.user) {
+        // Ruajmë të dhënat e user-it në state
         const currentUser: User = {
           id: auth.user.id,
           name: auth.user.name,
@@ -65,7 +75,7 @@ const Index = () => {
         };
         setUser(currentUser);
 
-        // Proceed with enrollment
+        // Vijojmë me procesin e enrollment-it
         const enrollRes = await fetch("http://localhost:5000/enrollments", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -76,12 +86,17 @@ const Index = () => {
           }),
         });
 
-        if (!enrollRes.ok) throw new Error(`HTTP Error! Status: ${enrollRes.status}`);
+        if (!enrollRes.ok) {
+          throw new Error(`HTTP Error! Status: ${enrollRes.status}`);
+        }
+
         const result = await enrollRes.json();
         console.log("Enrollment successful:", result);
 
+        // Mund ta dërgoni user-in diku pas regjistrimit (p.sh. homepage)
         router.push("/");
       } else {
+        // Nëse nuk kemi user, e vendosim në null dhe tregojmë një mesazh
         setUser(null);
         alert("Please log in to enroll.");
       }
@@ -90,12 +105,27 @@ const Index = () => {
     }
   }
 
+  // Nëse course nuk ka ardhur ende, mund të shfaqim një "Loading..."
+  if (!course) {
+    return (
+      <div className="max-w-7xl mx-auto py-6 px-4">
+        <h2 className="text-xl">Loading course...</h2>
+      </div>
+    );
+  }
+
   return (
     <div>
-      <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 ">
+      <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
         <h1 className="text-3xl font-bold text-gray-900">
           Next.js Course Enrollment
         </h1>
+        {/* Lexojmë 'user' për të eliminuar gabimin e TS */}
+        {user && (
+          <p className="mt-2 text-blue-600">
+            Mirë se erdhe, {user.name}!
+          </p>
+        )}
       </div>
 
       <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
@@ -109,11 +139,12 @@ const Index = () => {
                       src="/images/course.jpg"
                       alt="Course Image"
                       className="object-cover w-full h-full rounded-lg"
+                      fill
                     />
                   </div>
                 </div>
-                <h2 className="text-xl font-bold mb-4">{course?.title}</h2>
-                <p>{course?.description}</p>
+                <h2 className="text-xl font-bold mb-4">{course.title}</h2>
+                <p>{course.description}</p>
               </div>
               <div className="px-4 py-3 bg-gray-50 text-right sm:px-6">
                 <button

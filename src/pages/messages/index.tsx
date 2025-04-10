@@ -2,7 +2,7 @@ import { SetStateAction  } from "react";
 import { useState } from "react";
 
 function MessagesPage() {
-  const [messages, setMessages] = useState([
+  const [messages,setMessages] = useState([
     {
       id: 1,
       name: "Chat 1",
@@ -20,14 +20,23 @@ function MessagesPage() {
 
   const handleSendMessage = () => {
     if (newMessage.trim()) {
-      setCurrentChat({
-        ...currentChat,
-        messages: [...currentChat.messages, newMessage],
-      });
+      // 1. Përditësojmë listën e bisedave "messages"
+      setMessages((prevMessages) =>
+        prevMessages.map((chat) =>
+          chat.id === currentChat.id
+            ? { ...chat, messages: [...chat.messages, newMessage] }
+            : chat
+        )
+      );
+      // 2. Përditësojmë currentChat
+      setCurrentChat((prev) => ({
+        ...prev,
+        messages: [...prev.messages, newMessage],
+      }));
       setNewMessage("");
     }
   };
-
+  
   const handleChatClick = (
     chat: SetStateAction<{ id: number; name: string; messages: string[] }>
   ) => {

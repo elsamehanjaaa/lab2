@@ -467,7 +467,7 @@ const Hero = () => {
               <div className="ml-4">
                 <p className="font-semibold text-indigo-700">Dior H</p>
                 <p className="text-sm text-gray-600">
-                  Founder & CEO, ONLINE COURSES
+                  Founder & CEO, EduSpark
                 </p>
               </div>
             </div>
@@ -476,7 +476,7 @@ const Hero = () => {
           {/* Right Side */}
           <div className="w-full md:w-1/2 px-10 py-10 bg-blue-50 relative">
             <h2 className="text-2xl font-semibold mb-2 text-gray-800">
-              ONLINE COURSES
+              EduSpark
             </h2>
             <p className="text-lg text-gray-700 mb-2">
               Founded in{" "}
