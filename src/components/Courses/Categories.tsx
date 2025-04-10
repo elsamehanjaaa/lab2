@@ -53,7 +53,7 @@ const Categories = () => {
         ref={navRef}
         className={`inset-x-0 bg-[#e9ada4] m-0 p-0 transition-all ${
           isSticky
-            ? "fixed top-[70px] left-0 w-full shadow-lg z-50"
+            ? "fixed top-[100px] left-0 w-full shadow-lg z-50"
             : "relative"
         }`}
       >

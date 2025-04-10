@@ -21,23 +21,23 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
 
-  if (
-    url.pathname.split("/").length === 4 &&
-    (url.pathname.startsWith("/course/") ||
-      url.pathname.startsWith("/course/subscribe/"))
-  ) {
-    const courseId = url.pathname.split("/")[3];
+  // if (
+  //   url.pathname.split("/").length === 4 &&
+  //   (url.pathname.startsWith("/course/") ||
+  //     url.pathname.startsWith("/course/subscribe/"))
+  // ) {
+  //   const courseId = url.pathname.split("/")[3];
 
-    try {
-      const res = await fetch(`http://172.25.48.1:5000/courses/${courseId}`);
-      if (res.status === 404) {
-        url.pathname = "/course/not-found";
-        return NextResponse.redirect(url);
-      }
-    } catch (err) {
-      console.error("Middleware fetch error:", err);
-    }
-  }
+  //   try {
+  //     const res = await fetch(`http://172.25.48.1:5000/courses/${courseId}`);
+  //     if (res.status === 404) {
+  //       url.pathname = "/course/not-found";
+  //       return NextResponse.redirect(url);
+  //     }
+  //   } catch (err) {
+  //     console.error("Middleware fetch error:", err);
+  //   }
+  // }
   // Allow the request to proceed
   return NextResponse.next();
 }

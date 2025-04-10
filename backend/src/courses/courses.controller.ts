@@ -45,12 +45,16 @@ export class CoursesController {
   async getByName(@Body() body: any) {
     return this.coursesService.getCoursesByCategory(body.id);
   }
+  @Post('createInstructor')
+  async createInstructor(@Body() body: any) {
+    return this.coursesService.createInstructor(body.id);
+  }
 
   @Post('GetCoursesByQuery')
   async getCoursesByQuery(@Body() body: any) {
     return this.coursesService.getCoursesByQuery(body.query);
   }
-  
+
   // Update a course by its ID
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateCourseDto: UpdateCourseDto) {

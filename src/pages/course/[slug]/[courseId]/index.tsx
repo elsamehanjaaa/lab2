@@ -3,7 +3,6 @@ import { useRouter } from "next/router";
 import Head from "next/head";
 import Image from "next/image";
 
-
 interface Course {
   title: string;
   description: string;
@@ -81,36 +80,14 @@ const Index = () => {
                 <div className="px-4 py-5 bg-white sm:p-6">
                   <div className="flex justify-center mb-6">
                     <div className="relative w-full aspect-w-16 aspect-h-9">
-                    <Image
-                      src="https://example.com/new-image.jpg"
-                      alt="New Thumbnail"
-                      className="object-cover rounded-md"
-                    />
+                      <Image
+                        src="https://img-c.udemycdn.com/course/750x422/2270606_a764_3.jpg"
+                        alt="New Thumbnail"
+                        className="object-cover rounded-md"
+                        width={800}
+                        height={800}
+                      />
                     </div>
-
-                    <h2 className="text-2xl font-semibold mb-4">
-                      {course.title}
-                    </h2>
-                    <p className="text-gray-700 mb-4">{course.description}</p>
-
-                    <div className="flex items-center mb-4">
-                      <span className="text-yellow-500 mr-2">★★★★☆</span>
-                      <span className="text-gray-600">{course.rating}</span>
-                    </div>
-
-                    <div className="mb-4">
-                      <span className="text-gray-600">Created by</span>{" "}
-                      <span className="text-blue-600">John Doe</span>
-                    </div>
-
-                    <div className="mb-4">
-                      <span className="text-gray-600">Language:</span>{" "}
-                      <span className="text-blue-600">English</span>
-                    </div>
-
-                    <button className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" onClick={() => router.push(`/course/subscribe/${courseId}`)}>
-                      Enroll Now
-                    </button>
                   </div>
 
                   <h2 className="text-2xl font-semibold mb-4">

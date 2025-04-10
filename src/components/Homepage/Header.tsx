@@ -4,6 +4,7 @@ import Link from "next/link";
 import { User } from "lucide-react";
 import LoginModal from "../Login/LoginModal";
 import SignupModal from "../Login/SignupModal";
+import ResetPasswordModal from "../Login/ResetPasswordModal";
 import Search from "../Search/Search";
 
 const Header = () => {
@@ -13,6 +14,27 @@ const Header = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [showLogin, setShowLogin] = useState(false);
   const [showSignup, setShowSignup] = useState(false);
+  const [showResetPassword, setShowResetPassword] = useState(false);
+
+  function handleShowLogin() {
+    closeAllModals();
+    setShowLogin(true);
+  }
+
+  function handleShowSignup() {
+    closeAllModals();
+    setShowSignup(true);
+  }
+  function handleShowResetPassword() {
+    closeAllModals();
+    setShowResetPassword(true);
+  }
+
+  function closeAllModals() {
+    setShowResetPassword(false);
+    setShowLogin(false);
+    setShowSignup(false);
+  }
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -82,14 +104,14 @@ const Header = () => {
             <Image
               src="/icons/b77d377e-bf9c-42b0-8724-56a9f6d6ff73.png"
               alt="Logo"
-             width={100}
-             height={100}
-             className="h-16 w-auto"
-             quality={100}
+              width={100}
+              height={100}
+              className="h-16 w-auto"
+              quality={100}
             />
           </Link>
 
-          <Search/>
+          <Search />
 
           <nav className="flex items-center justify-end space-x-6 text-base">
             <Link
@@ -160,14 +182,14 @@ const Header = () => {
             ) : (
               <div className="flex items-center gap-3">
                 <button
-                  onClick={() => setShowLogin(true)}
+                  onClick={handleShowLogin}
                   className="border-2 cursor-pointer border-white px-4 py-1 rounded-lg text-white hover:bg-white hover:text-[#edb4a9] transition duration-300"
                 >
                   Log In
                 </button>
 
                 <button
-                  onClick={() => setShowSignup(true)}
+                  onClick={handleShowSignup}
                   className="border-2 cursor-pointer border-white bg-white px-4 py-1 rounded-lg text-[#edb4a9] hover:bg-transparent hover:text-white transition duration-300"
                 >
                   Sign Up
@@ -176,13 +198,21 @@ const Header = () => {
             )}
           </nav>
         </div>
-        
       </header>
-      
 
       {showSignup && <SignupModal onClose={() => setShowSignup(false)} />}
-      {showLogin && <LoginModal onClose={() => setShowLogin(false)} />}
-      
+      {showResetPassword && (
+        <ResetPasswordModal
+          onClose={() => setShowResetPassword(false)}
+          onLogin={handleShowLogin}
+        />
+      )}
+      {showLogin && (
+        <LoginModal
+          onClose={() => setShowLogin(false)}
+          onResetPassword={handleShowResetPassword}
+        />
+      )}
     </>
   );
 };

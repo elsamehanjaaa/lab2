@@ -29,6 +29,46 @@ export class AuthService {
       access_token: this.jwtService.sign(payload),
     };
   }
+  // auth.service.ts
+  async updatePasswordWithAccessToken(
+    access_token: string,
+    newPassword: string,
+  ) {
+    const { data: userInfo, error } = await (
+      await this.supabaseService.auth()
+    ).getUser(access_token);
+    if (error) throw new Error('Invalid or expired token');
+
+    const userId = userInfo.user.id;
+
+    const { error: updateError } = await (
+      await this.supabaseService.auth()
+    ).admin.updateUserById(userId, {
+      password: newPassword,
+    });
+
+    if (updateError) throw new Error('Password change failed');
+
+    return { userInfo, error };
+  }
+  async recovery_session(access_token: string) {
+    const { data, error } = await (
+      await this.supabaseService.auth()
+    ).getUser(access_token);
+
+    if (error) throw new Error('Invalid or expired token');
+
+    return { data, error };
+  }
+  async sendResetPassword(email: string) {
+    const { data, error } = await (
+      await this.supabaseService.auth()
+    ).resetPasswordForEmail(email);
+
+    if (error) throw new Error('Error sending reset password email');
+
+    return { data, error };
+  }
 
   async signup(username: string, email: string, password: string) {
     const { user, session } = await this.supabaseService.signup(

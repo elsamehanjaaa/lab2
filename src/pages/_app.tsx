@@ -16,7 +16,7 @@ export default function App({ Component, pageProps }: AppProps) {
       {/* Conditionally render Header and Footer based on the current page */}
       {!excludeHeaderFooterPages.includes(router.pathname) && <Header />}
 
-      <div className="flex-grow">
+      <div className="flex-grow  mt-[100px]">
         <Component {...pageProps} />
       </div>
 

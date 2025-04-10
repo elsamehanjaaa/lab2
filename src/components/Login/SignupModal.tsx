@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Mail, Lock, User, Loader2, X, Check } from "lucide-react";
@@ -269,17 +269,6 @@ export default function SignUpModal({ onClose }: { onClose: () => void }) {
               {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               {isLoading ? "Creating account..." : "Create account"}
             </button>
-
-            <p className="text-sm text-center text-gray-600">
-              Already have an account?{" "}
-              <button
-                type="button"
-                className="text-blue-600 hover:underline"
-                onClick={onClose}
-              >
-                Sign in
-              </button>
-            </p>
           </form>
         </motion.div>
       </motion.div>

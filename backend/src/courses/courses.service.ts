@@ -15,7 +15,8 @@ export class CoursesService {
     private readonly supabaseService: SupabaseService,
     private readonly mongooseService: MongooseService,
     @InjectModel(Courses.name) private readonly CoursesModel: Model<Courses>, // Inject Courses model
-    @InjectModel(Categories.name) private readonly CategoriesModel: Model<Categories>, // Inject Categories model
+    @InjectModel(Categories.name)
+    private readonly CategoriesModel: Model<Categories>, // Inject Categories model
   ) {}
 
   // Create a new course
@@ -59,6 +60,14 @@ export class CoursesService {
     return await this.mongooseService.getAllData(this.CoursesModel);
   }
 
+  async createInstructor(user_id: string) {
+    const { data, error } = await (
+      await this.supabaseService.auth()
+    ).admin.updateUserById(user_id, {
+      app_metadata: { role: 'instructor' },
+    });
+    return data;
+  }
   // Get courses by category ID (old method)
   async getCoursesByCategory(categoryId: string): Promise<Courses[]> {
     try {
@@ -89,23 +98,22 @@ export class CoursesService {
     if (!categoryName) {
       throw new Error('Category name must be provided');
     }
-    
-  
+
     try {
       // Find category by name
       const category = await this.CategoriesModel.findOne({
         name: categoryName,
       }).exec();
-  
+
       if (!category) {
         throw new Error(`Category "${categoryName}" not found`);
       }
-  
+
       // Get courses that belong to this category ID
       const courses = await this.CoursesModel.find({
         categories: { $in: [category._id] },
       }).exec();
-  
+
       return courses;
     } catch (error) {
       throw new Error('Error fetching courses: ' + error.message);

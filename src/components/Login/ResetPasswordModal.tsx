@@ -1,21 +1,20 @@
-// components/LoginModal.tsx
 "use client";
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Mail, Lock, Loader2, BookOpen, X } from "lucide-react";
+import { Mail, Loader2, BookOpen, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
-export default function LoginModal({
+export default function ResetPasswordModal({
   onClose,
-  onResetPassword,
+  onLogin,
 }: {
   onClose: () => void;
-  onResetPassword: () => void;
+  onLogin: () => void;
 }) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
-  const [data, setData] = useState({ email: "", password: "" });
+  const [data, setData] = useState({ email: "" });
 
   // Lock scroll when modal is open
   useEffect(() => {
@@ -26,22 +25,24 @@ export default function LoginModal({
     };
   }, []);
 
-  async function handleLogin(e: React.FormEvent) {
+  async function handleResetPassword(e: React.FormEvent) {
     e.preventDefault();
     setIsLoading(true);
     try {
-      const res = await fetch("http://localhost:5000/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-        credentials: "include",
-      });
+      const res = await fetch(
+        "http://localhost:5000/auth/send-reset-password",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data),
+          credentials: "include",
+        }
+      );
 
       const result = await res.json();
 
       if (res.ok) {
-        router.refresh();
-        onClose(); // Close modal on success
+        console.log("link sent");
       } else {
         throw new Error(result.message || "Login failed");
       }
@@ -77,13 +78,12 @@ export default function LoginModal({
 
           <div className="text-center mb-6">
             <BookOpen className="mx-auto h-10 w-10 text-blue-600" />
-            <h2 className="text-2xl font-bold text-gray-900">Welcome Back</h2>
-            <p className="text-gray-600 text-sm">
-              Continue your learning journey
-            </p>
+            <h2 className="text-2xl font-bold text-gray-900">
+              Reset Your Password
+            </h2>
           </div>
 
-          <form onSubmit={handleLogin} className="space-y-6">
+          <form onSubmit={handleResetPassword} className="space-y-6">
             <div className="relative">
               <Mail className="absolute left-3 top-3 h-5 w-5 text-blue-500" />
               <input
@@ -92,17 +92,6 @@ export default function LoginModal({
                 className="w-full pl-12 pr-4 py-3 border rounded-xl focus:ring-blue-500 bg-gray-50"
                 value={data.email}
                 onChange={(e) => setData({ ...data, email: e.target.value })}
-                required
-              />
-            </div>
-            <div className="relative">
-              <Lock className="absolute left-3 top-3 h-5 w-5 text-blue-500" />
-              <input
-                type="password"
-                placeholder="••••••••"
-                className="w-full pl-12 pr-4 py-3 border rounded-xl focus:ring-blue-500 bg-gray-50"
-                value={data.password}
-                onChange={(e) => setData({ ...data, password: e.target.value })}
                 required
               />
             </div>
@@ -117,10 +106,10 @@ export default function LoginModal({
             </button>
             <div className="text-center mt-4">
               <button
-                onClick={onResetPassword}
+                onClick={onLogin}
                 className="text-blue-600 hover:text-blue-800 font-semibold text-sm"
               >
-                Reset Password
+                Go Back To Login
               </button>
             </div>
           </form>
