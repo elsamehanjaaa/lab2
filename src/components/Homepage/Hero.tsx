@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
-import { BookOpen, User, Clock, Check } from "lucide-react";
+import { BookOpen, User, Clock, } from "lucide-react";
 import Link from "next/link";
 
 // Data
@@ -22,10 +22,6 @@ const courses = [
     title: "The Complete AI Guide: Learn ChatGPT, Generative AI & More",
     rating: 4.5,
     reviews: "45,903",
-    price: "€9.99",
-    oldPrice: "€54.99",
-    bestSeller: true,
-    width: 800,
   },
   {
     image:
@@ -33,8 +29,7 @@ const courses = [
     title: "The Complete AI-Powered Copywriting Course & ChatGPT...",
     rating: 4.3,
     reviews: "1,816",
-    price: "€9.99",
-    oldPrice: "€48.99",
+
   },
   {
     image:
@@ -42,8 +37,7 @@ const courses = [
     title: "ChatGPT, DeepSeek, Grok and 30+ More AI Marketing Assistants",
     rating: 4.5,
     reviews: "533",
-    price: "€10.99",
-    oldPrice: "€48.99",
+    
   },
   {
     image:
@@ -51,8 +45,7 @@ const courses = [
     title: "Mastering SEO With ChatGPT: Ultimate Beginner's Guide",
     rating: 4.4,
     reviews: "284",
-    price: "€10.99",
-    oldPrice: "€10.99",
+  
   },
 ];
 
@@ -63,57 +56,6 @@ const brandLogos = [
   "https://images.unsplash.com/photo-1611162618071-b39a2ec055fb?auto=format&fit=crop&w=200&h=80&q=80",
 ];
 
-const plans = [
-  {
-    title: "Personal Plan",
-    subtitle: "For you",
-    audience: "Individual",
-    price: "Starting at €10.00 per month",
-    billingNote: "Billed monthly or annually. Cancel anytime.",
-    button: "Try it free",
-    features: [
-      "Access to 12,000+ top courses",
-      "Certification prep",
-      "Goal-focused recommendations",
-      "AI-powered coding exercises",
-    ],
-  },
-  {
-    title: "Team Plan",
-    subtitle: "For your team",
-    audience: "2 to 20 people",
-    price: "€28.00 a month per user",
-    billingNote: "Billed annually. Cancel anytime.",
-    button: "Try it free",
-    features: [
-      "Access to 12,000+ top courses",
-      "Certification prep",
-      "Goal-focused recommendations",
-      "AI-powered coding exercises",
-      "Analytics and adoption reports",
-    ],
-  },
-  {
-    title: "Enterprise Plan",
-    subtitle: "For your whole organization",
-    audience: "More than 20 people",
-    price: "Contact sales for pricing",
-    billingNote: "",
-    button: "Request a demo",
-    features: [
-      "Access to 27,000+ top courses",
-      "Certification prep",
-      "Goal-focused recommendations",
-      "AI-powered coding exercises",
-      "Advanced analytics and insights",
-      "Dedicated customer success team",
-      "International course collection featuring 15 languages",
-      "Customizable content",
-      "Hands-on tech training with add-on",
-      "Strategic implementation services with add-on",
-    ],
-  },
-];
 const testimonials = [
   {
     name: "Erjona Ballou",
@@ -262,11 +204,6 @@ const Hero = () => {
                     alt={course.title}
                     className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
                   />
-                  {course.bestSeller && (
-                    <span className="absolute top-4 left-4 bg-yellow-400 text-yellow-900 text-xs font-bold px-3 py-1 rounded-full">
-                      Bestseller
-                    </span>
-                  )}
                 </div>
                 <div className="p-6">
                   <h3 className="font-bold text-lg mb-2 line-clamp-2 group-hover:text-indigo-600 transition-colors">
@@ -277,16 +214,6 @@ const Hero = () => {
                     <span className="font-semibold mr-2">{course.rating}</span>
                     <span className="text-gray-500">({course.reviews})</span>
                   </div>
-                  <div className="flex items-center">
-                    <span className="font-bold text-xl text-indigo-600">
-                      {course.price}
-                    </span>
-                    {course.oldPrice && (
-                      <span className="text-gray-400 line-through ml-2">
-                        {course.oldPrice}
-                      </span>
-                    )}
-                  </div>
                 </div>
               </div>
             ))}
@@ -296,125 +223,15 @@ const Hero = () => {
               href="/courses"
               className="text-indigo-600 hover:text-indigo-700 font-semibold hover:underline"
             >
-              Show all Data Science courses →
+              Show all Courses →
             </Link>
           </div>
         </div>
       </div>
 
-      {/* Trusted By Section */}
-      <div className="bg-gray-50 py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-2xl font-bold mb-12">
-            Trusted by over 16,000 companies and millions of learners
-          </h2>
-          <div className="flex flex-wrap justify-center items-center gap-12">
-            {brandLogos.map((logo, i) => (
-              <Image
-                key={i}
-                width={200}
-                height={80}
-                src={logo}
-                alt="Brand Logo"
-                className="h-12 object-contain grayscale hover:grayscale-0 transition-all duration-300"
-              />
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* Plans Section */}
-      <div className="bg-white py-24">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              Accelerate growth — for you or your organization
-            </h2>
-            <p className="text-xl text-gray-600">
-              Reach goals faster with one of our plans or programs
-            </p>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {plans.map((plan, i) => (
-              <div
-                key={i}
-                className="bg-indigo-100 p-8 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 text-center"
-              >
-                <h3 className="text-2xl font-semibold mb-4">{plan.title}</h3>
-                <p className="text-gray-600 mb-4">{plan.subtitle}</p>
-                <p className="font-bold text-xl text-indigo-600 mb-6">
-                  {plan.price}
-                </p>
-                <p className="text-sm text-gray-500 mb-8">{plan.billingNote}</p>
-                <ul className="text-left mb-8">
-                  {plan.features.map((feature, j) => (
-                    <li key={j} className="flex items-center mb-2">
-                      <Check className="w-5 h-5 text-indigo-600 mr-3" />
-                      <span>{feature}</span>
-                    </li>
-                  ))}
-                </ul>
-                <button className="bg-indigo-600 text-white px-8 py-3 rounded-xl hover:bg-indigo-700 transition-all duration-300">
-                  {plan.button}
-                </button>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-      <div className="bg-gray-50 py-20">
-        <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Assessment Section */}
-          <div className="flex items-center bg-green-100 p-6 rounded-lg">
-            <div className="flex-1 space-y-4 text-center md:text-left">
-              <h2 className="text-2xl font-bold text-gray-800">
-                Get to know yourself better!
-              </h2>
-              <p className="text-gray-700">
-                Discover your career strengths & weaknesses
-              </p>
-              <button className="bg-green-600 hover:bg-green-700 text-white font-semibold px-6 py-3 rounded">
-                Take The Free Personality Assessment
-              </button>
-            </div>
-            <div className="hidden md:block ml-6">
-              <Image
-                src="/know-yourself.svg"
-                alt="Puzzle Illustration"
-                width={140}
-                height={140}
-              />
-            </div>
-          </div>
-
-          {/* Resume Section */}
-          <div className="flex items-center bg-green-200 p-6 rounded-lg">
-            <div className="flex-1 space-y-4 text-center md:text-left">
-              <h2 className="text-2xl font-bold text-gray-800">
-                Get hired for your dream job!
-              </h2>
-              <p className="text-gray-700">
-                Build your free resumé in minutes!
-              </p>
-              <button className="bg-green-600 hover:bg-green-700 text-white font-semibold px-6 py-3 rounded">
-                Create My Professional Resumé
-              </button>
-            </div>
-            <div className="hidden md:block ml-6">
-              <Image
-                src="/get-hired-alt.svg"
-                alt="Resume Illustration"
-                width={140}
-                height={140}
-              />
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <section className="bg-gray-50 py-12 px-4 md:px-12">
+      <section className="bg-gray-50 py-10 md:px-40">
         <h2 className="text-3xl font-bold mb-6">Trending Now</h2>
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-10">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* ChatGPT section */}
           <div>
             <h3 className="text-xl font-bold mb-2">ChatGPT is a top skill</h3>
@@ -433,21 +250,21 @@ const Hero = () => {
             <h4 className="text-lg font-bold mb-3">Development</h4>
             <ul className="space-y-2">
               <li>
-                <a
-                  href="#"
+                <Link
+                  href="/courses"
                   className="text-purple-700 font-medium hover:underline"
                 >
                   Python →
-                </a>
+                </Link>
                 <p className="text-sm text-gray-500">47,815,126 learners</p>
               </li>
               <li>
-                <a
+              <Link
                   href="#"
                   className="text-purple-700 font-medium hover:underline"
                 >
                   Web Development →
-                </a>
+                  </Link>
                 <p className="text-sm text-gray-500">14,015,184 learners</p>
               </li>
               <li>
@@ -532,66 +349,100 @@ const Hero = () => {
         </div>
       </section>
 
+
+    
+      
+      <div className="bg-gray-50 py-20">
+        <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Assessment Section */}
+          <div className="flex items-center bg-green-100 p-6 rounded-lg">
+            <div className="flex-1 space-y-4 text-center md:text-left">
+              <h2 className="text-2xl font-bold text-gray-800">
+                Get to know yourself better!
+              </h2>
+              <p className="text-gray-700">
+                Discover your career strengths & weaknesses
+              </p>
+              <button className="bg-green-600 hover:bg-green-700 text-white font-semibold px-6 py-3 rounded">
+                Take The Free Personality Assessment
+              </button>
+            </div>
+            <div className="hidden md:block ml-6">
+              <Image
+                src="/know-yourself.svg"
+                alt="Puzzle Illustration"
+                width={140}
+                height={140}
+              />
+            </div>
+          </div>
+
+          {/* Resume Section */}
+          <div className="flex items-center bg-green-200 p-6 rounded-lg">
+            <div className="flex-1 space-y-4 text-center md:text-left">
+              <h2 className="text-2xl font-bold text-gray-800">
+                Get hired for your dream job!
+              </h2>
+              <p className="text-gray-700">
+                Build your free resumé in minutes!
+              </p>
+              <button className="bg-green-600 hover:bg-green-700 text-white font-semibold px-6 py-3 rounded">
+                Create My Professional Resumé
+              </button>
+            </div>
+            <div className="hidden md:block ml-6">
+              <Image
+                src="/get-hired-alt.svg"
+                alt="Resume Illustration"
+                width={140}
+                height={140}
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      
       {/* Testimonials Section */}
       <div className="bg-gray-50 py-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-            {/* Testimonials section */}
-            <div className="relative">
-              {/* Testimonial Content */}
-              <div className="bg-white rounded-2xl shadow-xl p-10 text-center relative">
-                {/* Arrow buttons inside the card */}
-                <div className="absolute top-1/2 -translate-y-1/2 left-0 right-0 flex justify-between items-center px-4 z-10">
-                  <button
-                    onClick={prevSlide}
-                    className="transform hover:scale-110 transition-all duration-300 bg-white p-2 rounded-full shadow-lg hover:shadow-xl focus:outline-none"
-                  >
-                    &lt;
-                  </button>
-                  <button
-                    onClick={nextSlide}
-                    className="transform hover:scale-110 transition-all duration-300 bg-white p-2 rounded-full shadow-lg hover:shadow-xl focus:outline-none"
-                  >
-                    &gt;
-                  </button>
-                </div>
-
-                <h3 className="text-2xl font-bold mb-4 text-center">
-                  What our learners say
-                </h3>
-                <div className="flex justify-center mb-6">
-                  <Image
-                    src={testimonials[current].image}
-                    alt={testimonials[current].name}
-                    width={60}
-                    height={60}
-                    className="h-32 w-32 rounded-full object-cover border-4 border-indigo-600"
-                  />
-                  <div className="ml-6 text-left">
-                    <p className="text-lg font-semibold text-gray-800">
-                      {testimonials[current].name}
-                    </p>
-                    <p className="text-gray-500">
-                      {testimonials[current].title}
-                    </p>
-                  </div>
-                </div>
-                <p className="text-xl font-medium italic text-gray-700">
-                  {testimonials[current].quote}
-                </p>
+            <div className="bg-white rounded-2xl shadow-xl p-10 text-center relative">
+              <div className="absolute top-1/2 -translate-y-1/2 left-4 right-4 flex justify-between z-10">
+                <button
+                  onClick={prevSlide}
+                  className="bg-white p-2 rounded-full shadow-lg hover:shadow-xl focus:outline-none transform hover:scale-110 transition-all"
+                >
+                  <span className="text-blue-600 text-sm font-medium">----</span>
+                </button>
+                <button
+                  onClick={nextSlide}
+                  className="bg-white p-2 rounded-full shadow-lg hover:shadow-xl focus:outline-none transform hover:scale-110 transition-all"
+                >
+                  <span className="text-blue-600 text-sm font-medium"> ---- </span>
+                </button>
+              </div>
+              
+              <div className="text-center">
+                <Image
+                  src={testimonials[current].image}
+                  alt={testimonials[current].name}
+                  width={50}
+                  height={50}
+                  className="w-24 h-24 rounded-full mx-auto mb-6 border-4 border-white shadow-lg object-cover"
+                />
+                <p className="text-xl italic text-gray-700 mb-6">-{testimonials[current].quote}-</p>
+                <p className="font-semibold text-gray-900">{testimonials[current].name}</p>
+                <p className="text-blue-600">{testimonials[current].title}</p>
               </div>
             </div>
 
-            {/* Message section */}
-            <div className="flex flex-col justify-center items-center bg-indigo-600 text-white p-8 rounded-xl shadow-lg">
-              <h3 className="text-2xl font-bold mb-4 text-center">
-                Over 45 million learners have used ONLINE COURSES to empower
-                themselves
-              </h3>
-              <p className="text-lg text-center">
-                Join our community today and start learning with real-world
-                skills that will make a difference in your career.
-              </p>
+            <div className="bg-blue-600 text-white rounded-2xl p-8 flex flex-col justify-center">
+              <h3 className="text-3xl font-bold mb-6">Join Our Global Community</h3>
+              <p className="text-xl mb-8">Over 45 million learners have already taken the first step toward their future. Start your journey today.</p>
+              <button className="bg-white text-blue-600 px-8 py-4 rounded-lg font-semibold text-lg shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 self-start">
+                Get Started
+              </button>
             </div>
           </div>
         </div>
@@ -649,7 +500,28 @@ const Hero = () => {
           </div>
         </div>
       </section>
+      <div className="bg-gray-50 py-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h2 className="text-2xl font-bold mb-12">
+            Trusted by over 16,000 companies and millions of learners
+          </h2>
+          <div className="flex flex-wrap justify-center items-center gap-12">
+            {brandLogos.map((logo, i) => (
+              <Image
+                key={i}
+                width={200}
+                height={80}
+                src={logo}
+                alt="Brand Logo"
+                className="h-12 object-contain grayscale hover:grayscale-0 transition-all duration-300"
+              />
+            ))}
+          </div>
+        </div>
+      </div>
+
     </div>
+    
   );
 };
 

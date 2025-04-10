@@ -1,22 +1,33 @@
-import { set } from "mongoose";
-import { useRouter } from "next/router";
-import React, { useEffect, useState } from "react";
 
+import { useEffect, useState } from "react";
+import { useRouter } from "next/router";
+import Image from "next/image";
+
+// Interfaces
 interface Course {
   id: string;
   title: string;
   description: string;
 }
 
-const index = () => {
+interface User {
+  id: string;
+  name: string;
+  email: string;
+}
+
+const Index = () => {
   const router = useRouter();
   const { courseId } = router.query;
-  const [course, setCourse] = useState<Course>();
-  const [user, setUser] = useState(null);
 
+  const [course, setCourse] = useState<Course>();
+  const [user, setUser] = useState<User | null>(null);
+
+  // Fetch course by ID
   useEffect(() => {
     if (!courseId) return;
-    async function getAll() {
+
+    async function fetchCourse() {
       try {
         const res = await fetch(`http://localhost:5000/courses/${courseId}`, {
           method: "GET",
@@ -32,11 +43,13 @@ const index = () => {
       }
     }
 
-    getAll();
+    fetchCourse();
   }, [courseId]);
 
+  // Handle enrollment logic
   async function handleEnrollment() {
     try {
+      // Check if user is authenticated
       const res = await fetch("http://localhost:5000/auth/protected", {
         method: "POST",
         credentials: "include",
@@ -44,27 +57,36 @@ const index = () => {
 
       const auth = await res.json();
 
-      setUser(auth.user.id);
-      if (res.ok) {
-        const res = await fetch(`http://localhost:5000/enrollments`, {
+      if (res.ok && auth.user) {
+        const currentUser: User = {
+          id: auth.user.id,
+          name: auth.user.name,
+          email: auth.user.email,
+        };
+        setUser(currentUser);
+
+        // Proceed with enrollment
+        const enrollRes = await fetch("http://localhost:5000/enrollments", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           credentials: "include",
           body: JSON.stringify({
-            user_id: auth.user.id,
+            user_id: currentUser.id,
             course_id: courseId,
           }),
         });
 
-        if (!res.ok) throw new Error(`HTTP Error! Status: ${res.status}`);
-        const result = await res.json();
-        console.log(result);
+        if (!enrollRes.ok) throw new Error(`HTTP Error! Status: ${enrollRes.status}`);
+        const result = await enrollRes.json();
+        console.log("Enrollment successful:", result);
+
         router.push("/");
       } else {
         setUser(null);
+        alert("Please log in to enroll.");
       }
     } catch (error) {
-      console.error("Fetch error:", error);
+      console.error("Enrollment error:", error);
     }
   }
 
@@ -83,7 +105,7 @@ const index = () => {
               <div className="px-4 py-5 bg-white sm:p-6">
                 <div className="flex justify-center mb-6">
                   <div className="relative w-full aspect-w-16 aspect-h-9">
-                    <img
+                    <Image
                       src="/images/course.jpg"
                       alt="Course Image"
                       className="object-cover w-full h-full rounded-lg"
@@ -110,4 +132,4 @@ const index = () => {
   );
 };
 
-export default index;
+export default Index;

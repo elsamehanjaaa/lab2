@@ -1,6 +1,7 @@
+import Categories from "../components/Courses/Categories"
 import React, { useState, useEffect } from "react";
 import { ChevronDown, ChevronUp, Star } from "lucide-react";
-import Categories from "@/components/Courses/Categories"; // Import the Categories component
+
 
 const Dropdown = ({
   title,
@@ -38,7 +39,7 @@ const Dropdown = ({
 
 const CourseFilters = ({ onCategoryChange }: { onCategoryChange: (id: string) => void }) => {
   const [selectedRating, setSelectedRating] = useState<number | null>(null);
-  const [categories, setCategories] = useState<any[]>([]); // Add categories state
+  const [categories, setCategories] = useState<Category[]>([]); // Add categories state
   const [selectedPrice, setSelectedPrice] = useState<string>(""); // Price state
 
 
@@ -56,8 +57,12 @@ const CourseFilters = ({ onCategoryChange }: { onCategoryChange: (id: string) =>
     getCategories();
     
   }, []);
+  type Category = {
+    _id: string;
+    name: string; // or other fields you use
+  };
 
-  const handleTopicChange = (category: any) => {
+  const handleTopicChange = (category: Category) => {
     onCategoryChange(category._id);
   };
 

@@ -13,7 +13,7 @@ import Image from "next/image";
 
 const columns = [
   {
-    title: "ONLINE COURSES",
+    title: "EduSpark",
     links: [
       "Technology & IT",
       "Health & Wellness",
@@ -107,7 +107,7 @@ export default function Footer() {
           <div className="flex flex-col items-start gap-4 w-full lg:w-1/2">
             <div className="flex items-center gap-2">
               <Image
-                src="/icons/71d96b6b-7e69-400a-9cf9-ad4f2fe843a0.png"
+                src="/icons/b77d377e-bf9c-42b0-8724-56a9f6d6ff73.png"
                 alt="Alison"
                 width={96}
                 height={40}
@@ -153,7 +153,7 @@ export default function Footer() {
               />
             </div>
             <div className="text-xs text-gray-400 flex gap-4 flex-wrap mt-2">
-              <span>© ONLINE COURSES 2025</span>
+              <span>© EduSpark 2025</span>
               <a href="#" className="hover:underline">
                 Privacy
               </a>

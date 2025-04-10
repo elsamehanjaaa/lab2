@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import Head from "next/head";
+import Image from "next/image";
+
 
 interface Course {
   title: string;
@@ -79,11 +81,11 @@ const Index = () => {
                 <div className="px-4 py-5 bg-white sm:p-6">
                   <div className="flex justify-center mb-6">
                     <div className="relative w-full aspect-w-16 aspect-h-9">
-                      <img
-                        src="https://img-c.udemycdn.com/course/750x422/2270606_a764_3.jpg"
-                        alt="Course Thumbnail"
-                        className="object-cover rounded-md"
-                      />
+                    <Image
+                      src="https://example.com/new-image.jpg"
+                      alt="New Thumbnail"
+                      className="object-cover rounded-md"
+                    />
                     </div>
 
                     <h2 className="text-2xl font-semibold mb-4">
@@ -145,7 +147,7 @@ const Index = () => {
               <div className="shadow overflow-hidden sm:rounded-md">
                 <div className="px-4 py-5 bg-white sm:p-6">
                   <h3 className="text-lg font-semibold mb-4">
-                    What you'll learn
+                    What you will learn
                   </h3>
                   <ul className="list-disc list-inside">
                     <li>Learn Next.js fundamentals</li>

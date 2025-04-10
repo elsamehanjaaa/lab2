@@ -12,7 +12,7 @@ export default function CourseNotFound() {
         404 - Course Not Found
       </h1>
       <p className="text-lg text-gray-600 mb-6">
-        Sorry, the course you are looking for doesn't exist.
+        Sorry, the course you are looking for does not exist.
       </p>
       <Link
         href="/courses"
