@@ -43,15 +43,13 @@ const CourseFilters = ({
 }: {
   onCategoryChange: (id: string) => void;
   onRatingChange: (rating: number) => void;
-  onPriceRangeChange: (priceRange: [number, number]) => void; // Accepting price range
+  onPriceRangeChange: (priceRange: [number, number]) => void;
   fetchAllCourses: () => void;
 }) => {
   const [selectedRating, setSelectedRating] = useState<number | null>(null);
   const [categories, setCategories] = useState<any[]>([]);
-  const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(
-    null
-  );
-  const [selectedPrice, setSelectedPrice] = useState<string>("");
+  const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
+  const [selectedPrice, setSelectedPrice] = useState<string>(""); // Track free/paid
   const [isPriceRangeVisible, setIsPriceRangeVisible] = useState<boolean>(false);
   const [startPrice, setStartPrice] = useState<number | string>(""); // Start price can be string (empty) or number
   const [endPrice, setEndPrice] = useState<number | string>(""); // End price can be string (empty) or number
@@ -85,6 +83,7 @@ const CourseFilters = ({
       setIsPriceRangeVisible(true); // Show price fields when "Paid" is selected
     } else {
       setIsPriceRangeVisible(false); // Hide price fields when "Free" is selected
+      onPriceRangeChange([0, 0]); // Reset price range if "Free" is selected
     }
   };
 
@@ -93,15 +92,14 @@ const CourseFilters = ({
     setSelectedCategoryId(null);
     setSelectedPrice("");
     setStartPrice(""); // Reset start price
-    setEndPrice(""); // Reset end price
-    onCategoryChange("");
-    onRatingChange(0);
-    fetchAllCourses();
+    setEndPrice(""); 
+    onCategoryChange(""); 
+    onRatingChange(0); 
+    onPriceRangeChange([0, 0]); 
+    fetchAllCourses(); 
   };
 
   const handlePriceRangeChange = () => {
-    // Handle the filtering logic for price range
-    console.log(`Filtering courses from ${startPrice} to ${endPrice} euros`);
     if (startPrice && endPrice) {
       onPriceRangeChange([Number(startPrice), Number(endPrice)]); // Passing price range to parent
     }
@@ -190,25 +188,18 @@ const CourseFilters = ({
         </div>
       </Dropdown>
 
-      {/* Video Duration Dropdown */}
-      <Dropdown title="Video Duration" />
-
       {/* Price Dropdown */}
       <Dropdown title="Price">
         <div className="space-y-2 text-sm">
           <div
             onClick={() => handlePriceChange("free")}
-            className={`cursor-pointer px-4 py-2 rounded-md transition-all ${
-              selectedPrice === "free" ? "bg-[#e9ada4] text-white" : "hover:bg-[#e9ada4] hover:text-white"
-            }`}
+            className={`cursor-pointer px-4 py-2 rounded-md transition-all ${selectedPrice === "free" ? "bg-[#e9ada4] text-white" : "hover:bg-[#e9ada4] hover:text-white"}`}
           >
             Free
           </div>
           <div
             onClick={() => handlePriceChange("paid")}
-            className={`cursor-pointer px-4 py-2 rounded-md transition-all ${
-              selectedPrice === "paid" ? "bg-[#e9ada4] text-white" : "hover:bg-[#e9ada4] hover:text-white"
-            }`}
+            className={`cursor-pointer px-4 py-2 rounded-md transition-all ${selectedPrice === "paid" ? "bg-[#e9ada4] text-white" : "hover:bg-[#e9ada4] hover:text-white"}`}
           >
             Paid
           </div>
@@ -222,7 +213,6 @@ const CourseFilters = ({
               <span>End Price:</span>
             </div>
 
-            {/* Start Price Input */}
             <div className="flex gap-2">
               <input
                 type="number"

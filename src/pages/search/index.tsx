@@ -13,127 +13,64 @@ const SearchPage = () => {
   const searchParams = useSearchParams();
   const query = searchParams.get("q");
 
-  // Fetch all courses (default or when filters are reset)
-  const fetchAllCourses = async () => {
+  // Fetch filtered courses based on all filters
+  const fetchFilteredCourses = async () => {
     setLoading(true);
     try {
-      const res = await fetch("http://localhost:5000/courses", { // Adjust the URL accordingly
-        method: "GET",
+      const filters: any = {
+        query,
+        rating: selectedRating || undefined,
+        categoryId: selectedCategory || undefined,
+        startPrice: selectedPriceRange ? selectedPriceRange[0] : undefined,
+        endPrice: selectedPriceRange ? selectedPriceRange[1] : undefined,
+      };
+
+      // Send filters to the backend to get the filtered courses
+      const res = await fetch("http://localhost:5000/courses/getFilteredCourses", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         credentials: "include",
+        body: JSON.stringify(filters),
       });
-      if (!res.ok) throw new Error("Failed to fetch");
+
+      if (!res.ok) throw new Error("Failed to fetch filtered courses");
       const data = await res.json();
-      setCourses(data); // Set courses state to all courses
+      setCourses(data); // Set courses state to the filtered courses
     } catch (error) {
-      console.error("Error fetching all courses:", error);
+      console.error("Error fetching filtered courses:", error);
     } finally {
       setLoading(false);
     }
   };
 
-  // Fetch courses by search query
+  // Fetch courses when filters or search query change
   useEffect(() => {
+    fetchFilteredCourses();
+  }, [query, selectedCategory, selectedRating, selectedPriceRange]);
+
+  const fetchCoursesByQuery = async (query: string | null) => {
     if (!query) return;
-
-    const fetchCourses = async () => {
-      try {
-        const res = await fetch("http://localhost:5000/courses/GetCoursesByQuery", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          credentials: "include",
-          body: JSON.stringify({ query }),
-        });
-
-        if (!res.ok) throw new Error("Failed to fetch");
-        const data = await res.json();
-        setCourses(data);
-      } catch (error) {
-        console.error("Search error:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchCourses();
-  }, [query]);
-
-  // Fetch courses by rating filter
-  useEffect(() => {
-    if (!selectedRating) return;
-
-    const fetchCoursesByRating = async () => {
-      try {
-        const res = await fetch("http://localhost:5000/courses/getCoursesByRating", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          credentials: "include",
-          body: JSON.stringify({ rating: selectedRating }),
-        });
-        if (!res.ok) throw new Error("Failed to fetch");
-        const data = await res.json();
-        setCourses(data);
-      } catch (error) {
-        console.error("Rating filter error:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchCoursesByRating();
-  }, [selectedRating]);
-
-  // Fetch courses by category filter
-  useEffect(() => {
-    if (!selectedCategory) return;
-
-    const fetchCoursesByCategory = async () => {
-      try {
-        const res = await fetch("http://localhost:5000/courses/getCoursesByCategory", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          credentials: "include",
-          body: JSON.stringify({ id: selectedCategory }),
-        });
-
-        if (!res.ok) throw new Error("Failed to fetch");
-        const data = await res.json();
-        setCourses(data);
-      } catch (error) {
-        console.error("Category filter error:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchCoursesByCategory();
-  }, [selectedCategory]);
-
-  // Fetch courses by price range filter
-  useEffect(() => {
-    if (!selectedPriceRange) return;
-
-    const fetchCoursesByPriceRange = async () => {
-      try {
-        const res = await fetch("http://localhost:5000/courses/getCoursesByPriceRange", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          credentials: "include",
-          body: JSON.stringify({ startPrice: selectedPriceRange[0], endPrice: selectedPriceRange[1] }), // Pass the correct params
-        });
     
-        if (!res.ok) throw new Error("Failed to fetch");
-        const data = await res.json();
-        setCourses(data);
-      } catch (error) {
-        console.error("Price range filter error:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchCoursesByPriceRange();
-  }, [selectedPriceRange]);
-
+    setLoading(true);
+    try {
+      const res = await fetch("http://localhost:5000/courses/GetCoursesByQuery", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ query }),
+      });
+  
+      if (!res.ok) throw new Error("Failed to fetch courses");
+  
+      const data = await res.json();
+      setCourses(data); 
+    } catch (error) {
+      console.error("Search error:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+  
   return (
     <div>
       <TopSection
@@ -141,13 +78,13 @@ const SearchPage = () => {
         text1={`${courses.length}`}
         text2="Courses Available"
       />
-      <div className="max-w-6xl mx-auto flex gap-8 mt-8 px-4">
+      <div className="max-w-6xl mx-auto flex gap-8 mt-8 px-4">s
         {/* Filter Bar */}
         <CourseFilters
           onCategoryChange={setSelectedCategory}
           onRatingChange={setSelectedRating}
-          onPriceRangeChange={setSelectedPriceRange}  // Pass price range change handler
-          fetchAllCourses={fetchAllCourses}
+          onPriceRangeChange={setSelectedPriceRange}
+          fetchAllCourses={fetchFilteredCourses}
         />
 
         {/* Courses Side */}

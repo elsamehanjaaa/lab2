@@ -40,31 +40,33 @@ export class CoursesController {
     return course;
   }
 
-  // Get courses by category ID (old method)
-  @Post('getCoursesByCategory')
-  async getByName(@Body() body: any) {
-    return this.coursesService.getCoursesByCategory(body.id);
-  }
-  @Post('createInstructor')
-  async createInstructor(@Body() body: any) {
-    return this.coursesService.createInstructor(body.id);
-  }
-
-  @Post('getCoursesByRating')
-  async getByCategory(@Body() body : {rating : number}) {
-    return this.coursesService.getCoursesByRating(body.rating);
-  }
-
   @Post('GetCoursesByQuery')
-  async getCoursesByQuery(@Body() body: any) {
-    return this.coursesService.getCoursesByQuery(body.query);
+    async getCoursesByQuery(@Body() body: { query: string }) {
+      const { query } = body;
+      return this.coursesService.getCoursesByQuery(query);
+    }
+
+  // Get filtered courses by query, rating, category, and price range
+  @Post('getFilteredCourses')
+  async getFilteredCourses(
+    @Body() body: {
+      query: string;
+      rating?: number;
+      categoryId?: string;
+      startPrice?: number;
+      endPrice?: number;
+    }
+  ) {
+    const { query, rating, categoryId, startPrice, endPrice } = body;
+    return this.coursesService.getFilteredCourses(
+      query,
+      rating,
+      categoryId,
+      startPrice,
+      endPrice
+    );
   }
 
-  @Post('getCoursesByPriceRange')
-  async getCoursesByPriceRange(@Body() body: { startPrice: number, endPrice: number }) {
-    return this.coursesService.getCoursesByPriceRange(body.startPrice, body.endPrice);
-  }
-  
   // Update a course by its ID
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateCourseDto: UpdateCourseDto) {

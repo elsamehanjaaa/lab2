@@ -149,6 +149,42 @@ export class CoursesService {
     }
   }
 
+  // Get filtered courses by query, rating, category, and price range
+  async getFilteredCourses(
+    query: string,
+    rating?: number,
+    categoryId?: string,
+    startPrice?: number,
+    endPrice?: number
+  ): Promise<Courses[]> {
+    try {
+      // Ensure that query is a valid string
+      const searchQuery = typeof query === 'string' ? query : '';
+  
+      let coursesQuery = this.CoursesModel.find({
+        title: { $regex: searchQuery, $options: 'i' }, // Initial search by query
+      });
+  
+      if (rating) {
+        coursesQuery = coursesQuery.where('rating').equals(rating); // Apply rating filter
+      }
+  
+      if (categoryId) {
+        coursesQuery = coursesQuery.where('categories').in([categoryId]); // Apply category filter
+      }
+  
+      if (startPrice !== undefined && endPrice !== undefined) {
+        coursesQuery = coursesQuery.where('price').gte(startPrice).lte(endPrice); // Apply price filter
+      }
+  
+      const courses = await coursesQuery.exec();
+      return courses;
+    } catch (error) {
+      throw new Error('Error fetching filtered courses: ' + error.message);
+    }
+  }
+  
+
   // Get a course by ID
   async findOne(id: string) {
     return await this.CoursesModel.findOne({ _id: id }).exec();
