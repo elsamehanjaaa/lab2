@@ -10,6 +10,8 @@ import { ConfigModule } from '@nestjs/config';
 import { CoursesModule } from './courses/courses.module';
 import { CategoriesModule } from './categories/categories.module';
 import { EnrollmentsModule } from './enrollments/enrollments.module';
+import { R2Service } from './r2/r2.service';
+import { UploadController } from './upload/upload.controller';
 import * as dotenv from 'dotenv';
 dotenv.config();
 
@@ -22,7 +24,7 @@ dotenv.config();
     CategoriesModule,
     EnrollmentsModule,
   ],
-  controllers: [AppController],
-  providers: [AppService, SupabaseService, JwtStrategy, MongooseService],
+  controllers: [AppController, UploadController],
+  providers: [AppService, SupabaseService, JwtStrategy, MongooseService, R2Service],
 })
 export class AppModule {}

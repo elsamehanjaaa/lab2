@@ -5,10 +5,14 @@ import Card from "@/components/Courses/Card";
 
 // Krijojmë një interface për tipin e kursit
 interface Course {
-  _id: string;
   title: string;
-  description?: string;
-  // shtoni fushat e tjera që kthen API-ja, p.sh. price, image, etj.
+  description: string;
+  price: number;
+  rating: number;
+  status: boolean;
+  created_at: string;
+  slug: string;
+  _id: string;
 }
 
 const Index = () => {

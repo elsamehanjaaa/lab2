@@ -19,7 +19,7 @@ export class CoursesService {
   ) {}
 
   // Create a new course
-  async create(createCourseDto: CreateCourseDto) {
+  async create(createCourseDto: CreateCourseDto, instructor_id: string) {
     const generateSlug = (title: string): string => {
       return title
         .toLowerCase() // Make the title lowercase
@@ -31,6 +31,7 @@ export class CoursesService {
 
     // Generate the slug
     createCourseDto.slug = generateSlug(createCourseDto.title);
+    createCourseDto.instructor_id = instructor_id;
 
     // Insert course into Supabase
     const { data, error } = await this.supabaseService.insertData(
@@ -136,16 +137,23 @@ export class CoursesService {
   }
 
   // Get courses by price range
-  async getCoursesByPriceRange(startPrice: number, endPrice: number): Promise<Courses[]> {
+  async getCoursesByPriceRange(
+    startPrice: number,
+    endPrice: number,
+  ): Promise<Courses[]> {
     try {
-      console.log(`Fetching courses with price range: ${startPrice} to ${endPrice}`);
+      console.log(
+        `Fetching courses with price range: ${startPrice} to ${endPrice}`,
+      );
       const courses = await this.CoursesModel.find({
         price: { $gte: startPrice, $lte: endPrice },
       }).exec();
       return courses;
     } catch (error) {
       console.error('Error fetching courses by price range:', error);
-      throw new Error('Error fetching courses by price range: ' + error.message);
+      throw new Error(
+        'Error fetching courses by price range: ' + error.message,
+      );
     }
   }
 
@@ -155,41 +163,60 @@ export class CoursesService {
     rating?: number,
     categoryId?: string,
     startPrice?: number,
-    endPrice?: number
+    endPrice?: number,
   ): Promise<Courses[]> {
     try {
       // Ensure that query is a valid string
       const searchQuery = typeof query === 'string' ? query : '';
-  
+
       let coursesQuery = this.CoursesModel.find({
         title: { $regex: searchQuery, $options: 'i' }, // Initial search by query
       });
-  
+
       if (rating) {
         coursesQuery = coursesQuery.where('rating').equals(rating); // Apply rating filter
       }
-  
+
       if (categoryId) {
         coursesQuery = coursesQuery.where('categories').in([categoryId]); // Apply category filter
       }
-  
-      if (startPrice !== undefined && endPrice !== undefined) {
-        coursesQuery = coursesQuery.where('price').gte(startPrice).lte(endPrice); // Apply price filter
+
+      if (
+        startPrice !== undefined &&
+        endPrice !== undefined &&
+        typeof startPrice == 'number' &&
+        typeof endPrice == 'number'
+      ) {
+        coursesQuery = coursesQuery
+          .where('price')
+          .gte(startPrice)
+          .lte(endPrice); // Apply price filter
       }
-  
+
+      console.log(startPrice);
+      console.log(endPrice);
       const courses = await coursesQuery.exec();
       return courses;
     } catch (error) {
       throw new Error('Error fetching filtered courses: ' + error.message);
     }
   }
-  
 
   // Get a course by ID
   async findOne(id: string) {
     return await this.CoursesModel.findOne({ _id: id }).exec();
   }
-
+  async getCoursesByInstructor(instructor_id: string): Promise<Courses[]> {
+    try {
+      // Find courses with the exact instructor_id
+      const courses = await this.CoursesModel.find({
+        instructor_id,
+      }).exec();
+      return courses;
+    } catch (error) {
+      throw new Error('Error fetching courses: ' + error.message);
+    }
+  }
   // Update a course
   async update(id: string, updateCourseDto: UpdateCourseDto) {
     const { data, error } = await this.supabaseService.updateData(

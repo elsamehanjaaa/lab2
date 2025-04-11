@@ -39,18 +39,21 @@ const CourseFilters = ({
   onCategoryChange,
   onRatingChange,
   onPriceRangeChange,
-  fetchAllCourses,
+  fetchByQuery,
 }: {
   onCategoryChange: (id: string) => void;
   onRatingChange: (rating: number) => void;
-  onPriceRangeChange: (priceRange: [number, number]) => void;
-  fetchAllCourses: () => void;
+  onPriceRangeChange: (priceRange: [any, any]) => void;
+  fetchByQuery: () => void;
 }) => {
   const [selectedRating, setSelectedRating] = useState<number | null>(null);
   const [categories, setCategories] = useState<any[]>([]);
-  const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
+  const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(
+    null
+  );
   const [selectedPrice, setSelectedPrice] = useState<string>(""); // Track free/paid
-  const [isPriceRangeVisible, setIsPriceRangeVisible] = useState<boolean>(false);
+  const [isPriceRangeVisible, setIsPriceRangeVisible] =
+    useState<boolean>(false);
   const [startPrice, setStartPrice] = useState<number | string>(""); // Start price can be string (empty) or number
   const [endPrice, setEndPrice] = useState<number | string>(""); // End price can be string (empty) or number
 
@@ -92,11 +95,11 @@ const CourseFilters = ({
     setSelectedCategoryId(null);
     setSelectedPrice("");
     setStartPrice(""); // Reset start price
-    setEndPrice(""); 
-    onCategoryChange(""); 
-    onRatingChange(0); 
-    onPriceRangeChange([0, 0]); 
-    fetchAllCourses(); 
+    setEndPrice("");
+    onCategoryChange("");
+    onRatingChange(0);
+    onPriceRangeChange([undefined, undefined]);
+    fetchByQuery();
   };
 
   const handlePriceRangeChange = () => {
@@ -150,7 +153,11 @@ const CourseFilters = ({
                 />
                 <label
                   className={`w-4 h-4 rounded-full cursor-pointer transition duration-200 ease-in-out
-                    ${isSelected ? "bg-white" : "bg-[#e9ada4] group-hover:bg-white"}`}
+                    ${
+                      isSelected
+                        ? "bg-white"
+                        : "bg-[#e9ada4] group-hover:bg-white"
+                    }`}
                 />
                 <span
                   className={`transition-colors duration-200 
@@ -163,7 +170,11 @@ const CourseFilters = ({
                     key={i}
                     size={16}
                     className={`transition-colors duration-200 
-                      ${isSelected ? "text-white" : "text-[#e9ada4] group-hover:text-white"}`}
+                      ${
+                        isSelected
+                          ? "text-white"
+                          : "text-[#e9ada4] group-hover:text-white"
+                      }`}
                   />
                 ))}
               </div>
@@ -180,7 +191,11 @@ const CourseFilters = ({
               key={category.id}
               onClick={() => handleTopicChange(category)}
               className={`block px-4 py-2 rounded-md transition-all cursor-pointer 
-                ${selectedCategoryId === category._id ? "bg-[#e9ada4] text-white" : "text-black hover:bg-[#e9ada4] hover:text-white"}`}
+                ${
+                  selectedCategoryId === category._id
+                    ? "bg-[#e9ada4] text-white"
+                    : "text-black hover:bg-[#e9ada4] hover:text-white"
+                }`}
             >
               {category.name}
             </div>
@@ -193,13 +208,21 @@ const CourseFilters = ({
         <div className="space-y-2 text-sm">
           <div
             onClick={() => handlePriceChange("free")}
-            className={`cursor-pointer px-4 py-2 rounded-md transition-all ${selectedPrice === "free" ? "bg-[#e9ada4] text-white" : "hover:bg-[#e9ada4] hover:text-white"}`}
+            className={`cursor-pointer px-4 py-2 rounded-md transition-all ${
+              selectedPrice === "free"
+                ? "bg-[#e9ada4] text-white"
+                : "hover:bg-[#e9ada4] hover:text-white"
+            }`}
           >
             Free
           </div>
           <div
             onClick={() => handlePriceChange("paid")}
-            className={`cursor-pointer px-4 py-2 rounded-md transition-all ${selectedPrice === "paid" ? "bg-[#e9ada4] text-white" : "hover:bg-[#e9ada4] hover:text-white"}`}
+            className={`cursor-pointer px-4 py-2 rounded-md transition-all ${
+              selectedPrice === "paid"
+                ? "bg-[#e9ada4] text-white"
+                : "hover:bg-[#e9ada4] hover:text-white"
+            }`}
           >
             Paid
           </div>

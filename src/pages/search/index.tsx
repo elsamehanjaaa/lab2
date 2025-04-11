@@ -9,7 +9,9 @@ const SearchPage = () => {
   const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedRating, setSelectedRating] = useState<number | null>(null);
-  const [selectedPriceRange, setSelectedPriceRange] = useState<[number, number] | null>(null); // Added price range state
+  const [selectedPriceRange, setSelectedPriceRange] = useState<
+    [number, number] | null
+  >(null); // Added price range state
   const searchParams = useSearchParams();
   const query = searchParams.get("q");
 
@@ -26,15 +28,19 @@ const SearchPage = () => {
       };
 
       // Send filters to the backend to get the filtered courses
-      const res = await fetch("http://localhost:5000/courses/getFilteredCourses", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify(filters),
-      });
+      const res = await fetch(
+        "http://localhost:5000/courses/getFilteredCourses",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify(filters),
+        }
+      );
 
       if (!res.ok) throw new Error("Failed to fetch filtered courses");
       const data = await res.json();
+      // console.log(data);
       setCourses(data); // Set courses state to the filtered courses
     } catch (error) {
       console.error("Error fetching filtered courses:", error);
@@ -50,27 +56,30 @@ const SearchPage = () => {
 
   const fetchCoursesByQuery = async (query: string | null) => {
     if (!query) return;
-    
+
     setLoading(true);
     try {
-      const res = await fetch("http://localhost:5000/courses/GetCoursesByQuery", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify({ query }),
-      });
-  
+      const res = await fetch(
+        "http://localhost:5000/courses/GetCoursesByQuery",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify({ query }),
+        }
+      );
+
       if (!res.ok) throw new Error("Failed to fetch courses");
-  
+
       const data = await res.json();
-      setCourses(data); 
+      setCourses(data);
     } catch (error) {
       console.error("Search error:", error);
     } finally {
       setLoading(false);
     }
   };
-  
+
   return (
     <div>
       <TopSection
@@ -78,15 +87,14 @@ const SearchPage = () => {
         text1={`${courses.length}`}
         text2="Courses Available"
       />
-      <div className="max-w-6xl mx-auto flex gap-8 mt-8 px-4">s
-        {/* Filter Bar */}
+      <div className="max-w-6xl mx-auto flex gap-8 mt-8 px-4">
+        s{/* Filter Bar */}
         <CourseFilters
           onCategoryChange={setSelectedCategory}
           onRatingChange={setSelectedRating}
           onPriceRangeChange={setSelectedPriceRange}
-          fetchAllCourses={fetchFilteredCourses}
+          fetchByQuery={fetchFilteredCourses}
         />
-
         {/* Courses Side */}
         <div className="w-2/3">
           {loading ? (

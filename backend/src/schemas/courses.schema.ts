@@ -24,6 +24,9 @@ export class Courses extends Document {
   @Prop({ type: [{ type: Number, ref: 'Categories' }] })
   categories: number[];
 
+  @Prop()
+  instructor_id: string;
+
   @Prop({ type: String, default: () => new Date().toISOString() }) // ✅ Default to current date
   created_at: Date;
 

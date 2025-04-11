@@ -1,17 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 
 const CreateCourseForm = () => {
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
-  const [price, setPrice] = useState('');
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [price, setPrice] = useState("");
   const [categories, setCategories] = useState<any[]>([]);
-  const [selectedCategory, setSelectedCategory] = useState<string>('');
+  const [selectedCategory, setSelectedCategory] = useState<string>("");
 
   useEffect(() => {
     const getCategories = async () => {
-      const res = await fetch('http://localhost:5000/categories', {
-        method: 'GET',
-        credentials: 'include',
+      const res = await fetch("http://localhost:5000/categories", {
+        method: "GET",
+        credentials: "include",
       });
       const result = await res.json();
       setCategories(result);
@@ -35,29 +35,39 @@ const CreateCourseForm = () => {
     };
 
     try {
-      const response = await fetch('http://localhost:5000/courses', {
-        method: 'POST',
+      const token = getCookie("access_token"); // Assuming the token is stored in cookies
+
+      function getCookie(name: string): string | null {
+        const value = `; ${document.cookie}`;
+        const parts = value.split(`; ${name}=`);
+        if (parts.length === 2) return parts.pop()?.split(";").shift() || null;
+        return null;
+      }
+
+      const response = await fetch("http://localhost:5000/courses", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`, // Send the token as a Bearer token in the Authorization header
         },
         body: JSON.stringify(courseData),
-        credentials: 'include', // Include cookies if needed
+        credentials: "include", // Include cookies if needed
       });
 
       if (response.ok) {
         const data = await response.json();
-        console.log('Course created successfully:', data);
+        console.log("Course created successfully:", data);
         // Optionally, clear the form or redirect user after success
-        setTitle('');
-        setDescription('');
-        setPrice('');
-        setSelectedCategory('');
+        setTitle("");
+        setDescription("");
+        setPrice("");
+        setSelectedCategory("");
       } else {
         const error = await response.json();
-        console.error('Error creating course:', error);
+        console.error("Error creating course:", error);
       }
     } catch (error) {
-      console.error('Error creating course:', error);
+      console.error("Error creating course:", error);
     }
   };
 

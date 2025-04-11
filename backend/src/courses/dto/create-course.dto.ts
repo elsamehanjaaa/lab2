@@ -15,6 +15,9 @@ export class CreateCourseDto {
   @IsString()
   description: string;
 
+  @IsString()
+  instructor_id: string;
+
   @IsNumber()
   @IsPositive()
   price: number;

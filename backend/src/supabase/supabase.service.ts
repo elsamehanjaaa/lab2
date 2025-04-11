@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { config } from 'dotenv';
+import { Request } from 'express';
 config();
 @Injectable()
 export class SupabaseService {
@@ -23,7 +24,22 @@ export class SupabaseService {
     if (error) throw error;
     return data;
   }
+  async getUserFromRequest(req: Request) {
+    const accessToken = req.cookies['access_token']; // Get access_token from cookies
 
+    if (!accessToken) {
+      throw new Error('Access token is missing in cookies');
+    }
+
+    const { data, error } = await this.supabase.auth.getUser(accessToken);
+    console.log(data);
+
+    if (error) {
+      throw new Error('Failed to get user: ' + error.message);
+    }
+
+    return data; // Return user data including the ID
+  }
   async signup(username: string, email: string, password: string) {
     const { data, error } = await this.supabase.auth.signUp({
       email,
