@@ -50,11 +50,21 @@ export class CoursesController {
     return this.coursesService.createInstructor(body.id);
   }
 
+  @Post('getCoursesByRating')
+  async getByCategory(@Body() body : {rating : number}) {
+    return this.coursesService.getCoursesByRating(body.rating);
+  }
+
   @Post('GetCoursesByQuery')
   async getCoursesByQuery(@Body() body: any) {
     return this.coursesService.getCoursesByQuery(body.query);
   }
 
+  @Post('getCoursesByPriceRange')
+  async getCoursesByPriceRange(@Body() body: { startPrice: number, endPrice: number }) {
+    return this.coursesService.getCoursesByPriceRange(body.startPrice, body.endPrice);
+  }
+  
   // Update a course by its ID
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateCourseDto: UpdateCourseDto) {

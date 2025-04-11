@@ -1,15 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { ChevronDown, ChevronUp, Star } from "lucide-react";
 
-// Fshije importin e panevojshëm (nëse nuk përdoret vërtet):
-// import Categories from "../components/Courses/Categories";
-
-// Tipi për kategoritë (nëse API kthen _id dhe name):
-interface Category {
-  _id: string;
-  name: string;
-}
-
 const Dropdown = ({
   title,
   children,
@@ -35,7 +26,7 @@ const Dropdown = ({
             children
           ) : (
             <p className="text-sm leading-relaxed">
-              Zgjedh ndonjë opsion këtu...
+              Zgedhe ni kategori tjeter se hala su ndreq qikjo!
             </p>
           )}
         </div>
@@ -46,14 +37,26 @@ const Dropdown = ({
 
 const CourseFilters = ({
   onCategoryChange,
+  onRatingChange,
+  onPriceRangeChange,
+  fetchAllCourses,
 }: {
   onCategoryChange: (id: string) => void;
+  onRatingChange: (rating: number) => void;
+  onPriceRangeChange: (priceRange: [number, number]) => void; // Accepting price range
+  fetchAllCourses: () => void;
 }) => {
   const [selectedRating, setSelectedRating] = useState<number | null>(null);
-  const [categories, setCategories] = useState<Category[]>([]);
+  const [categories, setCategories] = useState<any[]>([]);
+  const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(
+    null
+  );
   const [selectedPrice, setSelectedPrice] = useState<string>("");
+  const [isPriceRangeVisible, setIsPriceRangeVisible] = useState<boolean>(false);
+  const [startPrice, setStartPrice] = useState<number | string>(""); // Start price can be string (empty) or number
+  const [endPrice, setEndPrice] = useState<number | string>(""); // End price can be string (empty) or number
 
-  // Marr kategoritë nga API
+  // Fetch categories from API
   useEffect(() => {
     const getCategories = async () => {
       const res = await fetch("http://localhost:5000/categories", {
@@ -66,59 +69,103 @@ const CourseFilters = ({
     getCategories();
   }, []);
 
-  // Handlers
-  const handleTopicChange = (category: Category) => {
+  const handleTopicChange = (category: any) => {
+    setSelectedCategoryId(category._id);
     onCategoryChange(category._id);
   };
 
   const handleRatingChange = (rating: number) => {
     setSelectedRating(rating);
+    onRatingChange(rating);
   };
 
   const handlePriceChange = (price: string) => {
     setSelectedPrice(price);
+    if (price === "paid") {
+      setIsPriceRangeVisible(true); // Show price fields when "Paid" is selected
+    } else {
+      setIsPriceRangeVisible(false); // Hide price fields when "Free" is selected
+    }
+  };
+
+  const handleClearFilters = () => {
+    setSelectedRating(null);
+    setSelectedCategoryId(null);
+    setSelectedPrice("");
+    setStartPrice(""); // Reset start price
+    setEndPrice(""); // Reset end price
+    onCategoryChange("");
+    onRatingChange(0);
+    fetchAllCourses();
+  };
+
+  const handlePriceRangeChange = () => {
+    // Handle the filtering logic for price range
+    console.log(`Filtering courses from ${startPrice} to ${endPrice} euros`);
+    if (startPrice && endPrice) {
+      onPriceRangeChange([Number(startPrice), Number(endPrice)]); // Passing price range to parent
+    }
+  };
+
+  // Handle change for the start and end price
+  const handleStartPriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setStartPrice(value === "" ? "" : Number(value)); // Allow empty value or convert to number
+  };
+
+  const handleEndPriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setEndPrice(value === "" ? "" : Number(value)); // Allow empty value or convert to number
   };
 
   return (
     <div className="w-1/3 p-4 text-black rounded-lg">
-      <h2 className="text-2xl font-bold mb-4">Filters</h2>
+      <h2 className="text-2xl font-bold mb-4 flex justify-between items-center">
+        Filters
+        <button
+          onClick={handleClearFilters}
+          className="text-sm text-[#e9ada4] hover:underline"
+        >
+          Clear Filters
+        </button>
+      </h2>
 
-      {/* Rating Dropdown me Radio Buttons custom */}
+      {/* Rating Dropdown */}
       <Dropdown title="Rating">
         <div className="space-x-2 text-sm">
-          {Array.from({ length: 4 }, (_, index) => {
-            const stars = 4 - index; // 4, 3, 2, 1
+          {Array.from({ length: 5 }, (_, index) => {
+            const stars = 5 - index;
+            const isSelected = selectedRating === stars;
+
             return (
               <div
                 key={stars}
-                className={`flex items-center gap-2 cursor-pointer ${
-                  selectedRating === stars ? "bg-[#e9ada4]" : ""
-                } rounded-md p-2 transition`}
+                className={`group flex items-center gap-2 cursor-pointer rounded-md p-2 transition 
+                  ${isSelected ? "bg-[#e9ada4]" : "hover:bg-[#e9ada4]"}`}
                 onClick={() => handleRatingChange(stars)}
               >
                 <input
                   type="radio"
                   name="rating"
                   value={stars}
-                  checked={selectedRating === stars}
-                  onChange={() => handleRatingChange(stars)}
                   className="hidden peer"
                 />
                 <label
-                  className={`w-4 h-4 rounded-full cursor-pointer
-                    ${
-                      selectedRating === stars
-                        ? "bg-white border-white"
-                        : "bg-white border-black"
-                    }
-                    border-[1px] transition duration-200 ease-in-out peer-checked:border-white`}
+                  className={`w-4 h-4 rounded-full cursor-pointer transition duration-200 ease-in-out
+                    ${isSelected ? "bg-white" : "bg-[#e9ada4] group-hover:bg-white"}`}
                 />
-                <span>{stars}</span>
+                <span
+                  className={`transition-colors duration-200 
+                    ${isSelected ? "text-white" : "group-hover:text-white"}`}
+                >
+                  {stars}
+                </span>
                 {Array.from({ length: stars }, (_, i) => (
                   <Star
                     key={i}
                     size={16}
-                    color={selectedRating === stars ? "#fff" : "#e9ada4"}
+                    className={`transition-colors duration-200 
+                      ${isSelected ? "text-white" : "text-[#e9ada4] group-hover:text-white"}`}
                   />
                 ))}
               </div>
@@ -132,9 +179,10 @@ const CourseFilters = ({
         <div className="space-y-2 max-h-48 overflow-y-auto">
           {categories.map((category) => (
             <div
-              key={category._id}
+              key={category.id}
               onClick={() => handleTopicChange(category)}
-              className="block text-black hover:bg-[#e9ada4] hover:text-white px-4 py-2 rounded-md transition-all cursor-pointer"
+              className={`block px-4 py-2 rounded-md transition-all cursor-pointer 
+                ${selectedCategoryId === category._id ? "bg-[#e9ada4] text-white" : "text-black hover:bg-[#e9ada4] hover:text-white"}`}
             >
               {category.name}
             </div>
@@ -142,9 +190,8 @@ const CourseFilters = ({
         </div>
       </Dropdown>
 
-      <Dropdown title="Video Duration">
-        {/* Vendos logjikën tuaj për “Video Duration” këtu, nëse keni */}
-      </Dropdown>
+      {/* Video Duration Dropdown */}
+      <Dropdown title="Video Duration" />
 
       {/* Price Dropdown */}
       <Dropdown title="Price">
@@ -152,7 +199,7 @@ const CourseFilters = ({
           <div
             onClick={() => handlePriceChange("free")}
             className={`cursor-pointer px-4 py-2 rounded-md transition-all ${
-              selectedPrice === "free" ? "bg-[#e9ada4]" : ""
+              selectedPrice === "free" ? "bg-[#e9ada4] text-white" : "hover:bg-[#e9ada4] hover:text-white"
             }`}
           >
             Free
@@ -160,12 +207,51 @@ const CourseFilters = ({
           <div
             onClick={() => handlePriceChange("paid")}
             className={`cursor-pointer px-4 py-2 rounded-md transition-all ${
-              selectedPrice === "paid" ? "bg-[#e9ada4]" : ""
+              selectedPrice === "paid" ? "bg-[#e9ada4] text-white" : "hover:bg-[#e9ada4] hover:text-white"
             }`}
           >
             Paid
           </div>
         </div>
+
+        {/* Price Range Inputs (visible when "Paid" is selected) */}
+        {isPriceRangeVisible && (
+          <div className="mt-4 space-y-2">
+            <div className="flex justify-between text-sm">
+              <span>Start Price:</span>
+              <span>End Price:</span>
+            </div>
+
+            {/* Start Price Input */}
+            <div className="flex gap-2">
+              <input
+                type="number"
+                value={startPrice}
+                onChange={handleStartPriceChange}
+                className="w-1/2 px-4 py-2 border border-gray-300 rounded-md"
+                placeholder="Start Price"
+              />
+              <input
+                type="number"
+                value={endPrice}
+                onChange={handleEndPriceChange}
+                className="w-1/2 px-4 py-2 border border-gray-300 rounded-md"
+                placeholder="End Price"
+              />
+            </div>
+
+            <div className="mt-2 text-sm text-center">
+              {startPrice}€ - {endPrice}€
+            </div>
+
+            <button
+              onClick={handlePriceRangeChange}
+              className="mt-2 px-4 py-2 bg-[#e9ada4] text-white rounded-md"
+            >
+              Apply
+            </button>
+          </div>
+        )}
       </Dropdown>
     </div>
   );

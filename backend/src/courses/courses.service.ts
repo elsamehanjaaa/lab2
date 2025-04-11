@@ -1,4 +1,3 @@
-// src/courses/courses.service.ts
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateCourseDto } from './dto/create-course.dto';
 import { UpdateCourseDto } from './dto/update-course.dto';
@@ -31,8 +30,9 @@ export class CoursesService {
     };
 
     // Generate the slug
-
     createCourseDto.slug = generateSlug(createCourseDto.title);
+
+    // Insert course into Supabase
     const { data, error } = await this.supabaseService.insertData(
       'courses',
       createCourseDto,
@@ -42,6 +42,7 @@ export class CoursesService {
       throw error;
     }
 
+    // Insert course into MongoDB
     const mongo = await this.mongooseService.insertData(this.CoursesModel, {
       ...createCourseDto,
       categories: createCourseDto.categories,
@@ -60,6 +61,7 @@ export class CoursesService {
     return await this.mongooseService.getAllData(this.CoursesModel);
   }
 
+  // Create an instructor
   async createInstructor(user_id: string) {
     const { data, error } = await (
       await this.supabaseService.auth()
@@ -68,6 +70,7 @@ export class CoursesService {
     });
     return data;
   }
+
   // Get courses by category ID (old method)
   async getCoursesByCategory(categoryId: string): Promise<Courses[]> {
     try {
@@ -82,6 +85,17 @@ export class CoursesService {
     }
   }
 
+  // Get courses by rating
+  async getCoursesByRating(rating: number): Promise<Courses[]> {
+    try {
+      const courses = await this.CoursesModel.find({ rating }).exec();
+      return courses;
+    } catch (error) {
+      throw new Error('Error fetching courses: ' + error.message);
+    }
+  }
+
+  // Get courses by search query
   async getCoursesByQuery(query: string): Promise<Courses[]> {
     try {
       console.log(query);
@@ -94,6 +108,7 @@ export class CoursesService {
     }
   }
 
+  // Search courses by category name
   async searchCoursesByCategoryName(categoryName: string): Promise<Courses[]> {
     if (!categoryName) {
       throw new Error('Category name must be provided');
@@ -117,6 +132,20 @@ export class CoursesService {
       return courses;
     } catch (error) {
       throw new Error('Error fetching courses: ' + error.message);
+    }
+  }
+
+  // Get courses by price range
+  async getCoursesByPriceRange(startPrice: number, endPrice: number): Promise<Courses[]> {
+    try {
+      console.log(`Fetching courses with price range: ${startPrice} to ${endPrice}`);
+      const courses = await this.CoursesModel.find({
+        price: { $gte: startPrice, $lte: endPrice },
+      }).exec();
+      return courses;
+    } catch (error) {
+      console.error('Error fetching courses by price range:', error);
+      throw new Error('Error fetching courses by price range: ' + error.message);
     }
   }
 
