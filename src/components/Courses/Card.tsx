@@ -1,5 +1,6 @@
 import Link from "next/link";
 import React from "react";
+import Image from "next/image";
 
 interface Course {
   title: string;
@@ -8,11 +9,13 @@ interface Course {
   rating: number;
   status: boolean;
   created_at: string;
+  thumbnail_url?: string;
   slug: string;
   _id: string;
 }
 
 const Card = ({ course }: { course: Course }) => {
+  console.log(course.thumbnail_url);
   const renderStars = (rating: number) => {
     const stars = [];
     for (let i = 0; i < Math.floor(rating); i++) {
@@ -27,8 +30,14 @@ const Card = ({ course }: { course: Course }) => {
   return (
     <Link
       href={`/course/${course.slug}/${course._id}`}
-      className="bg-white rounded-2xl shadow-md p-6 hover:shadow-lg transition duration-300 ease-in-out"
+      className="bg-white rounded-2xl shadow-md p-6 hover:shadow-lg transition duration-300 ease-in-out max-w-80"
     >
+      <Image
+        src={course.thumbnail_url || "/images/no-thumbnail.png"}
+        width={300}
+        height={200}
+        alt={course.title}
+      />
       <h2 className="text-xl font-bold mb-2">{course.title}</h2>
       <p className="text-gray-600 mb-3">{course.description}</p>
       <p className="text-sm text-gray-500 mb-1">

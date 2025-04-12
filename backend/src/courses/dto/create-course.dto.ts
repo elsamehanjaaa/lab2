@@ -37,5 +37,8 @@ export class CreateCourseDto {
   categories: number[] = [];
 
   @IsString()
+  thumbnail_url: string;
+
+  @IsString()
   slug: string;
 }

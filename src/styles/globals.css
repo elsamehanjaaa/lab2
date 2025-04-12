@@ -3,6 +3,14 @@
 :root {
   --background: #f8f8f8;
   --foreground: #333333;
+
+  --admin-primary: #2C3E50;
+  --admin-secondary: #BDC3C7;
+  --admin-accent: #27AE60;
+
+  --instructor-primary: #6C5B7B;
+  --instructor-secondary: #FAD02E;
+  --instructor-accent: #D4A5A5;
 }
 
 @theme inline {
@@ -36,4 +44,49 @@ body {
 .nav-link:hover {
   background-color: white;
   color: #e9ada4;
+}
+
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 50px;
+  height: 24px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  transition: 0.4s;
+  border-radius: 50px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 16px;
+  width: 16px;
+  border-radius: 50px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  transition: 0.4s;
+}
+
+input:checked + .slider {
+  background-color: #4caf50;
+}
+
+input:checked + .slider:before {
+  transform: translateX(26px);
 }

@@ -10,6 +10,7 @@ interface Course {
   rating: number;
   slug: string;
   courseId: string;
+  thumbnail_url?: string;
 }
 
 const Index = () => {
@@ -81,11 +82,11 @@ const Index = () => {
                   <div className="flex justify-center mb-6">
                     <div className="relative w-full aspect-w-16 aspect-h-9">
                       <Image
-                        src="https://img-c.udemycdn.com/course/750x422/2270606_a764_3.jpg"
+                        src={course.thumbnail_url || "/images/no-thumbnail.png"}
                         alt="New Thumbnail"
-                        className="object-cover rounded-md"
+                        className="object-cover rounded-md max-h-[400px]"
                         width={800}
-                        height={800}
+                        height={400}
                       />
                     </div>
                   </div>

@@ -35,4 +35,23 @@ export class R2Service {
 
     return `${process.env.Cloudflare_Endpoint}/${bucket}/${key}`;
   }
+
+  async uploadThumbnail(
+    file: Express.Multer.File,
+    bucket: string,
+    course: string,
+  ): Promise<string> {
+    const key = `${course}/thumbnail`;
+
+    const command = new PutObjectCommand({
+      Bucket: bucket,
+      Key: key,
+      Body: file.buffer,
+      ContentType: file.mimetype,
+    });
+
+    await this.s3Client.send(command);
+
+    return `${process.env.Cloudflare_Endpoint}/${bucket}/${key}`;
+  }
 }

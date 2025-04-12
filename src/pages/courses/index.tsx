@@ -51,7 +51,7 @@ const Index = () => {
       <Categories />
 
       {/* Rendi i kurseve */}
-      <div className="grid mt-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid mt-4 grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-6">
         {courses.map((course) => (
           // Përdorim _id për key
           <Card key={course._id} course={course} />
