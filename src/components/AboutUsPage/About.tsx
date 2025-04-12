@@ -7,27 +7,27 @@ export default function AboutPage() {
     <>
       {/* Hero Section */}
       <div
-        className="flex flex-col lg:px-40 md:px-20 px-6 justify-center h-screen bg-gradient-to-r from-[#a7b3ff] to-[#cfcaff] text-[#1f1f1f] text-center"
-        style={{
-          backgroundImage: "url('/images/background.png')",
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          backgroundRepeat: "no-repeat",
-        }}
-      >
-        <div className="max-w-[600px] flex flex-col justify-center items-start mt-16 md:mt-0">
-          <h1 className="text-5xl md:text-6xl font-extrabold py-6 text-left leading-tight">
-            About Us
-          </h1>
-          <h3 className="text-lg md:text-xl font-medium py-4 text-left">
-            Build skills with courses, certificates, and degrees online from
-            world-class universities and companies.
-          </h3>
-          <button className="bg-[#4f46e5] text-white px-8 py-3 rounded-lg shadow-lg hover:bg-[#4338ca] hover:-translate-y-1 transition duration-300 ease-in-out mt-4">
-            See More
-          </button>
-        </div>
-      </div>
+  className="flex flex-col lg:px-40 md:px-20 px-6 justify-center h-screen bg-gradient-to-r from-[#a7b3ff] to-[#cfcaff] text-[#1f1f1f] text-center"
+  style={{
+    backgroundImage: "url('/images/background.png')",
+    backgroundSize: "cover",
+    backgroundPosition: "center",
+    backgroundRepeat: "no-repeat",
+  }}
+>
+  <div className="max-w-[600px] flex flex-col justify-center items-start mt-16 md:mt-0">
+    <h1 className="text-5xl md:text-6xl font-extrabold py-6 text-left leading-tight">
+      About Us
+    </h1>
+    <h3 className="text-lg md:text-xl font-medium py-4 text-left">
+      Build skills with courses, certificates, and degrees online from
+      world-class universities and companies.
+    </h3>
+    <button className="bg-[#4f46e5] text-white px-8 py-3 rounded-lg shadow-lg hover:bg-[#4338ca] hover:-translate-y-1 transition duration-300 ease-in-out mt-4">
+      See More
+    </button>
+  </div>
+</div>
 
       {/* Skills and Impact Section */}
       <div className="max-w-7xl mx-auto px-4 py-16">
