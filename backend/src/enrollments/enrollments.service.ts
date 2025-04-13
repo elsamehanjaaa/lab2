@@ -53,8 +53,6 @@ export class EnrollmentsService {
     const enrollments = await this.EnrollmentsModel.find({ user_id: id });
 
     const courseIds = enrollments.map((e) => e.course_id);
-    console.log(courseIds);
-
     const courses = await this.CoursesModel.find({ _id: { $in: courseIds } });
 
     return courses;

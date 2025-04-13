@@ -1,13 +1,13 @@
 import React, { useState, useEffect, useRef } from "react";
+import Section from "./Section";
 
 const CreateCourseForm = () => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
   const [categories, setCategories] = useState<any[]>([]);
-  const [selectedCategory, setSelectedCategory] = useState<string>("");
   const [thumbnail, setThumbnail] = useState<File | null>(null);
-  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [selectedCategories, setSelectedCategories] = useState<number[]>([]);
   const [sections, setSections] = useState<any[]>([]); // Store sections and their lessons
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -79,6 +79,20 @@ const CreateCourseForm = () => {
     );
   };
 
+  const handleSectionChange = (sectionId: number, value?: any) => {
+    setSections((prevSections) =>
+      prevSections.map((section: { id: number }) =>
+        section.id === sectionId
+          ? {
+              ...section,
+              title: value,
+            }
+          : section
+      )
+    );
+    console.log(sections);
+  };
+
   const handleRemoveLesson = (sectionId: number, lessonId: number) => {
     setSections((prevSections) =>
       prevSections.map((section) =>
@@ -102,8 +116,9 @@ const CreateCourseForm = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log(sections);
-    if (!title || !description || !thumbnail || !selectedCategory) {
+    console.log(selectedCategories);
+
+    if (!title || !description || !selectedCategories) {
       alert("complete all inputs");
       return "";
     }
@@ -112,7 +127,7 @@ const CreateCourseForm = () => {
       description,
       price: parseFloat(price),
       rating: 0,
-      categories: [selectedCategory],
+      categories: selectedCategories,
       thumbnail_url: "",
       sections: sections, // Include sections with lessons
     };
@@ -163,7 +178,7 @@ const CreateCourseForm = () => {
         setTitle("");
         setDescription("");
         setPrice("");
-        setSelectedCategory("");
+        setSelectedCategories([]);
         setThumbnail(null);
         setSections([]); // Reset sections
       } else {
@@ -239,7 +254,9 @@ const CreateCourseForm = () => {
               <span className="text-gray-500">Select Categories</span>
             ) : (
               selectedCategories.map((categoryId) => {
-                const category = categories.find((c) => c._id === categoryId);
+                const category = categories.find(
+                  (c) => Number(c._id) === categoryId
+                );
                 return (
                   category && (
                     <span
@@ -253,38 +270,39 @@ const CreateCourseForm = () => {
               })
             )}
           </button>
-
           {dropdownOpen && (
             <div className="absolute z-20 mt-1 w-full bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto">
-              {categories.map((category) => (
-                <label
-                  key={category._id}
-                  className={`flex items-center px-4 py-2 cursor-pointer transition rounded ${
-                    selectedCategories.includes(category._id)
-                      ? "bg-blue-100 text-blue-800 font-medium"
-                      : "hover:bg-gray-100"
-                  }`}
-                >
-                  <input
-                    type="checkbox"
-                    checked={selectedCategories.includes(category._id)}
-                    onChange={() => {
-                      if (selectedCategories.includes(category._id)) {
-                        setSelectedCategories((prev) =>
-                          prev.filter((id) => id !== category._id)
-                        );
-                      } else {
-                        setSelectedCategories((prev) => [
-                          ...prev,
-                          category._id,
-                        ]);
-                      }
-                    }}
-                    className="mr-2 accent-blue-600"
-                  />
-                  {category.name}
-                </label>
-              ))}
+              {categories.map((category) => {
+                const categoryId = Number(category._id); // ensure it's a number
+                const isSelected = selectedCategories.includes(categoryId);
+
+                const handleChange = () => {
+                  setSelectedCategories((prev) =>
+                    isSelected
+                      ? prev.filter((id) => id !== categoryId)
+                      : [...prev, categoryId]
+                  );
+                };
+
+                return (
+                  <label
+                    key={category._id}
+                    className={`flex items-center px-4 py-2 cursor-pointer transition rounded ${
+                      isSelected
+                        ? "bg-blue-100 text-blue-800 font-medium"
+                        : "hover:bg-gray-100"
+                    }`}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={isSelected}
+                      onChange={handleChange}
+                      className="mr-2 accent-blue-600"
+                    />
+                    {category.name}
+                  </label>
+                );
+              })}
             </div>
           )}
         </div>
@@ -304,142 +322,25 @@ const CreateCourseForm = () => {
           file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
           />
         </div>
-
+        {sections.map((section) => (
+          <Section
+            key={section.id}
+            section={section}
+            onAddLesson={handleAddLesson}
+            onRemoveSection={handleRemoveSection}
+            onLessonChange={handleLessonChange}
+            onSectionChange={handleSectionChange}
+            onRemoveLesson={handleRemoveLesson}
+          />
+        ))}
         {/* Sections */}
-        <div>
-          <button
-            type="button"
-            onClick={handleAddSection}
-            className="w-full md:w-auto bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-6 rounded-lg transition"
-          >
-            Add Section
-          </button>
-
-          {sections.map((section) => (
-            <div key={section.id} className="mt-6 p-4 bg-gray-100 rounded-lg">
-              <h2 className="text-xl font-bold mb-4">Section {section.id}</h2>
-
-              <div>
-                <button
-                  type="button"
-                  onClick={() => handleAddLesson(section.id)}
-                  className="w-full md:w-auto bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-lg transition mb-4"
-                >
-                  Add Lesson
-                </button>
-
-                {section.lessons.map(
-                  (lesson: {
-                    id: React.Key | null | undefined;
-                    title: string | number | readonly string[] | undefined;
-                    content: string | number | readonly string[] | undefined;
-                    type: string;
-                  }) => (
-                    <div
-                      key={lesson.id}
-                      className="flex flex-col mb-4 border-b pb-4"
-                    >
-                      <input
-                        type="text"
-                        value={lesson.title}
-                        onChange={(e) =>
-                          handleLessonChange(
-                            section.id,
-                            lesson.id as number,
-                            "title",
-                            e.target.value
-                          )
-                        }
-                        placeholder="Lesson Title"
-                        className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 mb-2"
-                      />
-
-                      <div className="flex items-center mb-4">
-                        <span className="mr-2">Text</span>
-                        <label className="switch">
-                          <input
-                            type="checkbox"
-                            checked={lesson.type === "video"}
-                            onChange={() =>
-                              lesson.type === "text"
-                                ? handleLessonChange(
-                                    section.id,
-                                    lesson.id as number,
-                                    "type",
-                                    "video"
-                                  )
-                                : handleLessonChange(
-                                    section.id,
-                                    lesson.id as number,
-                                    "type",
-                                    "text"
-                                  )
-                            }
-                            className="toggle-checkbox"
-                          />
-                          <span className="slider"></span>
-                        </label>
-                        <span className="ml-2">Video</span>
-                      </div>
-
-                      {lesson.type === "text" ? (
-                        <textarea
-                          value={lesson.content}
-                          onChange={(e) =>
-                            handleLessonChange(
-                              section.id,
-                              lesson.id as number,
-                              "content",
-                              e.target.value
-                            )
-                          }
-                          placeholder="Lesson Content"
-                          rows={4}
-                          className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 mb-2"
-                        />
-                      ) : (
-                        <input
-                          type="file"
-                          accept="video/*"
-                          onChange={(e) =>
-                            handleLessonChange(
-                              section.id,
-                              lesson.id as number,
-                              "video",
-                              e.target.files ? e.target.files[0] : undefined
-                            )
-                          }
-                          className="w-full text-sm mb-2 text-gray-600 file:mr-4 file:py-2 file:px-4
-                          file:rounded-lg file:border-0 file:font-semibold
-                          file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-                        />
-                      )}
-
-                      <button
-                        type="button"
-                        onClick={() =>
-                          lesson.id &&
-                          handleRemoveLesson(section.id, lesson.id as number)
-                        }
-                        className="bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-6 rounded-lg transition"
-                      >
-                        Remove Lesson
-                      </button>
-                    </div>
-                  )
-                )}
-              </div>
-
-              <button
-                type="button"
-                onClick={() => handleRemoveSection(section.id)}
-                className="bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-6 rounded-lg transition"
-              >
-                Remove Section
-              </button>
-            </div>
-          ))}
-        </div>
+        <button
+          type="button"
+          onClick={handleAddSection}
+          className="w-full md:w-auto bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-6 rounded-lg transition"
+        >
+          Add Section
+        </button>
 
         {/* Submit */}
         <div>

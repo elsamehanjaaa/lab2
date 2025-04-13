@@ -1,8 +1,4 @@
-import {
-  IsString,
-  IsNumber,
-  IsDate,
-} from 'class-validator';
+import { IsString, IsNumber, IsDate } from 'class-validator';
 
 export class CreateLessonDto {
   @IsString()
@@ -14,13 +10,11 @@ export class CreateLessonDto {
   @IsNumber()
   index: number;
 
-  @IsDate()
-  created_at: Date = new Date();
-
   @IsString()
   video_url: string;
+  @IsString()
+  url: string;
 
   @IsNumber()
   section_id: number;
-
 }

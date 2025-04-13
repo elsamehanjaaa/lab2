@@ -19,12 +19,11 @@ export class Lessons extends Document {
   section_id: string;
   @Prop()
   video_url: string;
+  @Prop()
+  url: string;
 
   @Prop({ type: String, default: () => new Date().toISOString() })
   created_at: Date;
-
-  
-
 }
 
 export const LessonsSchema = SchemaFactory.createForClass(Lessons);

@@ -32,7 +32,6 @@ export class SupabaseService {
     }
 
     const { data, error } = await this.supabase.auth.getUser(accessToken);
-    console.log(data);
 
     if (error) {
       throw new Error('Failed to get user: ' + error.message);

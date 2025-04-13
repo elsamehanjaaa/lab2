@@ -36,8 +36,6 @@ export class EnrollmentsController {
   @Post('getEnrollmentsByUser')
   @UseGuards(JwtAuthGuard)
   async getByName(@Body() getEnrollmentsByUserDto: any) {
-    console.log(getEnrollmentsByUserDto);
-
     const { user_id } = getEnrollmentsByUserDto;
     return this.enrollmentsService.getEnrollmentsByUser(user_id);
   }

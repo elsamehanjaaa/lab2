@@ -3,23 +3,34 @@ import { CreateCourseDto } from './dto/create-course.dto';
 import { UpdateCourseDto } from './dto/update-course.dto';
 import { SupabaseService } from 'src/supabase/supabase.service';
 import { MongooseService } from 'src/mongoose/mongoose.service';
+import { SectionService } from 'src/section/section.service';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { Courses } from '../schemas/courses.schema';
 import { Categories } from '../schemas/categories.schema'; // Import the Categories model
+import { Enrollments } from 'src/schemas/enrollments.schema';
+import { LessonsService } from 'src/lessons/lessons.service';
 
 @Injectable()
 export class CoursesService {
   constructor(
     private readonly supabaseService: SupabaseService,
     private readonly mongooseService: MongooseService,
+    private readonly sectionService: SectionService,
+    private readonly lessonsService: LessonsService,
     @InjectModel(Courses.name) private readonly CoursesModel: Model<Courses>, // Inject Courses model
     @InjectModel(Categories.name)
-    private readonly CategoriesModel: Model<Categories>, // Inject Categories model
+    private readonly CategoriesModel: Model<Categories>,
+    @InjectModel(Enrollments.name)
+    private readonly EnrollmetsModel: Model<Enrollments>, // Inject Categories model
   ) {}
 
   // Create a new course
-  async create(createCourseDto: CreateCourseDto, instructor_id: string) {
+  async create(
+    createCourseDto: CreateCourseDto,
+    instructor_id: string,
+    sections: any[],
+  ) {
     const generateSlug = (title: string): string => {
       return title
         .toLowerCase() // Make the title lowercase
@@ -32,7 +43,6 @@ export class CoursesService {
     // Generate the slug
     createCourseDto.slug = generateSlug(createCourseDto.title);
     createCourseDto.instructor_id = instructor_id;
-
     // Insert course into Supabase
     const { data, error } = await this.supabaseService.insertData(
       'courses',
@@ -54,6 +64,37 @@ export class CoursesService {
       throw Error('Error inserting data into MongoDB');
     }
 
+    const createSectionsPromises = sections.map(async (s) => {
+      const section = await this.sectionService.create({
+        name: s.title,
+        index: s.id,
+        course_id: data[0].id,
+      });
+
+      return section[0]; // You can return the section or any result if needed
+    });
+
+    const insertedSections = await Promise.all(createSectionsPromises);
+
+    const createLessonsPromises = sections.map(async (s) => {
+      s.lessons.map(async (l) => {
+        const section = insertedSections.find(
+          (section) => section.index === s.id,
+        );
+        const lesson = await this.lessonsService.create({
+          name: l.title,
+          content: l.content,
+          video_url: l.video_url,
+          index: l.id,
+          section_id: section.id,
+          url: l.url,
+        });
+        return lesson;
+      });
+    });
+
+    // Wait for all async operations to complete
+    await Promise.all(createLessonsPromises);
     return data;
   }
 
@@ -75,7 +116,6 @@ export class CoursesService {
   // Get courses by category ID (old method)
   async getCoursesByCategory(categoryId: string): Promise<Courses[]> {
     try {
-      console.log(categoryId);
       // Find courses that contain the given category ID in the categories array
       const courses = await this.CoursesModel.find({
         categories: { $in: [categoryId] },
@@ -99,7 +139,6 @@ export class CoursesService {
   // Get courses by search query
   async getCoursesByQuery(query: string): Promise<Courses[]> {
     try {
-      console.log(query);
       const courses = await this.CoursesModel.find({
         title: { $regex: query, $options: 'i' }, // 'i' makes the search case-insensitive
       }).exec();
@@ -164,39 +203,49 @@ export class CoursesService {
     categoryId?: string,
     startPrice?: number,
     endPrice?: number,
-  ): Promise<Courses[]> {
+  ) {
     try {
-      // Ensure that query is a valid string
       const searchQuery = typeof query === 'string' ? query : '';
 
       let coursesQuery = this.CoursesModel.find({
-        title: { $regex: searchQuery, $options: 'i' }, // Initial search by query
+        title: { $regex: searchQuery, $options: 'i' },
       });
 
       if (rating) {
-        coursesQuery = coursesQuery.where('rating').equals(rating); // Apply rating filter
+        coursesQuery = coursesQuery.where('rating').equals(rating);
       }
 
       if (categoryId) {
-        coursesQuery = coursesQuery.where('categories').in([categoryId]); // Apply category filter
+        coursesQuery = coursesQuery.where('categories').in([categoryId]);
       }
 
       if (
         startPrice !== undefined &&
         endPrice !== undefined &&
-        typeof startPrice == 'number' &&
-        typeof endPrice == 'number'
+        typeof startPrice === 'number' &&
+        typeof endPrice === 'number'
       ) {
         coursesQuery = coursesQuery
           .where('price')
           .gte(startPrice)
-          .lte(endPrice); // Apply price filter
+          .lte(endPrice);
       }
 
-      console.log(startPrice);
-      console.log(endPrice);
-      const courses = await coursesQuery.exec();
-      return courses;
+      const courses = await coursesQuery.lean().exec(); // returns plain objects
+
+      const coursesWithCounts = await Promise.all(
+        courses.map(async (course) => {
+          const enrollments = await this.EnrollmetsModel.countDocuments({
+            course_id: course._id,
+          });
+          return {
+            ...course, // no toObject() needed
+            enrollments,
+          };
+        }),
+      );
+
+      return coursesWithCounts;
     } catch (error) {
       throw new Error('Error fetching filtered courses: ' + error.message);
     }

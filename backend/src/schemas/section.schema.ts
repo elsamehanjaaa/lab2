@@ -17,9 +17,6 @@ export class Section extends Document {
 
   @Prop({ type: String, default: () => new Date().toISOString() })
   created_at: Date;
-
-  
-
 }
 
 export const SectionSchema = SchemaFactory.createForClass(Section);

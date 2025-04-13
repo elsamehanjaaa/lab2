@@ -15,7 +15,6 @@ interface Course {
 }
 
 const Card = ({ course }: { course: Course }) => {
-  console.log(course.thumbnail_url);
   const renderStars = (rating: number) => {
     const stars = [];
     for (let i = 0; i < Math.floor(rating); i++) {

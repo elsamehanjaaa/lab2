@@ -38,7 +38,7 @@ const CardHorizontal = ({ course }: { course: Course }) => {
           width={160}
           height={120}
           alt={course.title}
-          className="rounded-lg object-cover"
+          className="rounded-lg object-cover max-w-40 max-h-32"
         />
       </div>
       <div className="flex flex-col justify-between w-full">

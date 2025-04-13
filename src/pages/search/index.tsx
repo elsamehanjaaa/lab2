@@ -5,13 +5,14 @@ import CourseFilters from "@/components/Search/Filterbar";
 import CardHorizontal from "@/components/Search/CardHorizontal";
 import SortAndFilter from "@/components/Search/SortAndFilter";
 
-
 const SearchPage = () => {
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedRating, setSelectedRating] = useState<number | null>(null);
-  const [selectedPriceRange, setSelectedPriceRange] = useState<[number, number] | null>(null);
+  const [selectedPriceRange, setSelectedPriceRange] = useState<
+    [number, number] | null
+  >(null);
   const [sortOption, setSortOption] = useState<string>("");
   const [showFilters, setShowFilters] = useState<boolean>(true);
 
@@ -29,12 +30,15 @@ const SearchPage = () => {
         endPrice: selectedPriceRange ? selectedPriceRange[1] : undefined,
       };
 
-      const res = await fetch("http://localhost:5000/courses/getFilteredCourses", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify(filters),
-      });
+      const res = await fetch(
+        "http://localhost:5000/courses/getFilteredCourses",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify(filters),
+        }
+      );
 
       if (!res.ok) throw new Error("Failed to fetch filtered courses");
       const data = await res.json();
@@ -58,9 +62,12 @@ const SearchPage = () => {
     } else if (sortOption === "price_desc") {
       return [...courses].sort((a, b) => b.price - a.price);
     } else if (sortOption === "newest") {
-      return [...courses].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+      return [...courses].sort(
+        (a, b) =>
+          new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+      );
     } else if (sortOption === "highest_enrolled") {
-      return [...courses].sort((a, b) => b.enrolledCount - a.enrolledCount);
+      return [...courses].sort((a, b) => b.enrollments - a.enrollments);
     }
     return courses;
   };

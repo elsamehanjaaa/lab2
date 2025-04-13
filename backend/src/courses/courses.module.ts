@@ -1,20 +1,31 @@
-import { Module } from '@nestjs/common';
-import { MongooseModule } from '@nestjs/mongoose'; // ✅ Import MongooseModule
+import { forwardRef, Module } from '@nestjs/common';
+import { MongooseModule } from '@nestjs/mongoose';
 import { CoursesService } from './courses.service';
-
 import { CoursesController } from './courses.controller';
 import { SupabaseService } from 'src/supabase/supabase.service';
-import { Courses, CoursesSchema } from '../schemas/courses.schema'; // ✅ Import Course Schema
+import { Courses, CoursesSchema } from '../schemas/courses.schema';
 import { MongooseService } from 'src/mongoose/mongoose.service';
 import { CategoriesModule } from 'src/categories/categories.module';
+import { EnrollmentsModule } from 'src/enrollments/enrollments.module';
+import { SectionModule } from 'src/section/section.module';
+import { LessonsModule } from 'src/lessons/lessons.module';
+import { LessonsService } from 'src/lessons/lessons.service'; // Import LessonsService
 
 @Module({
   imports: [
-    CategoriesModule,
     MongooseModule.forFeature([{ name: Courses.name, schema: CoursesSchema }]),
+    CategoriesModule,
+    forwardRef(() => SectionModule),
+    forwardRef(() => LessonsModule),
+    forwardRef(() => EnrollmentsModule),
   ],
   controllers: [CoursesController],
-  providers: [CoursesService, SupabaseService, MongooseService],
+  providers: [
+    CoursesService,
+    SupabaseService,
+    MongooseService,
+    LessonsService, // Add LessonsService to providers
+  ],
   exports: [
     CoursesService,
     MongooseModule, // ✅ Export MongooseModule to share CoursesModel

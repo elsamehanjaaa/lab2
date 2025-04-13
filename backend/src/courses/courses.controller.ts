@@ -25,16 +25,14 @@ export class CoursesController {
   // Create a new course
   @UseGuards(JwtAuthGuard)
   @Post()
-  async create(
-    @Body() createCourseDto: CreateCourseDto,
-    @Req() request: Request,
-  ) {
+  async create(@Body() createCourseDto: any, @Req() request: Request) {
     if (!request.user) {
       throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
     }
     const { id } = request.user as any; // Adjust according to your user structure
 
-    return this.coursesService.create(createCourseDto, id);
+    const { sections, ...courseData } = createCourseDto;
+    return this.coursesService.create(courseData, id, sections);
   }
 
   @UseGuards(JwtAuthGuard)
