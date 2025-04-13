@@ -4,7 +4,7 @@ import {
   IsDate,
 } from 'class-validator';
 
-export class CreateSection {
+export class CreateSectionDto {
   @IsString()
   name: string;
 
