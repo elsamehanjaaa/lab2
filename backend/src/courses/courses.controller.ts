@@ -64,13 +64,33 @@ export class CoursesController {
 
     return course;
   }
+  @Post('getCoursesByCategory')
+  async getByName(@Body() body: any) {
+    return this.coursesService.getCoursesByCategory(body.id);
+  }
+  @Post('createInstructor')
+  async createInstructor(@Body() body: any) {
+    return this.coursesService.createInstructor(body.id);
+  }
 
+  @Post('getCoursesByRating')
+  async getByCategory(@Body() body: { rating: number }) {
+    return this.coursesService.getCoursesByRating(body.rating);
+  }
   @Post('GetCoursesByQuery')
   async getCoursesByQuery(@Body() body: { query: string }) {
     const { query } = body;
     return this.coursesService.getCoursesByQuery(query);
   }
-
+  @Post('getCoursesByPriceRange')
+  async getCoursesByPriceRange(
+    @Body() body: { startPrice: number; endPrice: number },
+  ) {
+    return this.coursesService.getCoursesByPriceRange(
+      body.startPrice,
+      body.endPrice,
+    );
+  }
   // Get filtered courses by query, rating, category, and price range
   @Post('getFilteredCourses')
   async getFilteredCourses(
