@@ -196,7 +196,7 @@ export default function AboutPage() {
               "codecademy.png",
               "pluralsight.png",
               "skillshare.png",
-      
+              "linkedinlearning.png",
             ].map((logo, index) => (
               <Image
                 key={index}
