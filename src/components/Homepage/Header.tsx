@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useRouter } from "next/router";  // Import useRouter hook
 import Image from "next/image";
 import Link from "next/link";
 import { User } from "lucide-react";
@@ -8,6 +9,7 @@ import ResetPasswordModal from "../Login/ResetPasswordModal";
 import Search from "../Search/Search";
 
 const Header = () => {
+  const router = useRouter();  // Use useRouter to access the route
   const [isScrolled, setIsScrolled] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState<string | undefined>(undefined);
@@ -91,6 +93,9 @@ const Header = () => {
   const handleDropdown = () => {
     setIsDropdownOpen(!isDropdownOpen);
   };
+
+  // Check if the current route matches the course detail page
+  const isCourseDetailPage = router.pathname.includes("/course/[slug]/[courseId]");
 
   return (
     <>
