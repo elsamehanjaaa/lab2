@@ -95,14 +95,14 @@ const Header = () => {
   return (
     <>
       <header
-        className={`py-6 w-full fixed top-0 transition-colors duration-300 z-10 backdrop-blur-md backdrop-filter bg-[#7ea6fc] ${
+        className={`py-6 w-full fixed top-0 transition-colors duration-300 z-10 backdrop-blur-md backdrop-filter bg-[#192847] ${
           isScrolled ? "shadow-md" : ""
         } text-white `}
       >
         <div className="flex justify-between items-center px-4 max-w-screen-xl mx-auto">
           <Link href="/">
             <Image
-              src="/icons/b77d377e-bf9c-42b0-8724-56a9f6d6ff73.png"
+              src="/icons/logo.png"
               alt="Logo"
               width={100}
               height={100}

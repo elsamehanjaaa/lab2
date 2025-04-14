@@ -17,31 +17,27 @@ const categories = [
 
 const courses = [
   {
-    image:
-      "https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&w=800&q=80",
+    image:"/courses/course1.png",
     title: "The Complete AI Guide: Learn ChatGPT, Generative AI & More",
     rating: 4.5,
     reviews: "45,903",
   },
   {
-    image:
-      "https://images.unsplash.com/photo-1677442136184-d74f8d98c1b7?auto=format&fit=crop&w=800&q=80",
+    image:"/courses/course2.png",
     title: "The Complete AI-Powered Copywriting Course & ChatGPT...",
     rating: 4.3,
     reviews: "1,816",
 
   },
   {
-    image:
-      "https://images.unsplash.com/photo-1677442136469-31da8010f192?auto=format&fit=crop&w=800&q=80",
+    image:"/courses/course3.png",
     title: "ChatGPT, DeepSeek, Grok and 30+ More AI Marketing Assistants",
     rating: 4.5,
     reviews: "533",
     
   },
   {
-    image:
-      "https://images.unsplash.com/photo-1677442136472-ae570f4fca3c?auto=format&fit=crop&w=800&q=80",
+    image:"/courses/course4.png",
     title: "Mastering SEO With ChatGPT: Ultimate Beginner's Guide",
     rating: 4.4,
     reviews: "284",
@@ -58,30 +54,40 @@ const brandLogos = [
 
 const testimonials = [
   {
-    name: "Erjona Ballou",
-    title: "Health and Safety Officer",
-    image: "/testimonials/alexandre-abitbol.jpg",
-    quote: "Online learning has changed my mind.",
+    name: "Sara M.",
+    title: " Marketing Professional",
+    image: "/testimonials/Sara.jpg",
+    quote: "EduSpark has completely changed the way I learn. The courses are well-structured, engaging, and taught by real experts. I finally feel confident advancing my career!",
   },
   {
-    name: "Dior Odiaka",
-    title: "Assistant Nurse",
-    image:
-      "/testimonials/charlotte-triggs-headshot-7ef4504afc244ec99096e5fc0c1a3b63.jpg",
-    quote: "I got my dream job with Alison.",
+    name: "David K.",
+    title: "University Student",
+    image:"/testimonials/David.jpg",
+    quote: "What I love most about EduSpark is the flexibility. I could learn at my own pace without sacrificing quality. The interactive modules kept me motivated throughout.",
   },
   {
-    name: "Elsa Ballou",
-    title: "Health and Safety Officer",
-    image: "/testimonials/alexandre-abitbol.jpg",
-    quote: "Online learning has changed my mind.",
+    name: "Lina T.",
+    title: "Aspiring Data Analyst",
+    image: "/testimonials/Lina.jpg",
+    quote: "The instructors are incredibly knowledgeable and supportive. I took the Data Science track, and I was able to land an internship within two months of completing it!",
   },
   {
-    name: "Arion Odiaka",
-    title: "Assistant Nurse",
-    image:
-      "/testimonials/charlotte-triggs-headshot-7ef4504afc244ec99096e5fc0c1a3b63.jpg",
-    quote: "I got my dream job with Alison.",
+    name: "James P.",
+    title: "Software Engineer",
+    image:"/testimonials/James.jpg",
+    quote: "I’ve tried several platforms, but EduSpark stands out. The community, the support, and the course content are simply top-notch. Highly recommended!",
+  },
+  {
+    name: "Kevin S.",
+    title: "Career Switcherr",
+    image:"/testimonials/Kevin.jpg",
+    quote: "From beginner to confident coder in just a few weeks! The hands-on projects and real-world examples made learning easy and practical.",
+  },
+  {
+    name: "Fatima R.",
+    title: "Lifelong Learner",
+    image:"/testimonials/Fatima.jpg",
+    quote: "As a busy mom and full-time worker, EduSpark was a game-changer. I could squeeze in learning between everything else, and I genuinely enjoyed every minute of it.",
   },
   // More testimonials can be added here
 ];
@@ -124,18 +130,18 @@ const Hero = () => {
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section */}
       <div className="relative text-white overflow-hidden">
-        <div className="absolute inset-0 bg-[url('/images/course.avif')] bg-cover bg-center opacity-55" />
-        <div className="absolute inset-0 bg-blue-950 opacity-40" />
+        <div className="absolute inset-0 bg-[url('/images/background.PNG')] bg-cover bg-center " />
+        <div className="absolute inset-0 " />
         <div className="relative max-w-7xl mx-auto px-4 py-32 sm:px-6 lg:px-8">
-          <div className="max-w-2xl">
-            <h1 className="text-5xl md:text-6xl font-extrabold leading-tight mb-6 text-blue-950 hover:text-blue-300 transition duration-300">
+          <div className="max-w-2xl"> 
+            <h1 className="text-5xl md:text-6xl font-extrabold leading-tight mb-6 text-blue-950 hover:text-blue-200 transition duration-300">
               Online Learning Course
             </h1>
-            <p className="text-xl font-semibold md:text-2xl text-blue-100 mb-8">
+            <p className="text-xl font-semibold md:text-2xl mb-8">
               Build skills with courses, certificates, and degrees online from
               world-class universities and companies.
             </p>
-            <button className="bg-white text-blue-600 px-8 py-4 rounded-full font-semibold text-lg shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300">
+            <button className="bg-white text-blue-900 px-8 py-4 rounded-full font-semibold text-lg shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300">
               Get Started
             </button>
           </div>
@@ -148,7 +154,7 @@ const Hero = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <Block
               icon={BookOpen}
-              title="60+ UX Courses"
+              title="1000+ Courses"
               description="Access comprehensive courses crafted by industry experts"
             />
             <Block
@@ -235,13 +241,16 @@ const Hero = () => {
           {/* ChatGPT section */}
           <div>
             <h3 className="text-xl font-bold mb-2">ChatGPT is a top skill</h3>
-            <a href="#" className="text-purple-600 font-medium hover:underline">
+            <Link href="/courses" className="text-purple-600 font-medium hover:underline">
               See ChatGPT courses →
-            </a>
+            </Link>
             <p className="text-gray-500 mt-1">4,345,758 learners</p>
 
             <button className="mt-6 px-4 py-2 border border-purple-600 text-purple-700 rounded-md hover:bg-purple-50 transition">
+              <Link href="/courses">
               Show all trending skills →
+              </Link>
+             
             </button>
           </div>
 
@@ -260,7 +269,7 @@ const Hero = () => {
               </li>
               <li>
               <Link
-                  href="#"
+                    href="/courses"
                   className="text-purple-700 font-medium hover:underline"
                 >
                   Web Development →
@@ -268,12 +277,12 @@ const Hero = () => {
                 <p className="text-sm text-gray-500">14,015,184 learners</p>
               </li>
               <li>
-                <a
-                  href="#"
+                <Link
+                 href="/courses"
                   className="text-purple-700 font-medium hover:underline"
                 >
                   Data Science →
-                </a>
+                </Link>
                 <p className="text-sm text-gray-500">7,793,156 learners</p>
               </li>
             </ul>
@@ -284,30 +293,30 @@ const Hero = () => {
             <h4 className="text-lg font-bold mb-3">Design</h4>
             <ul className="space-y-2">
               <li>
-                <a
-                  href="#"
+                <Link
+                  href="/courses"
                   className="text-purple-700 font-medium hover:underline"
                 >
                   Blender →
-                </a>
+                </Link>
                 <p className="text-sm text-gray-500">2,913,078 learners</p>
               </li>
               <li>
-                <a
-                  href="#"
+                <Link
+                  href="/courses"
                   className="text-purple-700 font-medium hover:underline"
                 >
                   Graphic Design →
-                </a>
+                </Link>
                 <p className="text-sm text-gray-500">4,495,153 learners</p>
               </li>
               <li>
-                <a
-                  href="#"
+                <Link
+                  href="/courses"
                   className="text-purple-700 font-medium hover:underline"
                 >
                   UX Design →
-                </a>
+                </Link>
                 <p className="text-sm text-gray-500">2,071,077 learners</p>
               </li>
             </ul>
@@ -318,30 +327,30 @@ const Hero = () => {
             <h4 className="text-lg font-bold mb-3">Business</h4>
             <ul className="space-y-2">
               <li>
-                <a
-                  href="#"
+                <Link
+                  href="/courses"
                   className="text-purple-700 font-medium hover:underline"
                 >
                   Project Management (PMP) →
-                </a>
+                </Link>
                 <p className="text-sm text-gray-500">2,570,660 learners</p>
               </li>
               <li>
-                <a
-                  href="#"
+                <Link
+                  href="/courses"
                   className="text-purple-700 font-medium hover:underline"
                 >
                   Microsoft Power BI →
-                </a>
+                </Link>
                 <p className="text-sm text-gray-500">4,638,884 learners</p>
               </li>
               <li>
-                <a
-                  href="#"
+                <Link
+                href="/courses"
                   className="text-purple-700 font-medium hover:underline"
                 >
                   Project Management →
-                </a>
+                </Link>
                 <p className="text-sm text-gray-500">3,984,755 learners</p>
               </li>
             </ul>
@@ -409,18 +418,8 @@ const Hero = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
             <div className="bg-white rounded-2xl shadow-xl p-10 text-center relative">
               <div className="absolute top-1/2 -translate-y-1/2 left-4 right-4 flex justify-between z-10">
-                <button
-                  onClick={prevSlide}
-                  className="bg-white p-2 rounded-full shadow-lg hover:shadow-xl focus:outline-none transform hover:scale-110 transition-all"
-                >
-                  <span className="text-blue-600 text-sm font-medium">----</span>
-                </button>
-                <button
-                  onClick={nextSlide}
-                  className="bg-white p-2 rounded-full shadow-lg hover:shadow-xl focus:outline-none transform hover:scale-110 transition-all"
-                >
-                  <span className="text-blue-600 text-sm font-medium"> ---- </span>
-                </button>
+              <span  onClick={prevSlide} className="text-blue-600 text-sm font-small">＜</span>
+              <span   onClick={nextSlide}  className="text-blue-600 text-sm font-medium">＞</span>
               </div>
               
               <div className="text-center">
@@ -431,16 +430,16 @@ const Hero = () => {
                   height={50}
                   className="w-24 h-24 rounded-full mx-auto mb-6 border-4 border-white shadow-lg object-cover"
                 />
-                <p className="text-xl italic text-gray-700 mb-6">-{testimonials[current].quote}-</p>
+                <p className="text-lg italic text-gray-700 mb-6">-{testimonials[current].quote}-</p>
                 <p className="font-semibold text-gray-900">{testimonials[current].name}</p>
                 <p className="text-blue-600">{testimonials[current].title}</p>
               </div>
             </div>
 
-            <div className="bg-blue-600 text-white rounded-2xl p-8 flex flex-col justify-center">
+            <div className="bg-[#192847] text-white rounded-2xl p-8 flex flex-col justify-center">
               <h3 className="text-3xl font-bold mb-6">Join Our Global Community</h3>
               <p className="text-xl mb-8">Over 45 million learners have already taken the first step toward their future. Start your journey today.</p>
-              <button className="bg-white text-blue-600 px-8 py-4 rounded-lg font-semibold text-lg shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 self-start">
+              <button className="bg-white text-blue-800 px-8 py-4 rounded-lg font-semibold text-lg shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 self-start">
                 Get Started
               </button>
             </div>
@@ -448,58 +447,67 @@ const Hero = () => {
         </div>
       </div>
       <section className="bg-blue-100 pt-8 pb-16">
-        <div className="flex flex-col md:flex-row items-center justify-center max-w-6xl mx-auto bg-white shadow-md rounded-xl overflow-hidden">
-          {/* Left Side */}
-          <div className="w-full md:w-1/2 px-10 py-10 bg-green-50">
-            <p className="text-lg italic text-gray-700 mb-6">
-              “Education underpins all social progress. Our aim is to harness
-              technology to make all education and skills training available to
-              anyone, anywhere for free”
-            </p>
-            <div className="flex items-center mt-6">
-              <Image
-                src="/testimonials/alexandre-abitbol.jpg" // Vendos një foto reale në public/ceo.jpg ose përdor një avatar
-                alt="Dior H"
-                width={60}
-                height={60}
-                className="rounded-full object-cover"
-              />
-              <div className="ml-4">
-                <p className="font-semibold text-indigo-700">Dior H</p>
-                <p className="text-sm text-gray-600">
-                  Founder & CEO, EduSpark
-                </p>
-              </div>
-            </div>
-          </div>
+       <div className="flex flex-col md:flex-row items-center justify-between max-w-6xl mx-auto bg-white shadow-md rounded-xl overflow-hidden">
+    
+    {/* Left Side */}
+<div className="w-full md:w-1/2 px-10 py-10 bg-green-50">
+  <div className="flex items-start space-x-6">
+    {/* Image & CEO Info */}
+    <div className="flex-shrink-0">
+      <Image
+        src="/testimonials/ElenaBrooks.jpg"
+        alt="Elena Brooks"
+        width={170}
+        height={80}
+      />
+    </div>
 
-          {/* Right Side */}
-          <div className="w-full md:w-1/2 px-10 py-10 bg-blue-50 relative">
-            <h2 className="text-2xl font-semibold mb-2 text-gray-800">
-              EduSpark
-            </h2>
-            <p className="text-lg text-gray-700 mb-2">
-              Founded in{" "}
-              <span className="text-blue-700 font-semibold">KOSOVA</span>
-              <br />
-              Developed Worldwide
-            </p>
-            <p className="mt-4 text-blue-800 font-medium cursor-pointer hover:underline">
-              Learn about <strong>Our Story</strong>
-            </p>
+    {/* Quote Text */}
+    <div className="text-medium italic text-gray-700">
+  <p>
+   " We envision a future of education that is open, inclusive, and accessible to everyone, everywhere.  At EduSpark, we are empowering people to learn, grow, and shape their own future 
+  — without barriers and beyond borders."
+  </p>
 
-            {/* Decorative image */}
-            <div className="absolute bottom-0 right-0 w-1/2 opacity-80 hidden md:block">
-              <Image
-                src="/icons/maps.png" // ruaje këtë figurë në /public
-                alt="Map Illustration"
-                width={200}
-                height={200}
-              />
-            </div>
-          </div>
-        </div>
-      </section>
+  <div className="mt-4">
+    <p className="font-semibold text-indigo-700">Elena Brooks</p>
+    <p className="text-sm text-grey-700 font-bold">Founder & CEO, EduSpark</p>
+  </div>
+</div>
+
+    
+  </div>
+</div>
+
+
+    {/* Right Side */}
+    <div className="w-full md:w-1/2 px-10 py-10 bg-blue-50 relative flex flex-col justify-center">
+      <h2 className="text-2xl font-semibold mb-2 text-gray-800">EduSpark</h2>
+      <p className="text-lg text-gray-700 mb-2">
+        Founded in{" "}
+        <span className="text-blue-700 font-semibold">KOSOVA</span><br />
+        Developed Worldwide
+      </p>
+      <Link
+        href="/about"
+        className="mt-2 text-blue-800 font-medium hover:underline"
+      >
+        Learn about <strong>Our Story</strong>
+      </Link>
+
+      {/* Decorative Map Image */}
+      <div className="absolute bottom-4 right-4 opacity-90 hidden md:block">
+        <Image
+          src="/icons/maps.png"
+          alt="Map Illustration"
+          width={120}
+          height={120}
+        />
+      </div>
+    </div>
+  </div>
+</section>
+
       <div className="bg-gray-50 py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-2xl font-bold mb-12">
