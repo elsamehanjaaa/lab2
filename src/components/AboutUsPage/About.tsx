@@ -5,30 +5,24 @@ import Link from "next/link";
 export default function AboutPage() {
   return (
     <>
-      {/* Hero Section */}
-      <div
-  className="flex flex-col lg:px-40 md:px-20 px-6 justify-center h-screen bg-gradient-to-r from-[#a7b3ff] to-[#cfcaff] text-[#1f1f1f] text-center"
-  style={{
-    backgroundImage: "url('/images/background.png')",
-    backgroundSize: "cover",
-    backgroundPosition: "center",
-    backgroundRepeat: "no-repeat",
-  }}
->
-  <div className="max-w-[600px] flex flex-col justify-center items-start mt-16 md:mt-0">
-    <h1 className="text-5xl md:text-6xl font-extrabold py-6 text-left leading-tight">
-      About Us
-    </h1>
-    <h3 className="text-lg md:text-xl font-medium py-4 text-left">
-      Build skills with courses, certificates, and degrees online from
-      world-class universities and companies.
-    </h3>
-    <button className="bg-[#4f46e5] text-white px-8 py-3 rounded-lg shadow-lg hover:bg-[#4338ca] hover:-translate-y-1 transition duration-300 ease-in-out mt-4">
-      See More
-    </button>
-  </div>
-</div>
-
+     <div className="relative text-white overflow-hidden">
+        <div className="absolute inset-0 bg-[url('/images/background.PNG')] bg-cover bg-center " />
+        <div className="absolute inset-0 " />
+        <div className="relative max-w-7xl mx-auto px-4 py-32 sm:px-6 lg:px-8">
+          <div className="max-w-2xl"> 
+            <h1 className="text-5xl md:text-6xl font-extrabold leading-tight mb-6 text-blue-950 hover:text-blue-200 transition duration-300">
+             About Us
+            </h1>
+            <p className="text-xl font-semibold md:text-xl mb-8">
+            Learn from top experts and innovators through flexible online programs 
+            designed to help you grow your career, wherever you are.
+            </p>
+            <button className="bg-white text-blue-900 px-8 py-4 rounded-full font-semibold text-lg shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300">
+             See More
+            </button>
+          </div>
+        </div>
+      </div>
       {/* Skills and Impact Section */}
       <div className="max-w-7xl mx-auto px-4 py-16">
         <h1 className="text-4xl font-bold mb-6 text-center">
@@ -44,7 +38,7 @@ export default function AboutPage() {
         <div className="grid md:grid-cols-2 gap-10 items-center">
           <div className="relative w-full h-[350px]">
             <Image
-              src="/about-us-panel.jpg"
+              src="/images/aboutuspage.jpg"
               alt="Learning and leading through change"
               layout="fill"
               objectFit="cover"
@@ -125,9 +119,9 @@ export default function AboutPage() {
           <div>
             <p className="text-4xl text-[#4f46e5] mb-2">“”</p>
             <p className="text-lg text-gray-900 mb-6">
-              Courses fit us perfectly. Their team continuously delivers fresh,
-              up-to-date content that’s easy to deploy and tailored to our
-              needs.
+            “EduSpark’s courses fit us perfectly. 
+            Their team consistently delivers fresh, 
+            up-to-date content that’s easy to implement and perfectly aligned with our development goals.”
             </p>
             <div>
               <p className="font-bold">Varun Patil</p>
@@ -147,8 +141,9 @@ export default function AboutPage() {
           <div>
             <p className="text-4xl text-[#4f46e5] mb-2">“”</p>
             <p className="text-lg text-gray-900 mb-6">
-              Overall, it was a major success. I regularly received messages
-              about how valuable the Courses platform was for our teams.
+            “Overall, it was a major success. 
+            I regularly received feedback from our teams on how impactful 
+            and practical the EduSpark platform was.”
             </p>
             <div>
               <p className="font-bold">Alfred Helmerich</p>
@@ -168,9 +163,9 @@ export default function AboutPage() {
           <div>
             <p className="text-4xl text-[#4f46e5] mb-2">“”</p>
             <p className="text-lg text-gray-900 mb-6">
-              Courses adapted quickly to our business needs and delivered global
-              impact. It’s the best solution we’ve found for upskilling our
-              employees.
+            “EduSpark adapted quickly to our evolving business needs and 
+            delivered real results globally. 
+            It’s by far the best solution we’ve found for upskilling our employees.”
             </p>
             <div>
               <p className="font-bold">Luz Santillana Romero</p>
