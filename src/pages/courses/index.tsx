@@ -45,7 +45,22 @@ const Index = () => {
   return (
     <div>
       {/* TopSection për titullin dhe nën-titullin */}
-      <TopSection title="Our Courses" text1="1000+" text2="Courses Available" />
+      <div className="relative text-white overflow-hidden">
+        <div className="absolute inset-0 bg-[url('/images/background.PNG')] bg-cover bg-center" />
+        <div className="absolute inset-0" />
+        <div className="relative max-w-7xl mx-auto px-4 py-32 sm:px-6 lg:px-8">
+          <div className="max-w-2xl">
+            <h1 className="text-3xl md:text-6xl font-extrabold leading-tight mb-6 text-blue-950 hover:text-blue-200 transition duration-300">
+              Our Courses
+            </h1>
+            <p className="text-xl font-semibold md:text-xl mb-8">
+              1000+ | available courses | 100% free | 100% online
+            </p>
+          
+          </div>
+        </div>
+      </div>
+
 
       {/* Kategoritë (nëse ju nevojitet, mund ta ndani në komponent tjetër) */}
       <Categories />
