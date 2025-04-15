@@ -11,16 +11,28 @@ export default function ContactUs() {
       email: formData.get("email"),
       message: formData.get("message"),
     };
-
+  
     try {
-      console.log(values);
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(values),
+      });
+  
+      if (!response.ok) {
+        throw new Error("Failed to send message");
+      }
+  
       alert("Message sent successfully!");
       e.currentTarget.reset();
-    } catch(error) {
-      console.error('Error sending message:', error);
-      alert('Failed to send message. Please try again.');
+    } catch (error) {
+      console.error("Error sending message:", error);
+      alert("Failed to send message. Please try again.");
     }
   };
+  
 
   return (
     <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">

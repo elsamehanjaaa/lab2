@@ -53,7 +53,10 @@ const Index = () => {
               Our Courses
             </h1>
             <p className="text-xl font-semibold md:text-xl mb-8">
-              1000+ | available courses | 100% free | 100% online
+              1000+ | Available Courses 
+            </p>
+            <p className="text-xl font-semibold md:text-xl mb-8">
+              Free Courses
             </p>
           
           </div>
