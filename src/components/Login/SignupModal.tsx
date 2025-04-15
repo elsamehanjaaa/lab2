@@ -146,7 +146,7 @@ export default function SignUpModal({ onClose }: { onClose: () => void }) {
                 Username
               </label>
               <div className="relative">
-                <User className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                <User className="absolute left-3 top-3 h-4 w-4 text-gray-900" />
                 <input
                   id="username"
                   type="text"
@@ -186,7 +186,7 @@ export default function SignUpModal({ onClose }: { onClose: () => void }) {
                 Email
               </label>
               <div className="relative">
-                <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-900" />
                 <input
                   id="email"
                   type="email"
@@ -224,7 +224,7 @@ export default function SignUpModal({ onClose }: { onClose: () => void }) {
                 Password
               </label>
               <div className="relative">
-                <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-900" />
                 <input
                   id="password"
                   type="password"
@@ -257,7 +257,7 @@ export default function SignUpModal({ onClose }: { onClose: () => void }) {
             {/* Submit */}
             <button
               type="submit"
-              className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+              className="w-full bg-blue-950 text-white py-2 px-4 rounded-md hover:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
               disabled={
                 isLoading ||
                 !Object.values(passwordValid).every(Boolean) ||

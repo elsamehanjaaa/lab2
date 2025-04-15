@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import TopSection from "@/components/TopSection";
 import Categories from "@/components/Courses/Categories";
 import Card from "@/components/Courses/Card";
 

@@ -76,7 +76,7 @@ export default function LoginModal({
           </button>
 
           <div className="text-center mb-6">
-            <BookOpen className="mx-auto h-10 w-10 text-blue-600" />
+            <BookOpen className="mx-auto h-10 w-10 text-blue-900" />
             <h2 className="text-2xl font-bold text-gray-900">Welcome Back</h2>
             <p className="text-gray-600 text-sm">
               Continue your learning journey
@@ -85,7 +85,7 @@ export default function LoginModal({
 
           <form onSubmit={handleLogin} className="space-y-6">
             <div className="relative">
-              <Mail className="absolute left-3 top-3 h-5 w-5 text-blue-500" />
+              <Mail className="absolute left-3 top-3 h-5 w-5 text-blue-900" />
               <input
                 type="email"
                 placeholder="you@example.com"
@@ -96,7 +96,7 @@ export default function LoginModal({
               />
             </div>
             <div className="relative">
-              <Lock className="absolute left-3 top-3 h-5 w-5 text-blue-500" />
+              <Lock className="absolute left-3 top-3 h-5 w-5 text-blue-900" />
               <input
                 type="password"
                 placeholder="••••••••"
@@ -110,7 +110,7 @@ export default function LoginModal({
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full bg-blue-600 text-white py-3 rounded-xl hover:bg-blue-700 flex items-center justify-center disabled:opacity-50"
+              className="w-full bg-blue-900 text-white py-3 rounded-xl hover:bg-blue-700 flex items-center justify-center disabled:opacity-50"
             >
               {isLoading && <Loader2 className="mr-2 h-5 w-5 animate-spin" />}
               {isLoading ? "Signing in..." : "Sign in"}
@@ -118,7 +118,7 @@ export default function LoginModal({
             <div className="text-center mt-4">
               <button
                 onClick={onResetPassword}
-                className="text-blue-600 hover:text-blue-800 font-semibold text-sm"
+                className="text-blue-900 hover:text-blue-800 font-semibold text-sm"
               >
                 Reset Password
               </button>

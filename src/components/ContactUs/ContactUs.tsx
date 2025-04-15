@@ -27,7 +27,7 @@ export default function ContactUs() {
       <div className="max-w-5xl mx-auto">
         {/* HEADER */}
         <div className="text-center mb-12">
-          <h1 className="text-4xl font-extrabold text-blue-700 mb-4">Get in Touch</h1>
+          <h1 className="text-4xl font-extrabold text-blue-950 mb-4">Get in Touch</h1>
           <p className="text-gray-600 max-w-2xl mx-auto">
             Have questions or want to collaborate? We would love to hear from you.
             Fill out the form below or reach out directly through our contact information.
@@ -72,7 +72,7 @@ export default function ContactUs() {
               </div>
               <button
                 type="submit"
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded-md transition duration-300 shadow-md"
+                className="w-full bg-blue-950 hover:bg-blue-400 text-white font-semibold px-4 py-2 rounded-md transition duration-300 shadow-md"
               >
                 Send Message
               </button>
@@ -83,7 +83,7 @@ export default function ContactUs() {
           <div className="space-y-8">
             <div className="bg-white rounded-lg shadow-md p-6 space-y-6">
               <div className="flex items-start space-x-4">
-                <Mail className="w-7 h-7 text-blue-600 mt-1" />
+                <Mail className="w-7 h-7 text-blue-950 mt-1" />
                 <div>
                   <h3 className="font-semibold text-lg">Email</h3>
                   <p className="text-gray-600">support@example.com</p>
@@ -92,7 +92,7 @@ export default function ContactUs() {
               </div>
 
               <div className="flex items-start space-x-4">
-                <Phone className="w-7 h-7 text-blue-600 mt-1" />
+                <Phone className="w-7 h-7 text-blue-950 mt-1" />
                 <div>
                   <h3 className="font-semibold text-lg">Phone</h3>
                   <p className="text-gray-600">+383 44 123 456</p>
@@ -101,7 +101,7 @@ export default function ContactUs() {
               </div>
 
               <div className="flex items-start space-x-4">
-                <MapPin className="w-7 h-7 text-blue-600 mt-1" />
+                <MapPin className="w-7 h-7 text-blue-950 mt-1" />
                 <div>
                   <h3 className="font-semibold text-lg">Address</h3>
                   <p className="text-gray-600">
