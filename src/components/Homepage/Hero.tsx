@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
-import { BookOpen, User, Clock, } from "lucide-react";
+import { BookOpen, User, Clock, Star, GraduationCap } from "lucide-react";
 import Link from "next/link";
 
 // Data
@@ -13,6 +13,10 @@ const categories = [
   { title: "AI", learners: "4M+" },
   { title: "Statistics", learners: "1M+" },
   { title: "NLP", learners: "811,403" },
+  { title: "SQL", learners: "21.3M+" },
+  { title: "Data Visualization", learners: "2.5M+" },
+  { title: "Computer Vision", learners: "1.2M+" },
+  { title: "Cloud Computing", learners: "5.8M+" }
 ];
 
 const courses = [
@@ -27,22 +31,20 @@ const courses = [
     title: "The Complete AI-Powered Copywriting Course & ChatGPT...",
     rating: 4.3,
     reviews: "1,816",
-
   },
   {
     image:"/courses/course3.png",
     title: "ChatGPT, DeepSeek, Grok and 30+ More AI Marketing Assistants",
     rating: 4.5,
     reviews: "533",
-    
   },
   {
     image:"/courses/course4.png",
     title: "Mastering SEO With ChatGPT: Ultimate Beginner's Guide",
     rating: 4.4,
     reviews: "284",
-  
   },
+  
 ];
 
 const brandLogos = [
@@ -117,9 +119,7 @@ const Hero = () => {
   }, []);
 
   const prevSlide = () => {
-    setCurrent(
-      (prev) => (prev - 1 + testimonials.length) % testimonials.length
-    );
+    setCurrent((prev) => (prev - 1 + testimonials.length) % testimonials.length);
   };
 
   const nextSlide = () => {
@@ -130,14 +130,15 @@ const Hero = () => {
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section */}
       <div className="relative text-white overflow-hidden">
-        <div className="absolute inset-0 bg-[url('/images/background.PNG')] bg-cover bg-center " />
-        <div className="absolute inset-0 " />
+        <div className="absolute inset-0 bg-[url('/images/background.PNG')] bg-cover bg-center" />
+        <div className="absolute inset-0" />
         <div className="relative max-w-7xl mx-auto px-4 py-32 sm:px-6 lg:px-8">
-          <div className="max-w-2xl"> 
-            <h1 className="text-5xl md:text-6xl font-extrabold leading-tight mb-6 text-blue-950 hover:text-blue-200 transition duration-300">
+          <div className="max-w-2xl">
+            {/* Adjusted heading sizes for smaller breakpoints */}
+            <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold leading-tight mb-6 text-blue-950 hover:text-blue-200 transition duration-300">
               Online Learning Course
             </h1>
-            <p className="text-xl font-semibold md:text-2xl mb-8">
+            <p className="text-lg sm:text-xl md:text-2xl font-semibold mb-8">
               Build skills with courses, certificates, and degrees online from
               world-class universities and companies.
             </p>
@@ -150,26 +151,32 @@ const Hero = () => {
 
       {/* Features Section */}
       <div className="bg-white py-24">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <Block
-              icon={BookOpen}
-              title="1000+ Courses"
-              description="Access comprehensive courses crafted by industry experts"
-            />
-            <Block
-              icon={User}
-              title="Expert Instructors"
-              description="Learn from professionals with real-world experience"
-            />
-            <Block
-              icon={Clock}
-              title="Lifetime Access"
-              description="Study at your own pace with unlimited course access"
-            />
-          </div>
-        </div>
-      </div>
+  <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 place-items-center">
+      <Block
+        icon={BookOpen}
+        title="1000+ Courses"
+        description="Access comprehensive courses crafted by industry experts"
+      />
+      <Block
+        icon={User}
+        title="Expert Instructors"
+        description="Learn from professionals with real-world experience"
+      />
+      <Block
+        icon={Clock}
+        title="Lifetime Access"
+        description="Study at your own pace with unlimited course access"
+      />
+      <Block
+        icon={Star}
+        title="Top Rated"
+        description="Highly rated by thousands of students worldwide"
+      />
+    </div>
+  </div>
+</div>
+
 
       {/* Categories Section */}
       <div className="bg-gray-50 py-16">
@@ -192,11 +199,12 @@ const Hero = () => {
 
       {/* Courses Section */}
       <div className="bg-white py-24">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="text-3xl font-bold mb-12 text-center">
             Featured Courses
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          {/* Responsive grid for courses */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
             {courses.map((course, i) => (
               <div
                 key={i}
@@ -235,9 +243,11 @@ const Hero = () => {
         </div>
       </div>
 
-      <section className="bg-gray-50 py-10 md:px-40">
+      {/* Trending Now Section */}
+      <section className="bg-gray-50 py-10 px-4 sm:px-6 md:px-10 lg:px-40">
         <h2 className="text-3xl font-bold mb-6">Trending Now</h2>
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+        {/* Adjusted to 1 column on mobile, 2 on small screens, 4 on large */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* ChatGPT section */}
           <div>
             <h3 className="text-xl font-bold mb-2">ChatGPT is a top skill</h3>
@@ -248,9 +258,8 @@ const Hero = () => {
 
             <button className="mt-6 px-4 py-2 border border-purple-600 text-purple-700 rounded-md hover:bg-purple-50 transition">
               <Link href="/courses">
-              Show all trending skills →
+                Show all trending skills →
               </Link>
-             
             </button>
           </div>
 
@@ -268,17 +277,17 @@ const Hero = () => {
                 <p className="text-sm text-gray-500">47,815,126 learners</p>
               </li>
               <li>
-              <Link
-                    href="/courses"
+                <Link
+                  href="/courses"
                   className="text-purple-700 font-medium hover:underline"
                 >
                   Web Development →
-                  </Link>
+                </Link>
                 <p className="text-sm text-gray-500">14,015,184 learners</p>
               </li>
               <li>
                 <Link
-                 href="/courses"
+                  href="/courses"
                   className="text-purple-700 font-medium hover:underline"
                 >
                   Data Science →
@@ -346,7 +355,7 @@ const Hero = () => {
               </li>
               <li>
                 <Link
-                href="/courses"
+                  href="/courses"
                   className="text-purple-700 font-medium hover:underline"
                 >
                   Project Management →
@@ -358,13 +367,12 @@ const Hero = () => {
         </div>
       </section>
 
-
-    
-      
+      {/* Assessment and Resume Section */}
       <div className="bg-gray-50 py-20">
         <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Assessment Section */}
-          <div className="flex items-center bg-green-100 p-6 rounded-lg">
+          {/* Converted to flex-col for mobile */}
+          <div className="flex flex-col md:flex-row items-center bg-green-100 p-6 rounded-lg">
             <div className="flex-1 space-y-4 text-center md:text-left">
               <h2 className="text-2xl font-bold text-gray-800">
                 Get to know yourself better!
@@ -376,7 +384,7 @@ const Hero = () => {
                 Take The Free Personality Assessment
               </button>
             </div>
-            <div className="hidden md:block ml-6">
+            <div className="hidden md:block md:ml-6 mt-6 md:mt-0">
               <Image
                 src="/know-yourself.svg"
                 alt="Puzzle Illustration"
@@ -387,7 +395,7 @@ const Hero = () => {
           </div>
 
           {/* Resume Section */}
-          <div className="flex items-center bg-green-200 p-6 rounded-lg">
+          <div className="flex flex-col md:flex-row items-center bg-green-200 p-6 rounded-lg">
             <div className="flex-1 space-y-4 text-center md:text-left">
               <h2 className="text-2xl font-bold text-gray-800">
                 Get hired for your dream job!
@@ -399,7 +407,7 @@ const Hero = () => {
                 Create My Professional Resumé
               </button>
             </div>
-            <div className="hidden md:block ml-6">
+            <div className="hidden md:block md:ml-6 mt-6 md:mt-0">
               <Image
                 src="/get-hired-alt.svg"
                 alt="Resume Illustration"
@@ -411,17 +419,20 @@ const Hero = () => {
         </div>
       </div>
 
-      
       {/* Testimonials Section */}
       <div className="bg-gray-50 py-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          {/* Two-column layout for medium screens */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
             <div className="bg-white rounded-2xl shadow-xl p-10 text-center relative">
               <div className="absolute top-1/2 -translate-y-1/2 left-4 right-4 flex justify-between z-10">
-              <span  onClick={prevSlide} className="text-blue-600 text-sm font-small">＜</span>
-              <span   onClick={nextSlide}  className="text-blue-600 text-sm font-medium">＞</span>
+                <span onClick={prevSlide} className="text-blue-600 text-sm font-small cursor-pointer">
+                  ＜
+                </span>
+                <span onClick={nextSlide} className="text-blue-600 text-sm font-medium cursor-pointer">
+                  ＞
+                </span>
               </div>
-              
               <div className="text-center">
                 <Image
                   src={testimonials[current].image}
@@ -430,15 +441,22 @@ const Hero = () => {
                   height={50}
                   className="w-24 h-24 rounded-full mx-auto mb-6 border-4 border-white shadow-lg object-cover"
                 />
-                <p className="text-lg italic text-gray-700 mb-6">-{testimonials[current].quote}-</p>
-                <p className="font-semibold text-gray-900">{testimonials[current].name}</p>
+                <p className="text-lg italic text-gray-700 mb-6">
+                  -{testimonials[current].quote}-
+                </p>
+                <p className="font-semibold text-gray-900">
+                  {testimonials[current].name}
+                </p>
                 <p className="text-blue-600">{testimonials[current].title}</p>
               </div>
             </div>
 
             <div className="bg-[#192847] text-white rounded-2xl p-8 flex flex-col justify-center">
               <h3 className="text-3xl font-bold mb-6">Join Our Global Community</h3>
-              <p className="text-xl mb-8">Over 45 million learners have already taken the first step toward their future. Start your journey today.</p>
+              <p className="text-xl mb-8">
+                Over 45 million learners have already taken the first step toward their future.
+                Start your journey today.
+              </p>
               <button className="bg-white text-blue-800 px-8 py-4 rounded-lg font-semibold text-lg shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 self-start">
                 Get Started
               </button>
@@ -446,74 +464,80 @@ const Hero = () => {
           </div>
         </div>
       </div>
-      <section className="bg-blue-100 pt-8 pb-16">
-       <div className="flex flex-col md:flex-row items-center justify-between max-w-6xl mx-auto bg-white shadow-md rounded-xl overflow-hidden">
-    
-    {/* Left Side */}
-<div className="w-full md:w-1/2 px-10 py-10 bg-green-50">
-  <div className="flex items-start space-x-6">
-    {/* Image & CEO Info */}
-    <div className="flex-shrink-0">
-      <Image
-        src="/testimonials/ElenaBrooks.jpg"
-        alt="Elena Brooks"
-        width={170}
-        height={80}
-      />
-    </div>
 
-    {/* Quote Text */}
-    <div className="text-medium italic text-gray-700">
-  <p>
-   " We envision a future of education that is open, inclusive, and accessible to everyone, everywhere.  At EduSpark, we are empowering people to learn, grow, and shape their own future 
-  — without barriers and beyond borders."
-  </p>
+      {/* CEO / Our Story Section */}
+      <section className="bg-blue-100 pt-8 pb-16 px-4">
+        <div className="flex flex-col md:flex-row items-center justify-between max-w-6xl mx-auto bg-white shadow-md rounded-xl overflow-hidden">
+          {/* Left Side */}
+          <div className="w-full md:w-1/2 px-10 py-10 bg-green-50">
+            <div className="flex items-start space-x-6">
+              {/* Image & CEO Info */}
+              <div className="flex-shrink-0">
+                <Image
+                  src="/testimonials/ElenaBrooks.jpg"
+                  alt="Elena Brooks"
+                  width={170}
+                  height={80}
+                />
+              </div>
 
-  <div className="mt-4">
-    <p className="font-semibold text-indigo-700">Elena Brooks</p>
-    <p className="text-sm text-grey-700 font-bold">Founder & CEO, EduSpark</p>
-  </div>
-</div>
+              {/* Quote Text */}
+              <div className="text-medium italic text-gray-700">
+                <p>
+                  " We envision a future of education that is open, inclusive,
+                  and accessible to everyone, everywhere. At EduSpark, we are
+                  empowering people to learn, grow, and shape their own future
+                  — without barriers and beyond borders."
+                </p>
+                <div className="mt-4">
+                  <p className="font-semibold text-indigo-700">Elena Brooks</p>
+                  <p className="text-sm text-grey-700 font-bold">
+                    Founder & CEO, EduSpark
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
 
-    
-  </div>
-</div>
+          {/* Right Side */}
+          <div className="w-full md:w-1/2 px-10 py-10 bg-blue-50 relative flex flex-col justify-center">
+            <h2 className="text-2xl font-semibold mb-2 text-gray-800">
+              EduSpark
+            </h2>
+            <p className="text-lg text-gray-700 mb-2">
+              Founded in{" "}
+              <span className="text-blue-700 font-semibold">KOSOVA</span>
+              <br />
+              Developed Worldwide
+            </p>
+            <Link
+              href="/about"
+              className="mt-2 text-blue-800 font-medium hover:underline"
+            >
+              Learn about <strong>Our Story</strong>
+            </Link>
 
+            {/* Decorative Map Image */}
+            <div className="absolute bottom-4 right-4 opacity-90 hidden md:block">
+              <Image
+                src="/icons/maps.png"
+                alt="Map Illustration"
+                width={120}
+                height={120}
+              />
+            </div>
+          </div>
+        </div>
+      </section>
 
-    {/* Right Side */}
-    <div className="w-full md:w-1/2 px-10 py-10 bg-blue-50 relative flex flex-col justify-center">
-      <h2 className="text-2xl font-semibold mb-2 text-gray-800">EduSpark</h2>
-      <p className="text-lg text-gray-700 mb-2">
-        Founded in{" "}
-        <span className="text-blue-700 font-semibold">KOSOVA</span><br />
-        Developed Worldwide
-      </p>
-      <Link
-        href="/about"
-        className="mt-2 text-blue-800 font-medium hover:underline"
-      >
-        Learn about <strong>Our Story</strong>
-      </Link>
-
-      {/* Decorative Map Image */}
-      <div className="absolute bottom-4 right-4 opacity-90 hidden md:block">
-        <Image
-          src="/icons/maps.png"
-          alt="Map Illustration"
-          width={120}
-          height={120}
-        />
-      </div>
-    </div>
-  </div>
-</section>
-
+      {/* Brand Logos Section */}
       <div className="bg-gray-50 py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-2xl font-bold mb-12">
             Trusted by over 16,000 companies and millions of learners
           </h2>
-          <div className="flex flex-wrap justify-center items-center gap-12">
+          {/* Updated to a grid for better responsiveness */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-8 place-items-center">
             {brandLogos.map((logo, i) => (
               <Image
                 key={i}
@@ -527,9 +551,7 @@ const Hero = () => {
           </div>
         </div>
       </div>
-
     </div>
-    
   );
 };
 
