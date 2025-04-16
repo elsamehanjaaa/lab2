@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Mail, Lock, Loader2, BookOpen, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { loginUser } from "@/utils/loginUser";
 
 export default function LoginModal({
   onClose,
@@ -29,22 +30,12 @@ export default function LoginModal({
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault();
     setIsLoading(true);
+
     try {
-      const res = await fetch("http://localhost:5000/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-        credentials: "include",
-      });
-
-      const result = await res.json();
-
-      if (res.ok) {
-        router.refresh();
-        onClose(); // Close modal on success
-      } else {
-        throw new Error(result.message || "Login failed");
-      }
+      const result = await loginUser(data); // data should include email and password
+      console.log("Login successful:", result);
+      router.refresh();
+      onClose(); // Close modal
     } catch (error) {
       console.error("Login error:", error);
       alert(error instanceof Error ? error.message : "Login failed");
@@ -52,7 +43,6 @@ export default function LoginModal({
       setIsLoading(false);
     }
   }
-
   return (
     <AnimatePresence>
       <motion.div

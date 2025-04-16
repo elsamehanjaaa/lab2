@@ -2,6 +2,12 @@ import React, { useState, useEffect, useRef } from "react";
 import Section from "./Section";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import StepButton from "./StepButton";
+import { log } from "util";
+import Thumbnail from "./Thumbnail";
+import Categories from "./Categories";
+import { fetchCategories } from "@/utils/fetchCategories";
+import { uploadThumbnail } from "@/utils/uploadThumbnail";
+import { createCourse } from "@/utils/createCategory";
 const CreateCourseForm = () => {
   const [step, setStep] = useState(1); // Step 1 or 2
   const [title, setTitle] = useState("");
@@ -16,21 +22,16 @@ const CreateCourseForm = () => {
 
   useEffect(() => {
     const getCategories = async () => {
-      const res = await fetch("http://localhost:5000/categories", {
-        method: "GET",
-        credentials: "include",
-      });
-      const result = await res.json();
-      setCategories(result);
+      try {
+        const result = await fetchCategories();
+        setCategories(result);
+      } catch (err) {
+        console.error("Error fetching categories:", err);
+      }
     };
+
     getCategories();
   }, []);
-
-  const handleThumbnailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      setThumbnail(e.target.files[0]);
-    }
-  };
 
   const handleAddSection = () => {
     const newSection = {
@@ -134,8 +135,6 @@ const CreateCourseForm = () => {
     };
 
     try {
-      const token = getCookie("access_token");
-
       function getCookie(name: string): string | null {
         const value = `; ${document.cookie}`;
         const parts = value.split(`; ${name}=`);
@@ -143,55 +142,32 @@ const CreateCourseForm = () => {
         return null;
       }
 
+      const token = getCookie("access_token");
+      if (!token) throw new Error("No access token found");
+
       if (thumbnail) {
         const formData = new FormData();
         formData.append("file", thumbnail);
         formData.append("course", title);
-
-        const thumbnailRes = await fetch(
-          "http://localhost:5000/upload/thumbnail",
-          {
-            method: "POST",
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-            body: formData,
-          }
-        );
-
-        const thumbnailResult = await thumbnailRes.json();
+        const thumbnailResult = await uploadThumbnail({ token, formData });
         courseData.thumbnail_url = thumbnailResult.url;
       }
 
-      const response = await fetch("http://localhost:5000/courses", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(courseData),
-        credentials: "include",
-      });
+      const data = await createCourse(courseData, token);
+      console.log("Course created successfully:", data);
 
-      if (response.ok) {
-        const data = await response.json();
-        console.log("Course created successfully:", data);
-        setTitle("");
-        setDescription("");
-        setPrice("");
-        setSelectedCategories([]);
-        setThumbnail(null);
-        setSections([]);
-        setStep(1);
-      } else {
-        const error = await response.json();
-        console.error("Error creating course:", error);
-      }
+      // Reset form
+      setTitle("");
+      setDescription("");
+      setPrice("");
+      setSelectedCategories([]);
+      setThumbnail(null);
+      setSections([]);
+      setStep(1);
     } catch (error) {
       console.error("Error creating course:", error);
     }
   };
-
   return (
     <div className="max-w-3xl mx-auto p-8 bg-white shadow-xl rounded-2xl min-h-[800px] flex flex-col justify-between">
       <h1 className="text-3xl font-bold mb-6 text-gray-800">
@@ -206,6 +182,12 @@ const CreateCourseForm = () => {
           {step === 1 && (
             <>
               {/* Course Info */}
+              <h1 className="text-3xl font-bold mb-6 text-gray-800">
+                Course Info
+              </h1>
+              {/* Thumbnail */}
+              <Thumbnail onThumbnailChange={setThumbnail} />
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -249,90 +231,22 @@ const CreateCourseForm = () => {
               </div>
 
               {/* Categories */}
-              <div ref={dropdownRef} className="relative">
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Categories
-                </label>
-                <button
-                  type="button"
-                  onClick={() => setDropdownOpen((prev) => !prev)}
-                  className="w-full border border-gray-300 bg-white rounded-lg px-4 py-2 text-left"
-                >
-                  {selectedCategories.length === 0 ? (
-                    <span className="text-gray-500">Select Categories</span>
-                  ) : (
-                    selectedCategories.map((categoryId) => {
-                      const category = categories.find(
-                        (c) => Number(c._id) === categoryId
-                      );
-                      return (
-                        category && (
-                          <span
-                            key={category._id}
-                            className="inline-block bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-sm mr-2"
-                          >
-                            {category.name}
-                          </span>
-                        )
-                      );
-                    })
-                  )}
-                </button>
-                {dropdownOpen && (
-                  <div className="absolute z-20 mt-1 w-full bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto">
-                    {categories.map((category) => {
-                      const categoryId = Number(category._id);
-                      const isSelected =
-                        selectedCategories.includes(categoryId);
-
-                      const handleChange = () => {
-                        setSelectedCategories((prev) =>
-                          isSelected
-                            ? prev.filter((id) => id !== categoryId)
-                            : [...prev, categoryId]
-                        );
-                      };
-
-                      return (
-                        <label
-                          key={category._id}
-                          className={`flex items-center px-4 py-2 cursor-pointer transition rounded ${
-                            isSelected
-                              ? "bg-blue-100 text-blue-800 font-medium"
-                              : "hover:bg-gray-100"
-                          }`}
-                        >
-                          <input
-                            type="checkbox"
-                            checked={isSelected}
-                            onChange={handleChange}
-                            className="mr-2 accent-blue-600"
-                          />
-                          {category.name}
-                        </label>
-                      );
-                    })}
-                  </div>
-                )}
-              </div>
-
-              {/* Thumbnail */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Thumbnail
-                </label>
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleThumbnailChange}
-                  className="block w-full text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-                />
-              </div>
+              <Categories
+                categories={categories}
+                selectedCategories={selectedCategories}
+                setSelectedCategories={setSelectedCategories}
+                dropdownOpen={dropdownOpen}
+                setDropdownOpen={setDropdownOpen}
+                dropdownRef={dropdownRef}
+              />
             </>
           )}
 
           {step === 2 && (
             <>
+              <h1 className="text-3xl font-bold mb-6 text-gray-800">
+                Course Sections
+              </h1>
               {sections.map((section) => (
                 <Section
                   key={section.id}
@@ -357,7 +271,12 @@ const CreateCourseForm = () => {
         </div>
 
         {/* Footer Button */}
-        <StepButton step={step} setStep={setStep} totalSteps={3} />
+        <StepButton
+          step={step}
+          setStep={setStep}
+          totalSteps={3}
+          submit={(e) => handleSubmit(e)}
+        />
       </form>
     </div>
   );

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useRouter } from "next/router";  // Import useRouter hook
+import { useRouter } from "next/router"; // Import useRouter hook
 import Image from "next/image";
 import Link from "next/link";
 import { User } from "lucide-react";
@@ -7,9 +7,11 @@ import LoginModal from "../Login/LoginModal";
 import SignupModal from "../Login/SignupModal";
 import ResetPasswordModal from "../Login/ResetPasswordModal";
 import Search from "../Search/Search";
+import { fetchUser } from "@/utils/fetchUser";
+import { handleLogout } from "@/utils/handleLogout";
 
 const Header = () => {
-  const router = useRouter();  // Use useRouter to access the route
+  const router = useRouter(); // Use useRouter to access the route
   const [isScrolled, setIsScrolled] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState<string | undefined>(undefined);
@@ -59,31 +61,18 @@ const Header = () => {
     const token = getTokenFromCookies();
     if (!token) return;
     const getUser = async () => {
-      const res = await fetch("http://localhost:5000/auth/protected", {
-        method: "POST",
-        credentials: "include",
-      });
+      const result = await fetchUser();
 
-      const result = await res.json();
-
-      if (res.ok) {
-        setUser(result.user.username);
-        setIsLoggedIn(true);
-      } else {
-        setIsLoggedIn(false);
-        setUser("");
-      }
+      setUser(result.user.username);
+      setIsLoggedIn(true);
     };
 
     const interval = setInterval(getUser, 1000);
     return () => clearInterval(interval);
   }, []);
 
-  const handleLogout = async () => {
-    const res = await fetch("http://localhost:5000/auth/logout", {
-      method: "post",
-      credentials: "include",
-    });
+  const handleUserLogout = async () => {
+    const res = await handleLogout(); // Replace with the actual logout API call
     if (res.ok) {
       setIsLoggedIn(false);
       setUser(undefined);
@@ -95,7 +84,9 @@ const Header = () => {
   };
 
   // Check if the current route matches the course detail page
-  const isCourseDetailPage = router.pathname.includes("/course/[slug]/[courseId]");
+  const isCourseDetailPage = router.pathname.includes(
+    "/course/[slug]/[courseId]"
+  );
 
   return (
     <>
@@ -176,7 +167,7 @@ const Header = () => {
                       Settings
                     </Link>
                     <button
-                      onClick={handleLogout}
+                      onClick={handleUserLogout}
                       className="w-full text-left px-4 py-2 hover:bg-gray-100 transition"
                     >
                       Logout

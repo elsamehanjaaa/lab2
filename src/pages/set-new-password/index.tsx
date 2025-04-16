@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useRouter } from "next/router";
+import { resetPassword } from "@/utils/resetPassword";
 
 export default function SetNewPasswordPage() {
   const [password, setPassword] = useState("");
@@ -18,26 +19,15 @@ export default function SetNewPasswordPage() {
 
     setLoading(true);
     setMessage("");
-
-    const res = await fetch("http://localhost:5000/auth/reset-password", {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ newPassword: password }),
-      credentials: "include", // this is required to accept cookies
-    });
-
-    const data = await res.json();
-
-    if (res.ok) {
+    try {
+      await resetPassword(password); // Call the resetPassword utility
       setMessage("Password updated successfully. Redirecting...");
       setTimeout(() => router.push("/login"), 1500);
-    } else {
-      setMessage(data.message || "Something went wrong");
+    } catch (error) {
+      setMessage("Something went wrong");
+    } finally {
+      setLoading(false);
     }
-
-    setLoading(false);
   };
 
   return (

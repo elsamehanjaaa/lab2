@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import Categories from "@/components/Courses/Categories";
 import Card from "@/components/Courses/Card";
+import { getCourses } from "@/utils/getCourses"; // Import the getCourses utility
 
-// Krijojmë një interface për tipin e kursit
 interface Course {
   title: string;
   description: string;
@@ -15,35 +15,26 @@ interface Course {
 }
 
 const Index = () => {
-  // Deklarojmë gjendjen e kurseve me tipin Course[]
   const [courses, setCourses] = useState<Course[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    async function getAll() {
-      try {
-        const res = await fetch("http://localhost:5000/courses", {
-          method: "GET",
-          headers: { "Content-Type": "application/json" },
-          credentials: "include",
-        });
-
-        if (!res.ok) {
-          throw new Error(`HTTP Error! Status: ${res.status}`);
-        }
-
-        const result = await res.json();
-        setCourses(result);
-      } catch (error) {
-        console.error("Fetch error:", error);
+    async function fetchCourses() {
+      const { courses, error } = await getCourses();
+      if (error) {
+        setError(error);
+      } else {
+        setCourses(courses);
       }
+      setLoading(false);
     }
 
-    getAll();
+    fetchCourses();
   }, []);
 
   return (
     <div>
-      {/* TopSection për titullin dhe nën-titullin */}
       <div className="relative text-white overflow-hidden">
         <div className="absolute inset-0 bg-[url('/images/background.PNG')] bg-cover bg-center" />
         <div className="absolute inset-0" />
@@ -53,26 +44,28 @@ const Index = () => {
               Our Courses
             </h1>
             <p className="text-xl font-semibold md:text-xl mb-8">
-              1000+ | Available Courses 
+              1000+ | Available Courses
             </p>
             <p className="text-xl font-semibold md:text-xl mb-8">
               Free Courses
             </p>
-          
           </div>
         </div>
       </div>
 
-
-      {/* Kategoritë (nëse ju nevojitet, mund ta ndani në komponent tjetër) */}
       <Categories />
 
-      {/* Rendi i kurseve */}
+      {loading && <p className="text-center text-xl">Loading courses...</p>}
+      {error && <p className="text-center text-xl text-red-500">{error}</p>}
+
       <div className="grid mt-4 grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-6">
-        {courses.map((course) => (
-          // Përdorim _id për key
-          <Card key={course._id} course={course} />
-        ))}
+        {courses.length > 0 ? (
+          courses.map((course) => <Card key={course._id} course={course} />)
+        ) : (
+          <p className="col-span-full text-center text-xl">
+            No courses available at the moment.
+          </p>
+        )}
       </div>
     </div>
   );

@@ -1,3 +1,4 @@
+import { fetchUser } from "@/utils/fetchUser";
 import React, { useEffect, useState } from "react";
 
 const Index = () => {
@@ -5,18 +6,9 @@ const Index = () => {
   const [user, setUser] = useState<string>("");
   useEffect(() => {
     const getUser = async () => {
-      const res = await fetch("http://localhost:5000/auth/protected", {
-        method: "POST",
-        credentials: "include",
-      });
+      const res = await fetchUser();
 
-      const result = await res.json();
-
-      if (res.ok) {
-        setUser(result.user.id);
-      } else {
-        setUser("");
-      }
+      setUser(res.user.id);
     };
     getUser();
   }, []);

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { ChevronDown, ChevronUp, Star } from "lucide-react";
+import { fetchCategories } from "@/utils/fetchCategories";
 
 const Dropdown = ({
   title,
@@ -60,13 +61,14 @@ const CourseFilters = ({
   // Fetch categories from API
   useEffect(() => {
     const getCategories = async () => {
-      const res = await fetch("http://localhost:5000/categories", {
-        method: "GET",
-        credentials: "include",
-      });
-      const result = await res.json();
-      setCategories(result);
+      try {
+        const result = await fetchCategories();
+        setCategories(result);
+      } catch (err) {
+        console.error("Error fetching categories:", err);
+      }
     };
+
     getCategories();
   }, []);
 

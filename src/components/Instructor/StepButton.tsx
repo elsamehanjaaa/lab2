@@ -5,12 +5,14 @@ type StepButtonProps = {
   step: number;
   setStep: React.Dispatch<React.SetStateAction<number>>;
   totalSteps: number;
+  submit: (e: any) => void;
 };
 
 const StepButton: React.FC<StepButtonProps> = ({
   step,
   setStep,
   totalSteps,
+  submit,
 }) => {
   return (
     <div className="flex justify-between mt-8">
@@ -38,7 +40,8 @@ const StepButton: React.FC<StepButtonProps> = ({
             </div>
           </button>
           <button
-            type="submit"
+            type="button"
+            onClick={(e) => submit(e)}
             className="w-40 bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-6 rounded-lg transition"
           >
             Create Course

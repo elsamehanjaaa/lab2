@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import Image from "next/image";
+import { enrollInCourse } from "@/utils/enroll";
 
 // Interfaces
 interface Course {
@@ -56,52 +57,16 @@ const Index = () => {
   }, [courseId]);
 
   // Handle enrollment logic
+
   async function handleEnrollment() {
     try {
-      // Kontrollojmë nëse user-i është autentikuar
-      const res = await fetch("http://localhost:5000/auth/protected", {
-        method: "POST",
-        credentials: "include",
-      });
+      const result = await enrollInCourse(courseId as string); // <- Cleaner call
 
-      const auth = await res.json();
-
-      if (res.ok && auth.user) {
-        // Ruajmë të dhënat e user-it në state
-        const currentUser: User = {
-          id: auth.user.id,
-          name: auth.user.name,
-          email: auth.user.email,
-        };
-        setUser(currentUser);
-
-        // Vijojmë me procesin e enrollment-it
-        const enrollRes = await fetch("http://localhost:5000/enrollments", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          credentials: "include",
-          body: JSON.stringify({
-            user_id: currentUser.id,
-            course_id: courseId,
-          }),
-        });
-
-        if (!enrollRes.ok) {
-          throw new Error(`HTTP Error! Status: ${enrollRes.status}`);
-        }
-
-        const result = await enrollRes.json();
-        console.log("Enrollment successful:", result);
-
-        // Mund ta dërgoni user-in diku pas regjistrimit (p.sh. homepage)
-        router.push("/");
-      } else {
-        // Nëse nuk kemi user, e vendosim në null dhe tregojmë një mesazh
-        setUser(null);
-        alert("Please log in to enroll.");
-      }
+      // Redirect the user after successful enrollment
+      router.push("/");
     } catch (error) {
       console.error("Enrollment error:", error);
+      alert(error instanceof Error ? error.message : "Enrollment failed");
     }
   }
 
@@ -122,9 +87,7 @@ const Index = () => {
         </h1>
         {/* Lexojmë 'user' për të eliminuar gabimin e TS */}
         {user && (
-          <p className="mt-2 text-blue-600">
-            Mirë se erdhe, {user.name}!
-          </p>
+          <p className="mt-2 text-blue-600">Mirë se erdhe, {user.name}!</p>
         )}
       </div>
 

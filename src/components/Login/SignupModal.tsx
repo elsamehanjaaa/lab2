@@ -4,6 +4,8 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Mail, Lock, User, Loader2, X, Check } from "lucide-react";
+import { checkUsername } from "@/utils/checkUsername";
+import { signup } from "@/utils/signup";
 
 export default function SignUpModal({ onClose }: { onClose: () => void }) {
   const router = useRouter();
@@ -53,51 +55,31 @@ export default function SignUpModal({ onClose }: { onClose: () => void }) {
     setData({ ...data, username: value });
 
     try {
-      const res = await fetch("http://localhost:5000/auth/checkUsername", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username: value }),
-        credentials: "include",
-      });
-
-      const result = await res.json();
-      setUsernameExist(result);
-    } catch {}
+      const exists = await checkUsername(value);
+      setUsernameExist(exists);
+    } catch (err) {
+      console.error("Username check failed:", err);
+    }
   }
-
   async function handleSignUp(e: React.FormEvent) {
     e.preventDefault();
     setIsLoading(true);
 
-    // Recheck the validity of the inputs before submission
     const isValidUsername = !usernameExist && data.username.length > 3;
     const isValidEmail = emailValid;
     const isValidPassword = Object.values(passwordValid).every(
       (value) => value === true
     );
 
-    // If any of the conditions are not met, do not proceed
     if (!isValidUsername || !isValidEmail || !isValidPassword) {
       setIsLoading(false);
       return;
     }
 
     try {
-      const res = await fetch("http://localhost:5000/auth/signup", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-        credentials: "include",
-      });
-
-      const result = await res.json();
-
-      if (res.ok) {
-        router.refresh();
-        onClose(); // close modal
-      } else {
-        throw new Error(result.message || "Sign up failed");
-      }
+      await signup(data); // <- Cleaner call
+      router.refresh();
+      onClose();
     } catch (error) {
       alert(error instanceof Error ? error.message : "Sign up failed");
     } finally {
