@@ -1,44 +1,22 @@
-import {
-  IsString,
-  IsNumber,
-  IsArray,
-  ArrayNotEmpty,
-  IsPositive,
-  IsDate,
-  IsBoolean,
-} from 'class-validator';
-
 export class CreateCourseDto {
-  @IsString()
   title: string;
-
-  @IsString()
   description: string;
-
-  @IsString()
-  instructor_id: string;
-
-  @IsNumber()
-  @IsPositive()
   price: number;
-
-  @IsBoolean()
-  status: boolean = true;
-
-  @IsNumber()
-  rating: number;
-
-  @IsDate()
-  created_at: Date = new Date();
-
-  @IsArray()
-  @ArrayNotEmpty()
-  @IsNumber({}, { each: true })
-  categories: number[] = [];
-
-  @IsString()
+  categories: string[];
   thumbnail_url: string;
-
-  @IsString()
+  instructor_id: string;
   slug: string;
+  sections: {
+    id: number;
+    title: string;
+    lessons: {
+      id: number;
+      title: string;
+      content?: string;
+      type: string;
+      video_url: string;
+      duration: string;
+      url: string;
+    }[];
+  }[];
 }

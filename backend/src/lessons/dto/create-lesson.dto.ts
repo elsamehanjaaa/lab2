@@ -2,7 +2,7 @@ import { IsString, IsNumber, IsDate } from 'class-validator';
 
 export class CreateLessonDto {
   @IsString()
-  name: string;
+  title: string;
 
   @IsString()
   content: string;
@@ -12,6 +12,10 @@ export class CreateLessonDto {
 
   @IsString()
   video_url: string;
+  @IsString()
+  type: string;
+  @IsNumber()
+  duration: number;
   @IsString()
   url: string;
 

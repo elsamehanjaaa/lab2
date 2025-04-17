@@ -11,30 +11,89 @@ import {
   UseGuards,
   HttpException,
   HttpStatus,
+  UseInterceptors,
+  UploadedFiles,
 } from '@nestjs/common';
 import { Request } from 'express';
 import { CoursesService } from './courses.service';
 import { CreateCourseDto } from './dto/create-course.dto';
 import { UpdateCourseDto } from './dto/update-course.dto';
 import { JwtAuthGuard } from 'src/jwt-strategy/jwt-auth.guard';
-
+import { FilesInterceptor } from '@nestjs/platform-express';
+import { AnyFilesInterceptor } from '@nestjs/platform-express';
+import { UploadService } from 'src/upload/upload.service';
+import * as fs from 'fs';
+import * as path from 'path';
 @Controller('courses')
 export class CoursesController {
-  constructor(private readonly coursesService: CoursesService) {}
+  constructor(
+    private readonly coursesService: CoursesService,
+    private readonly uploadService: UploadService,
+  ) {}
 
   // Create a new course
   @UseGuards(JwtAuthGuard)
   @Post()
-  async create(@Body() createCourseDto: any, @Req() request: Request) {
-    if (!request.user) {
-      throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
-    }
+  @UseInterceptors(AnyFilesInterceptor())
+  async createCourse(
+    @UploadedFiles() files: Express.Multer.File[],
+    @Body('courseData') rawCourseData: string,
+    @Req() request: Request,
+  ) {
+    const courseData = JSON.parse(rawCourseData);
     const { id } = request.user as any; // Adjust according to your user structure
+    courseData.instructor_id = id;
+    // Process files sequentially
+    for (const file of files) {
+      const matches = file.fieldname.match(/videos\[(\d+)\]\[(\d+)\]/);
+      if (!matches) continue;
 
-    const { sections, ...courseData } = createCourseDto;
-    return this.coursesService.create(courseData, id, sections);
+      const sectionId = parseInt(matches[1]);
+      const lessonId = parseInt(matches[2]);
+
+      const section = courseData.sections.find((s: any) => s.id === sectionId);
+
+      if (!section) {
+        console.warn(`Section ${sectionId} not found`);
+        continue;
+      }
+
+      const lesson = section.lessons.find((l: any) => l.id === lessonId);
+      console.log(lesson);
+
+      if (!lesson) {
+        console.warn(`Lesson ${lessonId} not found in section ${sectionId}`);
+        continue;
+      }
+
+      try {
+        // Upload video and get metadata
+        const { url, duration } = await this.uploadService.handleVideoUpload(
+          file,
+          courseData.title,
+          lesson.title,
+        );
+
+        // Update lesson with video details
+        lesson.video_url = url;
+        lesson.duration = duration;
+
+        // Clean up temporary file
+      } catch (error) {
+        console.error(`Failed to process video for lesson ${lessonId}:`, error);
+        // Optionally: Keep processing other files but mark this lesson as failed
+      }
+    }
+    const { sections, ...restCourseData } = courseData;
+    console.log('Final course data:', courseData);
+
+    const data = await this.coursesService.create(restCourseData, sections);
+    // Save to database
+    return {
+      message: 'Course created successfully',
+      data: courseData,
+    };
   }
-
   @UseGuards(JwtAuthGuard)
   @Post('getCoursesByInstructor')
   getCoursesByInstructor(@Req() request: Request) {
@@ -120,6 +179,6 @@ export class CoursesController {
   // Remove a course by its ID
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.coursesService.remove(id);
+    // return this.coursesService.remove(id);
   }
 }
