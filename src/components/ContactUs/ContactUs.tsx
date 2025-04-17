@@ -2,10 +2,14 @@
 
 import { Mail, Phone, MapPin } from "lucide-react";
 
+
 export default function ContactUs() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const formData = new FormData(e.currentTarget);
+  
+    const form = e.currentTarget;
+    
+    const formData = new FormData(form);
     const values = {
       name: formData.get("name"),
       email: formData.get("email"),
@@ -21,17 +25,22 @@ export default function ContactUs() {
         body: JSON.stringify(values),
       });
   
+      const responseData = await response.json();
+      console.log("Server response:", responseData);
+  
       if (!response.ok) {
-        throw new Error("Failed to send message");
+        throw new Error(responseData.error || "Failed to send message");
       }
   
       alert("Message sent successfully!");
-      e.currentTarget.reset();
+      form.reset();
     } catch (error) {
       console.error("Error sending message:", error);
-      alert("Failed to send message. Please try again.");
+      alert(`Failed to send message: ${error}`);
     }
   };
+  
+  
   
 
   return (
