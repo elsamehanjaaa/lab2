@@ -70,21 +70,28 @@ const Lesson: React.FC<LessonProps> = ({
           className="w-full border bg-gray-200 border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 mb-2"
         />
       ) : (
-        <input
-          type="file"
-          accept="video/*"
-          onChange={(e) =>
-            onChange(
-              sectionId,
-              lesson.id,
-              "video",
-              e.target.files ? e.target.files[0] : undefined
-            )
-          }
-          className="w-full text-sm mb-2 text-gray-600 file:mr-4 file:py-2 file:px-4
+        <div className="flex">
+          <input
+            key={`empty`}
+            type="file"
+            accept="video/*"
+            onChange={(e) =>
+              onChange(
+                sectionId,
+                lesson.id,
+                "video",
+                e.target.files ? e.target.files[0] : undefined
+              )
+            }
+            className="w-32
+                        text-transparent text-sm mb-2  file:mr-4 file:py-2 file:px-4
               file:rounded-lg file:border-0 file:font-semibold
               file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-        />
+          />{" "}
+          {lesson.video && (
+            <p className="text-m  mt-1">Selected: {lesson.video.name}</p>
+          )}
+        </div>
       )}
       <input
         type="text"

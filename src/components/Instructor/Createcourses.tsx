@@ -7,7 +7,7 @@ import Thumbnail from "./Thumbnail";
 import Categories from "./Categories";
 import { fetchCategories } from "@/utils/fetchCategories";
 import { uploadThumbnail } from "@/utils/uploadThumbnail";
-import { createCourse } from "@/utils/createCategory";
+import { createCourse } from "@/utils/createCourse";
 const CreateCourseForm = () => {
   const [step, setStep] = useState(1); // Step 1 or 2
   const [title, setTitle] = useState("");
@@ -115,59 +115,82 @@ const CreateCourseForm = () => {
       prevSections.filter((section) => section.id !== sectionId)
     );
   };
-
+  function getCookie(name: string): string | null {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop()?.split(";").shift() || null;
+    return null;
+  }
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    if (!title || !description || selectedCategories.length === 0) {
-      alert("Please complete all required fields.");
-      return;
-    }
 
     const courseData = {
       title,
       description,
       price: parseFloat(price),
-      rating: 0,
       categories: selectedCategories,
       thumbnail_url: "",
       sections: sections,
     };
 
-    try {
-      function getCookie(name: string): string | null {
-        const value = `; ${document.cookie}`;
-        const parts = value.split(`; ${name}=`);
-        if (parts.length === 2) return parts.pop()?.split(";").shift() || null;
-        return null;
-      }
+    const formData = new FormData();
 
+    const cleanedCourseData = {
+      ...courseData,
+      sections: courseData.sections.map((section) => ({
+        ...section,
+        lessons: section.lessons.map(
+          (lesson: { [x: string]: any; video: any }) => {
+            const { video, ...rest } = lesson;
+            return rest;
+          }
+        ),
+      })),
+    };
+
+    formData.append("courseData", JSON.stringify(cleanedCourseData));
+
+    // Append videos to formData
+    courseData.sections.forEach((section) => {
+      section.lessons.forEach((lesson: { id: any; video: string | Blob }) => {
+        if (lesson.video) {
+          const fieldName = `videos[${section.id}][${lesson.id}]`;
+          formData.append(fieldName, lesson.video); // Append videos using section and lesson ids
+        }
+      });
+    });
+
+    try {
       const token = getCookie("access_token");
       if (!token) throw new Error("No access token found");
 
       if (thumbnail) {
-        const formData = new FormData();
-        formData.append("file", thumbnail);
-        formData.append("course", title);
-        const thumbnailResult = await uploadThumbnail({ token, formData });
-        courseData.thumbnail_url = thumbnailResult.url;
+        const ThumbnailData = new FormData();
+        ThumbnailData.append("file", thumbnail);
+        ThumbnailData.append("course", title);
+        const thumbnailResult = await uploadThumbnail({
+          token,
+          formData: ThumbnailData,
+        });
+        formData.append("thumbnail_url", thumbnailResult.url);
       }
 
-      const data = await createCourse(courseData, token);
+      const data = await createCourse(formData, token);
       console.log("Course created successfully:", data);
 
-      // Reset form
-      setTitle("");
-      setDescription("");
-      setPrice("");
-      setSelectedCategories([]);
-      setThumbnail(null);
-      setSections([]);
-      setStep(1);
+      // Reset form after success
+      // setTitle("");
+      // setDescription("");
+      // setPrice("");
+      // setSelectedCategories([]);
+      // setThumbnail(null);
+      // setSections([]);
+      // setStep(1);
     } catch (error) {
       console.error("Error creating course:", error);
     }
   };
+
   return (
     <div className="max-w-3xl mx-auto p-8 bg-white shadow-xl rounded-2xl min-h-[800px] flex flex-col justify-between">
       <h1 className="text-3xl font-bold mb-6 text-gray-800">

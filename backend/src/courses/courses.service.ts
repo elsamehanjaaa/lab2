@@ -26,11 +26,7 @@ export class CoursesService {
   ) {}
 
   // Create a new course
-  async create(
-    createCourseDto: CreateCourseDto,
-    instructor_id: string,
-    sections: any[],
-  ) {
+  async create(createCourseDto: CreateCourseDto, sections: any[]) {
     const generateSlug = (title: string): string => {
       return title
         .toLowerCase() // Make the title lowercase
@@ -39,10 +35,8 @@ export class CoursesService {
         .replace(/[^a-z0-9\-]/g, '') // Remove any characters that are not letters, numbers, or dashes
         .trim(); // Trim any leading/trailing spaces
     };
-
     // Generate the slug
     createCourseDto.slug = generateSlug(createCourseDto.title);
-    createCourseDto.instructor_id = instructor_id;
     // Insert course into Supabase
     const { data, error } = await this.supabaseService.insertData(
       'courses',
@@ -52,47 +46,45 @@ export class CoursesService {
       console.error('Error inserting data:', error);
       throw error;
     }
-
     // Insert course into MongoDB
     const mongo = await this.mongooseService.insertData(this.CoursesModel, {
       ...createCourseDto,
-      categories: createCourseDto.categories,
+      categories: createCourseDto.categories.map((category) =>
+        parseInt(category, 10),
+      ),
       _id: data[0].id,
     });
-
     if (!mongo) {
-      throw Error('Error inserting data into MongoDB');
+      throw Error('Error inserting data into MongoDB ');
     }
 
     const createSectionsPromises = sections.map(async (s) => {
       const section = await this.sectionService.create({
-        name: s.title,
+        title: s.title,
         index: s.id,
         course_id: data[0].id,
       });
-
       return section[0]; // You can return the section or any result if needed
     });
-
     const insertedSections = await Promise.all(createSectionsPromises);
-
     const createLessonsPromises = sections.map(async (s) => {
       s.lessons.map(async (l) => {
         const section = insertedSections.find(
           (section) => section.index === s.id,
         );
         const lesson = await this.lessonsService.create({
-          name: l.title,
-          content: l.content,
+          title: l.title,
+          content: l.content || '',
           video_url: l.video_url,
+          duration: l.duration,
           index: l.id,
           section_id: section.id,
           url: l.url,
+          type: l.type,
         });
         return lesson;
       });
     });
-
     // Wait for all async operations to complete
     await Promise.all(createLessonsPromises);
     return data;
@@ -268,31 +260,27 @@ export class CoursesService {
   }
   // Update a course
   async update(id: string, updateCourseDto: UpdateCourseDto) {
-    const { data, error } = await this.supabaseService.updateData(
-      'courses',
-      updateCourseDto,
-      id,
-    );
-    if (error) {
-      console.error('Error inserting data:', error);
-      throw error;
-    }
-
-    const mongo = await this.mongooseService.updateData(this.CoursesModel, id, {
-      ...updateCourseDto,
-      categories: updateCourseDto.categories,
-    });
-
-    if (!mongo) {
-      throw Error('Error inserting data into MongoDB');
-    }
-  }
-
-  // Remove a course
-  async remove(id: string) {
-    await this.supabaseService.deleteData('courses', id.toString());
-    await this.mongooseService.deleteData(this.CoursesModel, id.toString());
-
-    return { message: 'Course deleted successfully' };
+    //   const { data, error } = await this.supabaseService.updateData(
+    //     'courses',
+    //     updateCourseDto,
+    //     id,
+    //   );
+    //   if (error) {
+    //     console.error('Error inserting data:', error);
+    //     throw error;
+    //   }
+    //   const mongo = await this.mongooseService.updateData(this.CoursesModel, id, {
+    //     ...updateCourseDto,
+    //     categories: updateCourseDto.categories,
+    //   });
+    //   if (!mongo) {
+    //     throw Error('Error inserting data into MongoDB');
+    //   }
+    // }
+    // // Remove a course
+    // async remove(id: string) {
+    //   await this.supabaseService.deleteData('courses', id.toString());
+    //   await this.mongooseService.deleteData(this.CoursesModel, id.toString());
+    //   return { message: 'Course deleted successfully' };
   }
 }

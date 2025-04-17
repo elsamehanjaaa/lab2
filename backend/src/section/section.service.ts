@@ -23,7 +23,7 @@ export class SectionService {
   async create(createSectionDto: CreateSectionDto) {
     // Insert the section into Supabase (external database)
     const { data, error } = await this.supabaseService.insertData(
-      'section',
+      'sections',
       createSectionDto,
     );
 

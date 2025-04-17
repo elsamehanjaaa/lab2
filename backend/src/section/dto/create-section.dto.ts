@@ -2,7 +2,7 @@ import { IsString, IsNumber, IsDate } from 'class-validator';
 
 export class CreateSectionDto {
   @IsString()
-  name: string;
+  title: string;
 
   @IsNumber()
   index: number;

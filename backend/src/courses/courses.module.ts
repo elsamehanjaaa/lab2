@@ -10,6 +10,8 @@ import { EnrollmentsModule } from 'src/enrollments/enrollments.module';
 import { SectionModule } from 'src/section/section.module';
 import { LessonsModule } from 'src/lessons/lessons.module';
 import { LessonsService } from 'src/lessons/lessons.service'; // Import LessonsService
+import { UploadService } from 'src/upload/upload.service';
+import { R2Service } from 'src/r2/r2.service';
 
 @Module({
   imports: [
@@ -24,7 +26,9 @@ import { LessonsService } from 'src/lessons/lessons.service'; // Import LessonsS
     CoursesService,
     SupabaseService,
     MongooseService,
-    LessonsService, // Add LessonsService to providers
+    LessonsService,
+    R2Service,
+    UploadService, // Add LessonsService to providers
   ],
   exports: [
     CoursesService,
