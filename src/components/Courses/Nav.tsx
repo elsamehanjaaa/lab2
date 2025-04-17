@@ -44,15 +44,15 @@ const Nav: React.FC<NavProps> = ({ course }) => {
             <h1 className="text-2xl font-semibold">{course.title}</h1>
 
             <div className="flex items-center mt-2">
-              {[...Array(5)].map((_, i) => (
+              {/* {[...Array(5)].map((_, i) => (
                 <span
                   key={i}
                   className={i < Math.round(course.rating) ? "text-yellow-400" : "text-gray-500"}
                 >
                   ★
                 </span>
-              ))}
-              <span className="ml-2 text-gray-400">{course.rating.toFixed(1)}</span>
+              ))} 
+              <span className="ml-2 text-gray-400">{course.rating.toFixed(1)}</span>*/}
             </div>
           </div>
         )}

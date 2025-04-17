@@ -41,10 +41,26 @@ export class CoursesController {
     @Req() request: Request,
   ) {
     const courseData = JSON.parse(rawCourseData);
+
     const { id } = request.user as any; // Adjust according to your user structure
     courseData.instructor_id = id;
+
     // Process files sequentially
     for (const file of files) {
+      const thumbnail = file.fieldname.match('thumbnail');
+      if (thumbnail) {
+        try {
+          const { url } = await this.uploadService.handleThumbnailUpload(
+            file,
+            courseData.title,
+          );
+          courseData.thumbnail_url = url;
+        } catch (error) {
+          console.error(error);
+          // Optionally: Keep processing other files but mark this lesson as failed
+        }
+        continue;
+      }
       const matches = file.fieldname.match(/videos\[(\d+)\]\[(\d+)\]/);
       if (!matches) continue;
 
@@ -59,7 +75,6 @@ export class CoursesController {
       }
 
       const lesson = section.lessons.find((l: any) => l.id === lessonId);
-      console.log(lesson);
 
       if (!lesson) {
         console.warn(`Lesson ${lessonId} not found in section ${sectionId}`);
@@ -85,7 +100,6 @@ export class CoursesController {
       }
     }
     const { sections, ...restCourseData } = courseData;
-    console.log('Final course data:', courseData);
 
     const data = await this.coursesService.create(restCourseData, sections);
     // Save to database

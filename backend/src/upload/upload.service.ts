@@ -44,7 +44,6 @@ export class UploadService {
     fs.writeFileSync(tempFilePath, file.buffer);
 
     const duration = await this.getVideoDuration(tempFilePath);
-    console.log(duration);
 
     const url = await this.r2Service.uploadFile(
       file,

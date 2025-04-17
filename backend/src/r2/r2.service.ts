@@ -36,7 +36,7 @@ export class R2Service {
     });
 
     await this.s3Client.send(command);
-    return `${process.env.Cloudflare_Public_Url}/${key}`;
+    return `${process.env.Cloudflare_Lessons_Public_Url}/${key}`;
   }
 
   async uploadThumbnail(
@@ -55,6 +55,6 @@ export class R2Service {
 
     await this.s3Client.send(command);
 
-    return `${process.env.Cloudflare_Endpoint}/${bucket}/${key}`;
+    return `${process.env.Cloudflare_Thumbnail_Public_Url}/${key}`;
   }
 }

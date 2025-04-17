@@ -8,7 +8,6 @@ interface Course {
   title: string;
   description: string;
   price: number;
-  rating: number;
   slug: string;
   courseId: string;
   thumbnail_url?: string;
@@ -59,7 +58,7 @@ const CourseHeader: React.FC<CourseHeaderProps> = ({
 
           {course && (
             <div className="flex items-center mb-3">
-              {[...Array(5)].map((_, i) => (
+              {/* {[...Array(5)].map((_, i) => (
                 <span
                   key={i}
                   className={
@@ -69,17 +68,23 @@ const CourseHeader: React.FC<CourseHeaderProps> = ({
                   ★
                 </span>
               ))}
-              <span className="ml-2 text-gray-400">{course.rating.toFixed(1)}</span>
+              <span className="ml-2 text-gray-400">{course.rating.toFixed(1)}</span> */}
             </div>
           )}
 
           <div className="text-sm text-gray-400">
             <p className="mb-1">
-              Created by <span className="text-blue-400">{course?.instructorName || "Unknown"}</span>
+              Created by{" "}
+              <span className="text-blue-400">
+                {course?.instructorName || "Unknown"}
+              </span>
             </p>
             <p>
               Updated:{" "}
-              {course?.updatedAt ? new Date(course.updatedAt).toLocaleDateString() : "N/A"} | Language
+              {course?.updatedAt
+                ? new Date(course.updatedAt).toLocaleDateString()
+                : "N/A"}{" "}
+              | Language
               {course?.languages?.length! > 1 ? "s" : ""}:{" "}
               <span className="text-blue-300">
                 {course?.languages?.join(", ") || "English"}

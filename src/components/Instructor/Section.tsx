@@ -46,13 +46,6 @@ const Section: React.FC<SectionProps> = ({
           Remove Section
         </button>
       </div>
-      <button
-        type="button"
-        onClick={() => onAddLesson(section.id)}
-        className="w-full md:w-auto bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-lg transition mb-4"
-      >
-        Add Lesson
-      </button>
 
       {section.lessons.map((lesson) => (
         <Lesson
@@ -63,6 +56,13 @@ const Section: React.FC<SectionProps> = ({
           onRemove={onRemoveLesson}
         />
       ))}
+      <button
+        type="button"
+        onClick={() => onAddLesson(section.id)}
+        className="w-full md:w-auto bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-lg transition mb-4"
+      >
+        Add Lesson
+      </button>
     </div>
   );
 };

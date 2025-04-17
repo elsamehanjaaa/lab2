@@ -6,7 +6,6 @@ import { log } from "util";
 import Thumbnail from "./Thumbnail";
 import Categories from "./Categories";
 import { fetchCategories } from "@/utils/fetchCategories";
-import { uploadThumbnail } from "@/utils/uploadThumbnail";
 import { createCourse } from "@/utils/createCourse";
 const CreateCourseForm = () => {
   const [step, setStep] = useState(1); // Step 1 or 2
@@ -14,7 +13,7 @@ const CreateCourseForm = () => {
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
   const [categories, setCategories] = useState<any[]>([]);
-  const [thumbnail, setThumbnail] = useState<File | null>(null);
+  const [thumbnail, setThumbnail] = useState<Blob | null>(null);
   const [selectedCategories, setSelectedCategories] = useState<number[]>([]);
   const [sections, setSections] = useState<any[]>([]);
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -129,7 +128,6 @@ const CreateCourseForm = () => {
       description,
       price: parseFloat(price),
       categories: selectedCategories,
-      thumbnail_url: "",
       sections: sections,
     };
 
@@ -148,6 +146,10 @@ const CreateCourseForm = () => {
       })),
     };
 
+    if (thumbnail) {
+      formData.append("thumbnail", thumbnail);
+    }
+
     formData.append("courseData", JSON.stringify(cleanedCourseData));
 
     // Append videos to formData
@@ -164,19 +166,8 @@ const CreateCourseForm = () => {
       const token = getCookie("access_token");
       if (!token) throw new Error("No access token found");
 
-      if (thumbnail) {
-        const ThumbnailData = new FormData();
-        ThumbnailData.append("file", thumbnail);
-        ThumbnailData.append("course", title);
-        const thumbnailResult = await uploadThumbnail({
-          token,
-          formData: ThumbnailData,
-        });
-        formData.append("thumbnail_url", thumbnailResult.url);
-      }
-
       const data = await createCourse(formData, token);
-      console.log("Course created successfully:", data);
+      console.log(data);
 
       // Reset form after success
       // setTitle("");
@@ -190,7 +181,6 @@ const CreateCourseForm = () => {
       console.error("Error creating course:", error);
     }
   };
-
   return (
     <div className="max-w-3xl mx-auto p-8 bg-white shadow-xl rounded-2xl min-h-[800px] flex flex-col justify-between">
       <h1 className="text-3xl font-bold mb-6 text-gray-800">

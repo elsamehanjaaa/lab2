@@ -18,7 +18,6 @@ export const resetPassword = async (password: string): Promise<void> => {
     }
 
     const data = await res.json();
-    console.log("Password reset successful:", data);
     // Handle success (you can redirect or show a success message here)
   } catch (error) {
     console.error("Password reset error:", error);
