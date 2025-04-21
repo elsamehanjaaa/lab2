@@ -2,36 +2,32 @@
 
 import { Mail, Phone, MapPin } from "lucide-react";
 
-
 export default function ContactUs() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-  
     const form = e.currentTarget;
-    
+
     const formData = new FormData(form);
     const values = {
       name: formData.get("name"),
       email: formData.get("email"),
       message: formData.get("message"),
     };
-  
+
     try {
       const response = await fetch("/api/contact", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(values),
       });
-  
+
       const responseData = await response.json();
       console.log("Server response:", responseData);
-  
+
       if (!response.ok) {
         throw new Error(responseData.error || "Failed to send message");
       }
-  
+
       alert("Message sent successfully!");
       form.reset();
     } catch (error) {
@@ -39,61 +35,81 @@ export default function ContactUs() {
       alert(`Failed to send message: ${error}`);
     }
   };
-  
-  
-  
 
   return (
     <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-5xl mx-auto">
         {/* HEADER */}
         <div className="text-center mb-12">
-          <h1 className="text-4xl font-extrabold text-blue-950 mb-4">Get in Touch</h1>
-          <p className="text-gray-600 max-w-2xl mx-auto">
-            Have questions or want to collaborate? We would love to hear from you.
-            Fill out the form below or reach out directly through our contact information.
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-blue-950 mb-4">
+            Get in Touch
+          </h1>
+          <p className="text-base sm:text-lg text-gray-600 max-w-2xl mx-auto">
+            Have questions or want to collaborate? We’d love to hear from you.
+            Fill out the form below or reach out directly using our contact
+            information.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
+        {/* CONTENT */}
+        {/* 
+          - Moved from `lg:grid-cols-2` to `md:grid-cols-2` so two-column layout
+            begins at medium screens (~768px) instead of large (~1024px).
+        */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
           {/* FORM */}
-          <div className="bg-white rounded-lg shadow-md p-8">
+          <div className="bg-white rounded-lg shadow-md p-6 sm:p-8">
             <form onSubmit={handleSubmit} className="space-y-6">
               <div>
-                <label htmlFor="name" className="block font-medium mb-1">Name</label>
+                <label htmlFor="name" className="block font-medium mb-1">
+                  Name
+                </label>
                 <input
                   id="name"
                   name="name"
                   type="text"
                   placeholder="Your name"
                   required
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-md 
+                             focus:outline-none focus:ring-2 focus:ring-blue-500 
+                             shadow-sm"
                 />
               </div>
               <div>
-                <label htmlFor="email" className="block font-medium mb-1">Email</label>
+                <label htmlFor="email" className="block font-medium mb-1">
+                  Email
+                </label>
                 <input
                   id="email"
                   name="email"
                   type="email"
-                  placeholder="your@email.com"
+                  placeholder="you@example.com"
                   required
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-md 
+                             focus:outline-none focus:ring-2 focus:ring-blue-500 
+                             shadow-sm"
                 />
               </div>
               <div>
-                <label htmlFor="message" className="block font-medium mb-1">Message</label>
+                <label htmlFor="message" className="block font-medium mb-1">
+                  Message
+                </label>
                 <textarea
                   id="message"
                   name="message"
                   placeholder="How can we help you?"
                   required
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md min-h-[150px] focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-md 
+                             min-h-[150px] focus:outline-none focus:ring-2 
+                             focus:ring-blue-500 shadow-sm"
                 />
               </div>
               <button
                 type="submit"
-                className="w-full bg-blue-950 hover:bg-blue-400 text-white font-semibold px-4 py-2 rounded-md transition duration-300 shadow-md"
+                className="w-full bg-blue-950 text-white font-semibold 
+                           px-4 py-2 rounded-md transition duration-300 
+                           shadow-md hover:bg-blue-800 focus:outline-none 
+                           focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
               >
                 Send Message
               </button>
@@ -126,8 +142,10 @@ export default function ContactUs() {
                 <div>
                   <h3 className="font-semibold text-lg">Address</h3>
                   <p className="text-gray-600">
-                    Rr. Kolegji UBT<br />
-                    Prishtinë, 10000<br />
+                    Rr. Kolegji UBT
+                    <br />
+                    Prishtinë, 10000
+                    <br />
                     Kosovë
                   </p>
                 </div>
@@ -154,7 +172,7 @@ export default function ContactUs() {
             </div>
           </div>
         </div>
-      </div>
+      </div> 
     </div>
   );
 }

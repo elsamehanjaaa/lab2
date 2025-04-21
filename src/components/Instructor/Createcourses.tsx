@@ -1,8 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import Section from "./Section";
-import { ArrowLeft, ArrowRight } from "lucide-react";
 import StepButton from "./StepButton";
-import { log } from "util";
 import Thumbnail from "./Thumbnail";
 import Categories from "./Categories";
 import { fetchCategories } from "@/utils/fetchCategories";
@@ -168,15 +166,6 @@ const CreateCourseForm = () => {
 
       const data = await createCourse(formData, token);
       console.log(data);
-
-      // Reset form after success
-      // setTitle("");
-      // setDescription("");
-      // setPrice("");
-      // setSelectedCategories([]);
-      // setThumbnail(null);
-      // setSections([]);
-      // setStep(1);
     } catch (error) {
       console.error("Error creating course:", error);
     }
