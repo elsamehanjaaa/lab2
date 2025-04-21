@@ -67,7 +67,7 @@ export default function LoginModal({
 
           <div className="text-center mb-6">
             <BookOpen className="mx-auto h-10 w-10 text-blue-900" />
-            <h2 className="text-2xl font-bold text-gray-900">Welcome Back</h2>
+            <h2 className="text-2xl font-bold text-gray-900">Welcome</h2>
             <p className="text-gray-600 text-sm">
               Continue your learning journey
             </p>

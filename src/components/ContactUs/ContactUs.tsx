@@ -123,8 +123,8 @@ export default function ContactUs() {
                 <Mail className="w-7 h-7 text-blue-950 mt-1" />
                 <div>
                   <h3 className="font-semibold text-lg">Email</h3>
-                  <p className="text-gray-600">support@example.com</p>
-                  <p className="text-gray-600">sales@example.com</p>
+                  <p className="text-gray-600">EduSparksupport@gmail.com</p>
+                  <p className="text-gray-600">EduSparkinfo@gmail.com</p>
                 </div>
               </div>
 
