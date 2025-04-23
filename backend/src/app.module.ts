@@ -13,7 +13,11 @@ import { EnrollmentsModule } from './enrollments/enrollments.module';
 import { R2Service } from './r2/r2.service';
 import { SectionModule } from './section/section.module';
 import { LessonsModule } from './lessons/lessons.module';
+<<<<<<< Updated upstream
 import { UploadService } from './upload/upload.service';
+=======
+import { CourseDetailsModule } from './course_details/course_details.module';
+>>>>>>> Stashed changes
 import * as dotenv from 'dotenv';
 dotenv.config();
 
@@ -27,6 +31,7 @@ dotenv.config();
     EnrollmentsModule,
     SectionModule,
     LessonsModule,
+    CourseDetailsModule,
   ],
   controllers: [AppController],
   providers: [
