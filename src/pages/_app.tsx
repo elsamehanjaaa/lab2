@@ -6,11 +6,13 @@ import type { AppProps } from "next/app";
 
 import Header from "@/components/Homepage/Header";
 import Footer from "@/components/Homepage/Footer";
+import { useHandleOAuthRedirect } from "@/hooks/useHandleOAuthRedirect";
 
 export default function App({ Component, pageProps }: AppProps) {
   const router = useRouter();
   const excludeHeaderFooterPages = ["/admin", "/instructor"];
 
+  useHandleOAuthRedirect();
   return (
     <div className="flex flex-col min-h-screen">
       {/* Conditionally render Header and Footer based on the current page */}

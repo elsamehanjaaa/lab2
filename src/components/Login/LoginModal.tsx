@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { Mail, Lock, Loader2, BookOpen, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { loginUser } from "@/utils/loginUser";
+import { handleGoogleLogin } from "@/utils/handleGoogleLogin";
 
 export default function LoginModal({
   onClose,
@@ -113,6 +114,30 @@ export default function LoginModal({
                 Reset Password
               </button>
             </div>
+            <div className="flex items-center justify-center mt-2">
+              <div className="border-t border-gray-300 w-1/3"></div>
+              <span className="text-gray-500 text-sm px-2">or</span>
+              <div className="border-t border-gray-300 w-1/3"></div>
+            </div>
+
+            <button
+              type="button"
+              onClick={async () => {
+                try {
+                  const { url } = await handleGoogleLogin();
+                  if (url) {
+                    window.location.href = url; // Redirect to Google login
+                  }
+                } catch (err) {
+                  alert("Failed to start Google login");
+                  console.error(err);
+                }
+              }}
+              className="w-full mt-4 border cursor-pointer border-gray-300 py-3 rounded-xl text-gray-700 hover:bg-gray-100 flex items-center justify-center gap-2"
+            >
+              <img src="/icons/google.png" alt="Google" className="w-5 h-5" />
+              Continue with Google
+            </button>
           </form>
         </motion.div>
       </motion.div>

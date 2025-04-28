@@ -173,9 +173,6 @@ export class CoursesService {
     endPrice: number,
   ): Promise<Courses[]> {
     try {
-      console.log(
-        `Fetching courses with price range: ${startPrice} to ${endPrice}`,
-      );
       const courses = await this.CoursesModel.find({
         price: { $gte: startPrice, $lte: endPrice },
       }).exec();

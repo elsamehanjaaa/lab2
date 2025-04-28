@@ -8,6 +8,7 @@ import SignupModal from "../Login/SignupModal";
 import ResetPasswordModal from "../Login/ResetPasswordModal";
 import Search from "../Search/Search";
 import { fetchUser } from "@/utils/fetchUser";
+import { recoverSession } from "@/utils/recoverSession";
 import { handleLogout } from "@/utils/handleLogout";
 
 const Header = () => {
@@ -62,19 +63,15 @@ const Header = () => {
 
   // Fetch user info based on token
   useEffect(() => {
-    const getTokenFromCookies = () => {
-      const value = `; ${document.cookie}`;
-      const parts = value.split(`; access_token=`);
-      if (parts.length === 2) return parts.pop()?.split(";").shift() ?? "";
-    };
-
-    const token = getTokenFromCookies();
-    if (!token) return;
-
     const getUser = async () => {
-      const result = await fetchUser();
-      setUser(result.user.username);
+      const recover_session = await recoverSession();
+
+      if (recover_session !== undefined && recover_session !== null) {
+        setUser(recover_session.username);
+      }
       setIsLoggedIn(true);
+      clearInterval(interval);
+      console.log(user);
     };
 
     // Poll user data every second (could also use another approach)

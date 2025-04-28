@@ -14,7 +14,6 @@ const CategoryPage = () => {
   useEffect(() => {
     if (!category) return;
     async function getAll() {
-      console.log(category);
       try {
         const res = await fetch(
           "http://localhost:5000/categories/checkCategoryName",

@@ -29,6 +29,16 @@ export class AuthService {
       access_token: this.jwtService.sign(payload),
     };
   }
+  async login_with_google() {
+    const { url } = await this.supabaseService.signInWithOAuth('google');
+
+    if (!url) {
+      throw new UnauthorizedException('Failed to get Google login URL');
+    }
+
+    return { url }; // Frontend should redirect to this URL
+  }
+
   // auth.service.ts
   async updatePasswordWithAccessToken(
     access_token: string,

@@ -16,6 +16,18 @@ export class SupabaseService {
   async auth() {
     return this.supabase.auth;
   }
+  async signInWithOAuth(provider: 'google', redirectTo?: string) {
+    const { data, error } = await this.supabase.auth.signInWithOAuth({
+      provider,
+      options: {
+        redirectTo: redirectTo || process.env.OAUTH_REDIRECT_URL, // e.g., 'http://localhost:3000/auth/callback'
+      },
+    });
+
+    if (error) throw error;
+    return data; // contains the `url` to redirect the user to
+  }
+
   async signIn(email: string, password: string) {
     const { data, error } = await this.supabase.auth.signInWithPassword({
       email,

@@ -9,6 +9,7 @@ import {
   HttpException,
   Patch,
   BadRequestException,
+  Get,
 } from '@nestjs/common';
 import { Response, Request } from 'express';
 
@@ -60,6 +61,28 @@ export class AuthController {
       );
     }
   }
+  @Post('login-with-google')
+  async login_with_google(@Res() response: Response) {
+    try {
+      const { url } = await this.authService.login_with_google(); // Calls Supabase OAuth
+
+      if (!url) {
+        throw new HttpException(
+          'Failed to retrieve Google login URL',
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        );
+      }
+
+      // Redirect the user to Google's OAuth consent screen
+      return response.status(HttpStatus.OK).json({ url });
+    } catch (error) {
+      throw new HttpException(
+        error.message || 'Google OAuth login failed',
+        error.status || HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
   @Patch('reset-password')
   async resetPassword(@Req() req, @Body() body: { newPassword: string }) {
     const access_token = req.cookies?.access_token;
@@ -108,11 +131,10 @@ export class AuthController {
       path: '/',
     });
 
-    // ✅ Send a response
     return response.status(200).json({
-      message: 'Session started. You may now reset your password.',
+      id: data.user.id,
       email: data.user.email,
-      userId: data.user.id,
+      username: data.user.user_metadata?.full_name || null,
     });
   }
 
@@ -176,23 +198,5 @@ export class AuthController {
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
-  }
-
-  @UseGuards(JwtAuthGuard)
-  @Post('protected')
-  async protectedRoute(@Req() request: Request) {
-    if (!request.user) {
-      throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
-    }
-
-    // Destructure to extract only necessary user details
-    const { id, email, username } = request.user as any; // Adjust according to your user structure
-
-    // Return the user details with a 200 OK status
-    return {
-      statusCode: HttpStatus.OK, // Explicit OK status
-      message: 'Request successful',
-      user: { id, email, username }, // Only returning necessary user info
-    };
   }
 }
