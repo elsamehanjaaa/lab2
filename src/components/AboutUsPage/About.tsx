@@ -230,7 +230,7 @@ export default function AboutPage() {
                 passionate about education, diversity, and helping people
                 thrive.
               </p>
-              <Link href="#" className="text-[#4f46e5] font-semibold">
+              <Link href="/signupmodal" className="text-[#4f46e5] font-semibold">
                 Join our team →
               </Link>
             </div>

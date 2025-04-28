@@ -110,6 +110,7 @@ const Block: React.FC<{
 
 const Hero = () => {
   const [current, setCurrent] = useState(0);
+  const [showStory, setShowStory] = useState(false);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -510,12 +511,78 @@ const Hero = () => {
               <br />
               Developed Worldwide
             </p>
-            <Link
-              href="/about"
-              className="mt-2 text-blue-800 font-medium hover:underline"
-            >
-              Learn about <strong>Our Story</strong>
-            </Link>
+            <button
+  onClick={() => setShowStory(true)}
+  className="mt-2 text-blue-800 font-medium hover:underline text-left"
+>
+  Learn about <strong>Our Story</strong>
+</button>
+            {showStory && (
+    <div className="fixed inset-0 bg-opacity-40 backdrop-blur-sm flex justify-center items-center z-50 p-4 transition duration-300">
+    <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-3xl w-full relative overflow-y-auto max-h-[80vh] text-left">
+      {/* Close button */}
+      <button
+        onClick={() => setShowStory(false)}
+        className="absolute top-4 right-4 text-gray-500 hover:text-black text-3xl font-bold"
+      >
+        ×
+      </button>
+  
+      {/* Modal Content */}
+      <h2 className="text-3xl font-bold mb-6 text-center">Our Story</h2>
+      <div className="text-lg leading-8 text-gray-700 space-y-6 px-2 md:px-6 text-justify">
+  <p className="first-letter:text-3xl first-letter:font-bold first-letter:text-blue-950 ">
+    Founded in 2021 by visionary entrepreneur <strong>Elena Brooks</strong> in the heart of <strong>Kosovo</strong>,
+    <strong> EduSpark</strong> was created with a powerful mission: to revolutionize education by making high-quality
+    online learning accessible, engaging, and transformative for learners across the globe.
+  </p>
+
+  <p>
+    Recognizing the urgent need for flexible, modern educational solutions in an increasingly digital world,
+    Elena set out to build a platform that would not only deliver knowledge but also inspire personal and professional growth.
+    She brought together a team of passionate educators, technologists, and innovators who shared a common belief —
+    that learning should be a dynamic, personalized journey, not a one-size-fits-all experience.
+  </p>
+
+  <p>
+    From the beginning, EduSpark distinguished itself through its commitment to innovation and learner-centric design.
+    Our platform offers a diverse range of courses across technology, business, languages, and creative fields,
+    each carefully curated to meet the evolving demands of the global workforce.
+    But EduSpark is more than just a course provider; it is a thriving learning community.
+    Through interactive modules, personalized learning paths, live mentorship, and peer collaboration,
+    we ensure that every learner feels supported, challenged, and inspired.
+  </p>
+
+  <p>
+    Our impact has been remarkable. In just a few short years, EduSpark has grown from a promising local startup
+    into a trusted global platform, serving thousands of students across continents.
+    Our learners are diverse — professionals seeking new skills, students preparing for future careers,
+    entrepreneurs building their dreams — and their successes continue to fuel our commitment to excellence.
+  </p>
+
+  <p>
+    At EduSpark, we believe that education is the foundation for innovation, empowerment, and positive change.
+    That is why we continually invest in advanced technologies, data-driven personalization,
+    and community-building initiatives to enhance the learning experience.
+  </p>
+
+  <p>
+    As we look to the future, our vision remains steadfast:{" "}
+    <em className="text-blue-950 font-semibold">
+      to ignite curiosity, cultivate lifelong learning,
+      and empower individuals everywhere to unlock their full potential through the power of education.
+    </em>
+  </p>
+
+  <p>
+    EduSpark is proud to be a story that started in Kosovo — and even prouder to be shaping the future of learning worldwide.
+  </p>
+</div>
+
+        </div>
+      </div>
+      
+      )}
 
             {/* Decorative Map Image */}
             <div className="absolute bottom-4 right-4 opacity-90 hidden md:block">
@@ -523,7 +590,7 @@ const Hero = () => {
                 src="/icons/maps.png"
                 alt="Map Illustration"
                 width={120}
-                height={120}
+                height={120} 
               />
             </div>
           </div>
