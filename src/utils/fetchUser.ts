@@ -1,13 +1,17 @@
 export const fetchUser = async () => {
-  const response = await fetch("http://localhost:5000/auth/protected", {
-    method: "POST",
-    credentials: "include",
+  const response = await fetch("http://localhost:5000/auth/me", {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    credentials: "include", // Ensure cookies are included
   });
 
   if (!response.ok) {
-    throw new Error("Failed to fetch users");
+    return null;
   }
 
   const result = await response.json();
+
   return result;
 };

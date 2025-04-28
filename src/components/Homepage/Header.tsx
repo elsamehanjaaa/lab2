@@ -64,14 +64,16 @@ const Header = () => {
   // Fetch user info based on token
   useEffect(() => {
     const getUser = async () => {
-      const recover_session = await recoverSession();
+      const token = localStorage.getItem("access_token");
+      if (token) {
+        const recover_session = await fetchUser();
 
-      if (recover_session !== undefined && recover_session !== null) {
-        setUser(recover_session.username);
+        if (recover_session) {
+          setUser(recover_session.username);
+          setIsLoggedIn(true);
+          clearInterval(interval);
+        }
       }
-      setIsLoggedIn(true);
-      clearInterval(interval);
-      console.log(user);
     };
 
     // Poll user data every second (could also use another approach)
@@ -85,6 +87,11 @@ const Header = () => {
     if (res.ok) {
       setIsLoggedIn(false);
       setUser(undefined);
+
+      localStorage.removeItem("access_token");
+      localStorage.removeItem("refresh_token");
+      localStorage.removeItem("expires_at");
+      localStorage.removeItem("token_type");
     }
   };
 

@@ -3,12 +3,11 @@ import React, { useEffect, useState } from "react";
 
 const Index = () => {
   const [courses, setCourses] = useState<{ id: string; title: string }[]>([]);
-  const [user, setUser] = useState<string>("");
+  const [userId, setUserId] = useState<string>("");
   useEffect(() => {
     const getUser = async () => {
       const res = await fetchUser();
-
-      setUser(res.user.id);
+      setUserId(res.id);
     };
     getUser();
   }, []);
@@ -23,7 +22,7 @@ const Index = () => {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            user_id: user,
+            user_id: userId,
           }),
         }
       );
@@ -35,7 +34,7 @@ const Index = () => {
     };
 
     getUserCourses();
-  }, [user]);
+  }, [userId]);
 
   return (
     <div className="p-4">

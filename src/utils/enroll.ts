@@ -14,10 +14,11 @@ interface EnrollmentData {
 export const enrollInCourse = async (courseId: string): Promise<any> => {
   // Check if the user is authenticated
   const auth = await fetchUser();
+
   const currentUser: User = {
-    id: auth.user.id,
-    name: auth.user.name,
-    email: auth.user.email,
+    id: auth.id,
+    name: auth.username,
+    email: auth.email,
   };
 
   // Proceed with the enrollment process

@@ -13,6 +13,8 @@ export const loginUser = async (data: LoginData) => {
 
   const result = await res.json();
 
+  localStorage.setItem("access_token", result.access_token);
+
   if (!res.ok) {
     throw new Error(result.message || "Login failed");
   }

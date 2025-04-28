@@ -11,6 +11,7 @@ import {
   BadRequestException,
   Get,
 } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
 import { Response, Request } from 'express';
 
 // Extend the Request interface to include the user property
@@ -29,174 +30,116 @@ export class AuthController {
   @Post('login')
   async login(
     @Body() body: { email: string; password: string },
-    @Res() response: Response,
+    @Res() res: Response,
   ) {
-    try {
-      const user = await this.authService.validateUser(
-        body.email,
-        body.password,
-      );
-      if (!user) {
-        throw new HttpException(
-          'Invalid email or password',
-          HttpStatus.UNAUTHORIZED,
-        );
-      }
-      const token = await this.authService.login(user.user);
+    const user = await this.authService.validateUser(body.email, body.password);
+    const token = await this.authService.login(user.user);
 
-      response.cookie('access_token', token.access_token, {
-        httpOnly: false,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict',
-        maxAge: 60 * 60 * 1000, // 1 hour
-      });
+    res.cookie('access_token', token.access_token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 60 * 60 * 1000, // 1 hour
+    });
 
-      response
-        .status(HttpStatus.OK)
-        .json({ message: 'Logged in successfully' });
-    } catch (error) {
-      throw new HttpException(
-        error.message || 'Login failed',
-        error.status || HttpStatus.UNAUTHORIZED,
-      );
-    }
-  }
-  @Post('login-with-google')
-  async login_with_google(@Res() response: Response) {
-    try {
-      const { url } = await this.authService.login_with_google(); // Calls Supabase OAuth
-
-      if (!url) {
-        throw new HttpException(
-          'Failed to retrieve Google login URL',
-          HttpStatus.INTERNAL_SERVER_ERROR,
-        );
-      }
-
-      // Redirect the user to Google's OAuth consent screen
-      return response.status(HttpStatus.OK).json({ url });
-    } catch (error) {
-      throw new HttpException(
-        error.message || 'Google OAuth login failed',
-        error.status || HttpStatus.INTERNAL_SERVER_ERROR,
-      );
-    }
+    return res.status(HttpStatus.OK).json({
+      message: 'Logged in successfully',
+      access_token: token.access_token,
+    });
   }
 
-  @Patch('reset-password')
-  async resetPassword(@Req() req, @Body() body: { newPassword: string }) {
-    const access_token = req.cookies?.access_token;
-    if (!access_token) {
-      throw new BadRequestException('No session found');
-    }
-
-    const { data } = await this.authService.recovery_session(access_token);
-    if (!data?.user) {
-      throw new BadRequestException('Invalid token');
-    }
-    const updateResult = await this.authService.updatePasswordWithAccessToken(
-      access_token,
-      body.newPassword,
+  @Post('signup')
+  async signup(
+    @Body() body: { username: string; email: string; password: string },
+    @Res() res: Response,
+  ) {
+    const user = await this.authService.signup(
+      body.username,
+      body.email,
+      body.password,
     );
+    const token = await this.authService.login(user.user);
 
-    if (updateResult.error) {
-      throw new BadRequestException(updateResult.error);
+    res.cookie('access_token', token.access_token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 60 * 60 * 1000,
+    });
+
+    return res
+      .status(HttpStatus.OK)
+      .json({ message: 'Signup successful', access_token: token.access_token });
+  }
+
+  @Post('refresh')
+  async refreshToken(@Req() req: Request, @Res() res: Response) {
+    const refresh_token = req.cookies?.refresh_token;
+    if (!refresh_token) {
+      throw new HttpException(
+        'Refresh token not found',
+        HttpStatus.UNAUTHORIZED,
+      );
     }
 
-    return { message: 'Password updated successfully' };
+    const tokens = await this.authService.refreshToken(refresh_token);
+
+    res.cookie('access_token', tokens.access_token, {
+      httpOnly: false,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 15 * 60 * 1000, // 15 minutes
+    });
+
+    return res
+      .status(HttpStatus.OK)
+      .json({ access_token: tokens.access_token });
   }
+  @Post('logout')
+  async logout(@Res() res: Response) {
+    res.clearCookie('access_token', {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+    });
+
+    return res
+      .status(HttpStatus.OK)
+      .json({ message: 'Logged out successfully' });
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('me')
+  async getProfile(@Req() req: Request, @Res() res: Response) {
+    const user = req.user as any;
+    return res.status(HttpStatus.OK).json({
+      id: user.id,
+      email: user.email,
+      username: user.username,
+    });
+  }
+
   @Post('send-reset-password')
   async sendResetPassword(@Body() body: { email: string }) {
     return await this.authService.sendResetPassword(body.email);
   }
-  @Post('recovery-session')
-  async recovery_session(
-    @Body() body: { access_token: string },
-    @Res() response: Response,
-  ) {
-    const { access_token } = body;
-    const { data, error } =
-      await this.authService.recovery_session(access_token);
-    if (!data || error) {
-      throw new HttpException(
-        'Invalid email or password',
-        HttpStatus.UNAUTHORIZED,
-      );
-    }
-    response.cookie('access_token', access_token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      maxAge: 10 * 60 * 1000, // 10 minutes
-      path: '/',
-    });
 
-    return response.status(200).json({
-      id: data.user.id,
-      email: data.user.email,
-      username: data.user.user_metadata?.full_name || null,
-    });
+  @Patch('reset-password')
+  @UseGuards(JwtAuthGuard)
+  async resetPassword(
+    @Req() req: Request,
+    @Body() body: { newPassword: string },
+  ) {
+    const user = req.user as any;
+    return await this.authService.updatePassword(user.sub, body.newPassword);
   }
 
   @Post('checkUsername')
   async checkUsername(
     @Body() body: { username: string },
-    @Res() response: Response,
+    @Res() res: Response,
   ) {
     const data = await this.authService.checkUsername(body.username);
-
-    response.status(HttpStatus.OK).json(data.user);
-  }
-  @Post('signup')
-  async signup(
-    @Body() body: { username: string; email: string; password: string },
-    @Res() response: Response,
-  ) {
-    try {
-      const user = await this.authService.signup(
-        body.username,
-        body.email,
-        body.password,
-      );
-
-      const token = await this.authService.login(user.user);
-
-      response.cookie('access_token', token.access_token, {
-        httpOnly: false,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict',
-        maxAge: 60 * 60 * 1000, // 1 hour
-      });
-
-      response
-        .status(HttpStatus.OK)
-        .json({ message: 'sign up in successfully' });
-    } catch (error) {
-      throw new HttpException(
-        error.message || 'signup failed',
-        error.status || HttpStatus.UNAUTHORIZED,
-      );
-    }
-  }
-
-  @Post('logout')
-  async logout(@Res() response: Response) {
-    try {
-      // Clear the access_token cookie
-      response.clearCookie('access_token', {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict',
-      });
-
-      return response
-        .status(HttpStatus.OK)
-        .json({ message: 'Logged out successfully' });
-    } catch (error) {
-      throw new HttpException(
-        'Logout failed',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
-    }
+    res.status(HttpStatus.OK).json(data.user);
   }
 }

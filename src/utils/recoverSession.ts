@@ -8,7 +8,7 @@ export const recoverSession = async (): Promise<
     if (!access_token) {
       return undefined;
     }
-    const res = await fetch("http://localhost:5000/auth/recovery-session", {
+    const res = await fetch("http://localhost:5000/auth/refresh", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
