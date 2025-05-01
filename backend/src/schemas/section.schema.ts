@@ -7,7 +7,7 @@ export class Section extends Document {
   declare _id: string;
 
   @Prop()
-  name: string;
+  title: string;
 
   @Prop({ required: true, type: Number })
   index: number;

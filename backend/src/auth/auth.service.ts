@@ -9,16 +9,17 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  async validateUser(email: string, password: string) {
+  async login(email: string, password: string) {
     const { user, session } = await this.supabaseService.signIn(
       email,
       password,
     );
     if (!user) throw new UnauthorizedException('Invalid credentials');
-    return { user, session };
+
+    return { session };
   }
 
-  async login(user: any) {
+  async validateUser(user: any) {
     const payload = {
       sub: user.id,
       username: user.user_metadata?.full_name || '',
@@ -38,16 +39,37 @@ export class AuthService {
   }
   async refreshToken(refreshToken: string) {
     try {
-      const payload = await this.jwtService.verifyAsync(refreshToken);
-      const newAccessToken = this.jwtService.sign(
-        {
-          sub: payload.sub,
-          username: payload.username,
-          email: payload.email,
-        },
-        { expiresIn: '15m' },
-      );
-      return { access_token: newAccessToken };
+      const { data, error } = await (
+        await this.supabaseService.auth()
+      ).refreshSession({
+        refresh_token: refreshToken,
+      });
+      if (error) {
+        console.log(error);
+      }
+      return {
+        access_token: data.session?.access_token,
+        refresh_token: data.session?.refresh_token,
+      };
+    } catch (error) {
+      throw new UnauthorizedException('Invalid refresh token');
+    }
+  }
+  async setSession(refreshToken: string, accessToken: string) {
+    try {
+      const { data, error } = await (
+        await this.supabaseService.auth()
+      ).setSession({
+        refresh_token: refreshToken,
+        access_token: accessToken,
+      });
+      if (error) {
+        throw new UnauthorizedException('Invalid refresh token');
+      }
+      return {
+        access_token: data.session?.access_token,
+        refresh_token: data.session?.refresh_token,
+      };
     } catch (error) {
       throw new UnauthorizedException('Invalid refresh token');
     }

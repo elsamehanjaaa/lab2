@@ -63,6 +63,15 @@ export class LessonsService {
     const lessons = await this.LessonsModel.find({ course_id: courseId });
     return lessons;
   }
+  async getLessonsByCourseId(section_id: string) {
+    const lessons = await this.LessonsModel.find({
+      section_id: section_id,
+    })
+      .sort({ index: 1 })
+      .exec();
+
+    return lessons;
+  }
 
   // Remove a lesson by ID (from both Supabase and MongoDB)
   async remove(id: string) {

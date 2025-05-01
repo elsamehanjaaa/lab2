@@ -17,103 +17,143 @@ export class SupabaseService {
     return this.supabase.auth;
   }
   async signInWithOAuth(provider: 'google', redirectTo?: string) {
-    const { data, error } = await this.supabase.auth.signInWithOAuth({
-      provider,
-      options: {
-        redirectTo: redirectTo || process.env.OAUTH_REDIRECT_URL, // e.g., 'http://localhost:3000/auth/callback'
-      },
-    });
+    try {
+      const { data, error } = await this.supabase.auth.signInWithOAuth({
+        provider,
+        options: {
+          redirectTo: redirectTo || process.env.OAUTH_REDIRECT_URL, // e.g., 'http://localhost:3000/auth/callback'
+        },
+      });
 
-    if (error) throw error;
-    return data; // contains the `url` to redirect the user to
+      if (error) throw error;
+      return data; // contains the `url` to redirect the user to
+    } catch (error) {
+      throw error;
+    }
   }
 
   async signIn(email: string, password: string) {
-    const { data, error } = await this.supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-    if (error) throw error;
-    return data;
+    try {
+      const { data, error } = await this.supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+      if (error) throw error;
+      return data;
+    } catch (error) {
+      throw error;
+    }
   }
   async getUserFromRequest(req: Request) {
-    const accessToken = req.cookies['access_token']; // Get access_token from cookies
+    try {
+      const accessToken = req.cookies['access_token']; // Get access_token from cookies
 
-    if (!accessToken) {
-      throw new Error('Access token is missing in cookies');
+      if (!accessToken) {
+        throw new Error('Access token is missing in cookies');
+      }
+
+      const { data, error } = await this.supabase.auth.getUser(accessToken);
+
+      if (error) {
+        throw new Error('Failed to get user: ' + error.message);
+      }
+
+      return data; // Return user data including the ID
+    } catch (error) {
+      throw error;
     }
-
-    const { data, error } = await this.supabase.auth.getUser(accessToken);
-
-    if (error) {
-      throw new Error('Failed to get user: ' + error.message);
-    }
-
-    return data; // Return user data including the ID
   }
   async signup(username: string, email: string, password: string) {
-    const { data, error } = await this.supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: {
-          full_name: username,
+    try {
+      const { data, error } = await this.supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            full_name: username,
+          },
         },
-      },
-    });
-    if (error) throw error;
+      });
+      if (error) throw error;
 
-    return data;
+      return data;
+    } catch (error) {
+      throw error;
+    }
   }
   async checkUsername(username: string) {
-    // List all users
-    const { data, error } = await this.supabase.auth.admin.listUsers();
+    try {
+      // List all users
+      const { data, error } = await this.supabase.auth.admin.listUsers();
 
-    if (error) throw error;
+      if (error) throw error;
 
-    const user = data.users.find(
-      (user) => user.user_metadata?.full_name === username,
-    );
-    return user ? true : false;
+      const user = data.users.find(
+        (user) => user.user_metadata?.full_name === username,
+      );
+      return user ? true : false;
+    } catch (error) {
+      throw error;
+    }
   }
 
   async getData(table: string) {
-    const { data, error } = await this.supabase.from(table).select();
-    if (error) throw error;
-    return data;
+    try {
+      const { data, error } = await this.supabase.from(table).select();
+      if (error) throw error;
+      return data;
+    } catch (error) {
+      throw error;
+    }
   }
   async getDataById(table: string, id: string) {
-    const { data, error } = await this.supabase
-      .from(table)
-      .select()
-      .eq('id', id);
-    if (error) throw error;
-    return data;
+    try {
+      const { data, error } = await this.supabase
+        .from(table)
+        .select()
+        .eq('id', id);
+      if (error) throw error;
+      return data;
+    } catch (error) {
+      throw error;
+    }
   }
   async insertData(
     table: string,
     data: any,
   ): Promise<{ data: any; error: any }> {
-    const { data: insertedData, error } = await this.supabase
-      .from(table)
-      .insert(data)
-      .select();
-    if (error) throw error;
-    return { data: insertedData, error };
+    try {
+      const { data: insertedData, error } = await this.supabase
+        .from(table)
+        .insert(data)
+        .select();
+      if (error) throw error;
+      return { data: insertedData, error };
+    } catch (error) {
+      throw error;
+    }
   }
 
   async updateData(table: string, data: any, id: string) {
-    const { data: updatedData, error } = await this.supabase
-      .from(table)
-      .update(data)
-      .match({ id })
-      .select();
-    if (error) throw error;
-    return { data: updatedData, error };
+    try {
+      const { data: updatedData, error } = await this.supabase
+        .from(table)
+        .update(data)
+        .match({ id })
+        .select();
+      if (error) throw error;
+      return { data: updatedData, error };
+    } catch (error) {
+      throw error;
+    }
   }
 
   async deleteData(table: string, id: string) {
-    const { error } = await this.supabase.from(table).delete().match({ id });
-    if (error) throw error;
+    try {
+      const { error } = await this.supabase.from(table).delete().match({ id });
+      if (error) throw error;
+    } catch (error) {
+      throw error;
+    }
   }
 }

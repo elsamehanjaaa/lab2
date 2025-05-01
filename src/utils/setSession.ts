@@ -1,20 +1,19 @@
 // utils/recoverySession.ts
 
-export const recoverSession = async (): Promise<
-  { username: any } | undefined
-> => {
+export const setSession = async (): Promise<{ username: any } | undefined> => {
   try {
     const refresh_token = localStorage.getItem("refresh_token");
+    const access_token = localStorage.getItem("access_token");
 
-    if (!refresh_token) {
+    if (!refresh_token || !access_token) {
       return undefined;
     }
-    const res = await fetch("http://localhost:5000/auth/refresh", {
+    const res = await fetch("http://localhost:5000/auth/set-session", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ refresh_token }),
+      body: JSON.stringify({ refresh_token, access_token }),
       credentials: "include", // Ensure cookies are included
     });
 

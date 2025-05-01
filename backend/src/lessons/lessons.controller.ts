@@ -29,7 +29,10 @@ export class LessonsController {
   findOne(@Param('id') id: string) {
     return this.lessonsService.findOne(id);
   }
-
+  @Post('getLessonsByCourse')
+  async getLessonsByCourseId(@Body() body: { section_id: string }) {
+    return this.lessonsService.getLessonsByCourseId(body.section_id);
+  }
   // @Patch(':id')
   // update(@Param('id') id: string, @Body() updateLessonDto: UpdateLessonDto) {
   //   return this.lessonsService.update(id, updateLessonDto);

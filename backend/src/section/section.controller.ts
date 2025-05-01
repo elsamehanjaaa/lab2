@@ -29,6 +29,10 @@ export class SectionController {
   findOne(@Param('id') id: string) {
     return this.sectionService.findOne(id);
   }
+  @Post('getSectionsByCourseId')
+  async getSectionsByCourseId(@Body() body: { course_id: string }) {
+    return this.sectionService.getSectionsByCourseId(body.course_id);
+  }
 
   // @Patch(':id')
   // update(@Param('id') id: string, @Body() updateSectionDto: UpdateSectionDto) {

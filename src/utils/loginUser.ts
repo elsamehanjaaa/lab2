@@ -1,6 +1,7 @@
 interface LoginData {
   email: string;
   password: string;
+  rememberMe?: boolean;
 }
 
 export const loginUser = async (data: LoginData) => {
@@ -14,10 +15,11 @@ export const loginUser = async (data: LoginData) => {
   const result = await res.json();
 
   localStorage.setItem("access_token", result.access_token);
+  localStorage.setItem("refresh_token", result.refresh_token);
 
   if (!res.ok) {
     throw new Error(result.message || "Login failed");
   }
 
-  return result;
+  return result.user;
 };

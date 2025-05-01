@@ -17,7 +17,11 @@ export default function LoginModal({
 }) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
-  const [data, setData] = useState({ email: "", password: "" });
+  const [data, setData] = useState({
+    email: "",
+    password: "",
+    rememberMe: false,
+  });
 
   // Lock scroll when modal is open
   useEffect(() => {
@@ -97,6 +101,18 @@ export default function LoginModal({
                 required
               />
             </div>
+            <div className="flex items-center justify-between mb-4">
+              <label className="flex items-center text-sm text-gray-600">
+                <input
+                  type="checkbox"
+                  className="mr-2"
+                  onChange={(e) =>
+                    setData({ ...data, rememberMe: !data.rememberMe })
+                  }
+                />
+                Remember me
+              </label>
+            </div>
 
             <button
               type="submit"
@@ -124,10 +140,7 @@ export default function LoginModal({
               type="button"
               onClick={async () => {
                 try {
-                  const { url } = await handleGoogleLogin();
-                  if (url) {
-                    window.location.href = url; // Redirect to Google login
-                  }
+                  await handleGoogleLogin();
                 } catch (err) {
                   alert("Failed to start Google login");
                   console.error(err);

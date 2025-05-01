@@ -57,6 +57,15 @@ export class EnrollmentsService {
 
     return courses;
   }
+  async checkAccess(id: string, course_id: string) {
+    const access = await this.EnrollmentsModel.findOne({
+      user_id: id,
+      course_id,
+    });
+
+    if (!access) return false;
+    return true;
+  }
 
   async remove(id: string) {
     await this.supabaseService.deleteData('enrollments', id);

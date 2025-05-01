@@ -112,15 +112,13 @@ const CreateCourseForm = () => {
       prevSections.filter((section) => section.id !== sectionId)
     );
   };
-  function getCookie(name: string): string | null {
-    const value = `; ${document.cookie}`;
-    const parts = value.split(`; ${name}=`);
-    if (parts.length === 2) return parts.pop()?.split(";").shift() || null;
-    return null;
-  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
+    if (!title || !description || !price || !selectedCategories || !sections) {
+      alert("Please Fill all data");
+      return;
+    }
     const courseData = {
       title,
       description,
@@ -161,7 +159,7 @@ const CreateCourseForm = () => {
     });
 
     try {
-      const token = getCookie("access_token");
+      const token = localStorage.getItem("access_token");
       if (!token) throw new Error("No access token found");
 
       const data = await createCourse(formData, token);

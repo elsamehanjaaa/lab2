@@ -1,6 +1,35 @@
 import { useState } from "react";
 import CreateCourseForm from "../../components/Instructor/Createcourses";
+import { GetServerSideProps } from "next";
+import { parse } from "cookie";
+import { checkInstructorRole } from "@/utils/checkInstructorRole";
 
+export const getServerSideProps: GetServerSideProps = async ({ req }) => {
+  const cookies = parse(req.headers.cookie || "");
+  const access_token = cookies["access_token"];
+
+  if (!access_token) {
+    return {
+      redirect: {
+        destination: "/",
+        permanent: false,
+      },
+    };
+  }
+
+  const access = await checkInstructorRole(access_token);
+  if (!access) {
+    return {
+      redirect: {
+        destination: "/",
+        permanent: false,
+      },
+    };
+  }
+  return {
+    props: {}, // Return an empty props object as a fallback
+  };
+};
 export default function TeacherDashboard() {
   const [activeTab, setActiveTab] = useState("");
 

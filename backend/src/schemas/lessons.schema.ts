@@ -7,7 +7,7 @@ export class Lessons extends Document {
   declare _id: string;
 
   @Prop()
-  name: string;
+  title: string;
 
   @Prop()
   content: string;

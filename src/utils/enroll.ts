@@ -13,7 +13,11 @@ interface EnrollmentData {
 
 export const enrollInCourse = async (courseId: string): Promise<any> => {
   // Check if the user is authenticated
-  const auth = await fetchUser();
+  const access_token = localStorage.getItem("access_token");
+  if (!access_token) {
+    throw new Error("Access token is missing");
+  }
+  const auth = await fetchUser(access_token);
 
   const currentUser: User = {
     id: auth.id,

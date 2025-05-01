@@ -7,15 +7,16 @@ import LoginModal from "../Login/LoginModal";
 import SignupModal from "../Login/SignupModal";
 import ResetPasswordModal from "../Login/ResetPasswordModal";
 import Search from "../Search/Search";
-import { fetchUser } from "@/utils/fetchUser";
-import { recoverSession } from "@/utils/recoverSession";
 import { handleLogout } from "@/utils/handleLogout";
 
-const Header = () => {
-  const router = useRouter(); // Use useRouter to access the route
+type HeaderProps = {
+  user?: { username: string };
+};
+
+const Header = ({ user }: HeaderProps) => {
   const [isScrolled, setIsScrolled] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [user, setUser] = useState<string | undefined>(undefined);
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(!!user);
+  const [username, setUsername] = useState<string | undefined>(user?.username);
 
   // State for modals
   const [showLogin, setShowLogin] = useState(false);
@@ -63,30 +64,18 @@ const Header = () => {
 
   // Fetch user info based on token
   useEffect(() => {
-    const getUser = async () => {
-      const token = localStorage.getItem("access_token");
-      if (token) {
-        const recover_session = await fetchUser();
-
-        if (recover_session) {
-          setUser(recover_session.username);
-          setIsLoggedIn(true);
-          clearInterval(interval);
-        }
-      }
-    };
-
-    // Poll user data every second (could also use another approach)
-    const interval = setInterval(getUser, 1000);
-    return () => clearInterval(interval);
-  }, []);
+    if (user) {
+      setUsername(user.username);
+      setIsLoggedIn(true);
+    }
+  }, [user]);
 
   // Handle logout
   const handleUserLogout = async () => {
     const res = await handleLogout();
     if (res.ok) {
       setIsLoggedIn(false);
-      setUser(undefined);
+      setUsername(undefined);
 
       localStorage.removeItem("access_token");
       localStorage.removeItem("refresh_token");
@@ -171,7 +160,7 @@ const Header = () => {
                 {isDropdownOpen && (
                   <div className="z-30 absolute right-0 mt-2 w-48 bg-white text-black shadow-lg rounded-lg overflow-hidden">
                     <div className="px-4 py-2 border-b text-center font-medium">
-                      {user}
+                      {username}
                     </div>
                     <Link
                       href="/myCourses"
@@ -276,14 +265,14 @@ const Header = () => {
                 Contact Us
               </Link>
 
-              {isLoggedIn && user ? (
+              {isLoggedIn && username ? (
                 <>
                   <button
                     onClick={handleDropdown}
                     className="flex items-center gap-2"
                   >
                     <User />
-                    <span>{user}</span>
+                    <span>{username}</span>
                   </button>
                   {isDropdownOpen && (
                     <div className="bg-white text-black rounded-lg p-2 space-y-2">

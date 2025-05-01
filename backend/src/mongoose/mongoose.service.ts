@@ -55,7 +55,26 @@ export class MongooseService {
       throw error;
     }
   }
+  async getDataBySQL<T extends Document>(
+    model: Model<T>,
+    sql: any,
+    sort?: any,
+  ) {
+    try {
+      const data = await model
+        .find(sql)
+        .sort(sort || { _id: 1 })
+        .exec();
 
+      if (!data) {
+        return {};
+      }
+      return data;
+    } catch (error) {
+      console.error(`Error fetching data by name sql:`, error.message);
+      throw error;
+    }
+  }
   // Insert data into a model
   async insertData<T extends Document>(
     model: Model<T>,
