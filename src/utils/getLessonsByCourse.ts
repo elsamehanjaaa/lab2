@@ -1,23 +1,32 @@
 // utils/getCourses.ts
 
+import { fetchUser } from "./fetchUser";
+
 interface Lesson {
   index: number;
   content: string;
   video_url: string;
   created_at: string;
+  status: string;
   _id: string;
 }
 
 export const getLessonsByCourse = async (
-  section_id: string
+  section_id: string,
+  access_token: string
 ): Promise<{ lessons: Lesson[] }> => {
   try {
+    const user = await fetchUser(access_token);
+    if (!user) {
+      return { lessons: [] };
+    }
+    const user_id = user.id;
     const res = await fetch(
-      `http://localhost:5000/lessons/getLessonsByCourse`,
+      `http://localhost:5000/lessons/getLessonsBySection`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ section_id }),
+        body: JSON.stringify({ section_id, user_id }),
         credentials: "include",
       }
     );

@@ -21,8 +21,10 @@ interface VideoPlayerProps {
   src: string;
   onNext?: () => void;
   onPrev?: () => void;
+  onProgressChange: (progress: ProgressState) => void; // 👈 new prop
 }
 
+type ProgressState = "not_started" | "incomplete" | "completed";
 const formatTime = (time: number): string => {
   const minutes = Math.floor(time / 60);
   const seconds = Math.floor(time % 60)
@@ -30,8 +32,12 @@ const formatTime = (time: number): string => {
     .padStart(2, "0");
   return `${minutes}:${seconds}`;
 };
-
-const VideoPlayer: React.FC<VideoPlayerProps> = ({ src, onNext, onPrev }) => {
+const VideoPlayer: React.FC<VideoPlayerProps> = ({
+  src,
+  onNext,
+  onPrev,
+  onProgressChange,
+}) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -42,6 +48,8 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ src, onNext, onPrev }) => {
   const [isMuted, setIsMuted] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [showControls, setShowControls] = useState(false);
+  const [progressState, setProgressState] =
+    useState<ProgressState>("not_started");
 
   const togglePlay = () => {
     const video = videoRef.current;
@@ -50,11 +58,22 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ src, onNext, onPrev }) => {
     if (video.paused) {
       video.play();
       setIsPlaying(true);
+      if (progressState === "not_started") {
+        setProgressState("incomplete");
+      }
     } else {
       video.pause();
       setIsPlaying(false);
     }
   };
+  const lastSentState = useRef<ProgressState | null>(null);
+
+  useEffect(() => {
+    if (onProgressChange && progressState !== lastSentState.current) {
+      onProgressChange(progressState);
+      lastSentState.current = progressState;
+    }
+  }, [progressState, onProgressChange]);
 
   const rewind = () => {
     if (videoRef.current) {
@@ -111,21 +130,31 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ src, onNext, onPrev }) => {
 
   useEffect(() => {
     const video = videoRef.current;
+
     if (!video) return;
+    const handleEnded = () => {
+      setIsPlaying(false);
+      setProgressState("completed");
+      setProgress(0);
+    };
 
     const updateProgress = () => setProgress(video.currentTime);
     const updateDuration = () => setDuration(video.duration);
-
+    setProgressState("not_started");
+    setIsPlaying(false);
     video.volume = volume;
 
     video.addEventListener("timeupdate", updateProgress);
     video.addEventListener("loadedmetadata", updateDuration);
+    video.addEventListener("ended", handleEnded);
 
+    // Cleanup on unmount or when src changes
     return () => {
       video.removeEventListener("timeupdate", updateProgress);
       video.removeEventListener("loadedmetadata", updateDuration);
+      video.removeEventListener("ended", handleEnded);
     };
-  }, [src]);
+  }, [src, volume]);
 
   const toggleFullscreen = () => {
     const container = containerRef.current;

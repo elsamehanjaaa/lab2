@@ -15,6 +15,7 @@ import { SectionModule } from './section/section.module';
 import { LessonsModule } from './lessons/lessons.module';
 import { UploadService } from './upload/upload.service';
 import { CourseDetailsModule } from './course_details/course_details.module';
+import { ProgressModule } from './progress/progress.module';
 import * as dotenv from 'dotenv';
 dotenv.config();
 
@@ -29,6 +30,7 @@ dotenv.config();
     SectionModule,
     LessonsModule,
     CourseDetailsModule,
+    ProgressModule,
   ],
   controllers: [AppController],
   providers: [

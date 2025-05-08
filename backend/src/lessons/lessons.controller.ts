@@ -30,8 +30,22 @@ export class LessonsController {
     return this.lessonsService.findOne(id);
   }
   @Post('getLessonsByCourse')
-  async getLessonsByCourseId(@Body() body: { section_id: string }) {
-    return this.lessonsService.getLessonsByCourseId(body.section_id);
+  async getLessonsByCourseId(
+    @Body() body: { course_id: string; user_id: string },
+  ) {
+    return this.lessonsService.getLessonsByCourseId(
+      body.course_id,
+      body.user_id,
+    );
+  }
+  @Post('getLessonsBySection')
+  async getLessonsBySectionId(
+    @Body() body: { section_id: string; user_id: string },
+  ) {
+    return this.lessonsService.getLessonsBySectionId(
+      body.section_id,
+      body.user_id,
+    );
   }
   // @Patch(':id')
   // update(@Param('id') id: string, @Body() updateLessonDto: UpdateLessonDto) {

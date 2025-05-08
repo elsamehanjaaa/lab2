@@ -6,4 +6,8 @@ export class CreateEnrollmentDto {
 
   @IsString()
   course_id: string;
+
+  @IsPositive()
+  @IsNumber()
+  progress?: number;
 }

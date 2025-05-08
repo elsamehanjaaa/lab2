@@ -22,7 +22,7 @@ export default function SetNewPasswordPage() {
     try {
       await resetPassword(password); // Call the resetPassword utility
       setMessage("Password updated successfully. Redirecting...");
-      setTimeout(() => router.push("/login"), 1500);
+      setTimeout(() => router.push("/"), 1500);
     } catch (error) {
       setMessage("Something went wrong");
     } finally {

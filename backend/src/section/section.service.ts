@@ -56,14 +56,12 @@ export class SectionService {
   async findOne(id: string) {
     return await this.mongooseService.getDataById(this.SectionsModel, id);
   }
-  async getSectionsByCourseId(course_id: string) {
-    return await this.mongooseService.getDataBySQL(
-      this.SectionsModel,
-      {
-        course_id: course_id,
-      },
-      { index: 1 },
-    );
+  async getSectionsByCourseId(course_id: string): Promise<Section[]> {
+    return this.SectionsModel.find({
+      course_id: course_id,
+    })
+      .sort({ index: 1 })
+      .exec();
   }
 
   // Remove a section by ID (from both Supabase and MongoDB)

@@ -101,7 +101,7 @@ export class CoursesController {
     }
     const { sections, ...restCourseData } = courseData;
 
-    const data = await this.coursesService.create(restCourseData, sections);
+    const data = await this.coursesService.create(restCourseData, sections, id);
     // Save to database
     return {
       message: 'Course created successfully',

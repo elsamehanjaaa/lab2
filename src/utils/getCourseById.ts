@@ -20,7 +20,10 @@ interface SectionsWithLessons {
   _id: string;
   lessons: [];
 }
-export const getCourseById = async (course_id: string): Promise<Course> => {
+export const getCourseById = async (
+  course_id: string,
+  access_token: string
+): Promise<Course> => {
   try {
     const res = await fetch(`http://localhost:5000/courses/${course_id}`, {
       method: "GET",
@@ -34,7 +37,7 @@ export const getCourseById = async (course_id: string): Promise<Course> => {
 
     const course = await res.json();
 
-    const sections = await getSectionsByCourse(course_id);
+    const sections = await getSectionsByCourse(course_id, access_token);
     course.sections = sections;
     return { ...course };
   } catch (error) {

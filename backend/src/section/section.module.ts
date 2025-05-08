@@ -18,6 +18,6 @@ import { CoursesModule } from 'src/courses/courses.module'; // If CoursesModule 
     SupabaseService, // Add SupabaseService to providers if needed
     MongooseService,
   ],
-  exports: [SectionService], // Export the SectionService if it's used in other modules
+  exports: [SectionService, MongooseModule], // Export the SectionService if it's used in other modules
 })
 export class SectionModule {}

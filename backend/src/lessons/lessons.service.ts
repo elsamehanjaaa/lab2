@@ -6,18 +6,19 @@ import { InjectModel } from '@nestjs/mongoose';
 import { MongooseService } from 'src/mongoose/mongoose.service';
 import { Model } from 'mongoose';
 import { Lessons } from 'src/schemas/lessons.schema';
-import { Courses } from 'src/schemas/courses.schema';
-import { Section } from 'src/schemas/section.schema';
+import { Progress } from 'src/schemas/progress.schema';
+import { SectionService } from 'src/section/section.service';
 
 @Injectable()
 export class LessonsService {
   constructor(
     private readonly supabaseService: SupabaseService,
     private readonly mongooseService: MongooseService,
+    private readonly sectionService: SectionService,
     @InjectModel(Lessons.name)
     private readonly LessonsModel: Model<Lessons>,
-    @InjectModel(Courses.name)
-    private readonly SectionModel: Model<Section>,
+    @InjectModel(Progress.name)
+    private readonly ProgressModel: Model<Progress>,
   ) {}
 
   // Create a new lesson (in both Supabase and MongoDB)
@@ -59,18 +60,64 @@ export class LessonsService {
   }
 
   // Find lessons by course ID from MongoDB
-  async getLessonsByCourse(courseId: string) {
-    const lessons = await this.LessonsModel.find({ course_id: courseId });
-    return lessons;
+
+  async getLessonsByCourseId(course_id: string, user_id: string) {
+    const sections = await this.sectionService.getSectionsByCourseId(course_id);
+
+    if (!sections || sections.length === 0) {
+      console.error('No sections found for the given course ID:', course_id);
+      throw new Error('No sections found for the given course ID');
+    }
+
+    const allLessons = await Promise.all(
+      sections.map(async (section) => {
+        return await this.getLessonsBySectionId(section._id, user_id);
+      }),
+    );
+
+    return allLessons.flat();
   }
-  async getLessonsByCourseId(section_id: string) {
+
+  async getLessonsLengthByCourseId(
+    course_id: string,
+    user_id: string,
+  ): Promise<number> {
+    try {
+      const lessons = await this.getLessonsByCourseId(course_id, user_id);
+      return lessons?.length || 0;
+    } catch (error) {
+      console.error('Failed to get lessons:', error);
+      return 0;
+    }
+  }
+
+  async getLessonsBySectionId(
+    section_id: string,
+    user_id: string,
+  ): Promise<any[]> {
     const lessons = await this.LessonsModel.find({
       section_id: section_id,
     })
       .sort({ index: 1 })
       .exec();
 
-    return lessons;
+    if (!lessons) {
+      return [];
+    }
+    const lessonsWithProgress = await Promise.all(
+      lessons.map(async (lesson) => {
+        const progress = await this.ProgressModel.findOne({
+          lesson_id: lesson._id,
+          user_id: user_id,
+        });
+        const status = progress ? progress.status : null;
+        return {
+          ...lesson.toObject(),
+          status,
+        };
+      }),
+    );
+    return lessonsWithProgress;
   }
 
   // Remove a lesson by ID (from both Supabase and MongoDB)

@@ -26,7 +26,11 @@ export class CoursesService {
   ) {}
 
   // Create a new course
-  async create(createCourseDto: CreateCourseDto, sections: any[]) {
+  async create(
+    createCourseDto: CreateCourseDto,
+    sections: any[],
+    user_id: string,
+  ) {
     const generateSlug = (title: string): string => {
       return title
         .toLowerCase() // Make the title lowercase
