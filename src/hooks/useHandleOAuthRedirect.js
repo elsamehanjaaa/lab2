@@ -1,5 +1,5 @@
 "use server"
-import { fetchUser } from "@/utils/fetchUser";
+import { fetchUser } from "@/utils/user";
 import { useEffect } from "react";
 
 export function useHandleOAuthRedirect() {

@@ -3,9 +3,8 @@ import Section from "./Section";
 import StepButton from "./StepButton";
 import Thumbnail from "./Thumbnail";
 import Categories from "./Categories";
-import { fetchCategories } from "@/utils/fetchCategories";
-import { getCourseById } from "@/utils/getCourseById";
-import { editCourse } from "@/utils/editCourse";
+import * as categoriesUtils from "@/utils/categories";
+import * as courseUtils from "@/utils/course";
 import { parse } from "cookie";
 interface EditCourseFormProps {
   id: string;
@@ -34,8 +33,8 @@ const EditCourseForm: React.FC<EditCourseFormProps> = ({
     const fetchData = async () => {
       try {
         const [categoryData, courseData] = await Promise.all([
-          fetchCategories(),
-          getCourseById(id, cookies),
+          categoriesUtils.getAll(),
+          courseUtils.getById(id, cookies),
         ]);
 
         if (!courseData || !categoryData) {
@@ -104,7 +103,7 @@ const EditCourseForm: React.FC<EditCourseFormProps> = ({
       const access_token = parsedCookies["access_token"];
       if (!access_token) throw new Error("No access token found");
 
-      const data = await editCourse(id, formData, access_token);
+      const data = await courseUtils.edit(id, formData, access_token);
       if (data) onClose();
     } catch (error) {
       console.error("Error updating course:", error);

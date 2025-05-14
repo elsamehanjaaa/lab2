@@ -16,11 +16,17 @@ export default function App({ Component, pageProps }: AppProps) {
     "/instructor",
     "/404",
     "/learn/[slug]/[courseId]",
+    "/join/instructor",
   ];
-  const excludeFooterPages = ["/admin", "/instructor", "/404"];
+  const excludeFooterPages = [
+    "/admin",
+    "/instructor",
+    "/404",
+    "/join/instructor",
+  ];
 
   const [user, setUser] = useState<
-    { username: string; role: string } | undefined
+    { username: string; isTeacher: boolean; email: string } | undefined
   >(undefined);
 
   useHandleOAuthRedirect();
@@ -28,8 +34,6 @@ export default function App({ Component, pageProps }: AppProps) {
     const fetchUserFromToken = async () => {
       const res = await fetch("http://localhost:3000/api/me");
       const data = await res.json();
-      // if (data.user.statusCode === 401) {
-      // }
 
       setUser(data.user);
     };

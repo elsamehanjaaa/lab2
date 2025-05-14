@@ -1,14 +1,14 @@
-import { getCourseById } from "@/utils/getCourseById";
+import * as courseUtils from "@/utils/course";
 import VideoPlayer from "@/components/learn/VideoPlayer";
 import { ArrowDown, SquarePlay } from "lucide-react";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
-import { checkEnrollment } from "@/utils/checkEnrollment";
+import * as enrollmentUtils from "@/utils/enrollment";
 import { GetServerSideProps } from "next";
 import { parse } from "cookie";
 import Link from "next/link";
 import Image from "next/image";
-import { updateProgress } from "@/utils/updateProgress";
+import * as progressUtils from "@/utils/progress";
 interface Course {
   title: string;
   description: string;
@@ -53,7 +53,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     };
   }
 
-  const access = await checkEnrollment(courseId, access_token);
+  const access = await enrollmentUtils.checkAccess(courseId, access_token);
   if (!access) {
     return {
       redirect: { destination: "/", permanent: false },
@@ -61,7 +61,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   }
   const cookies = req.headers.cookie || "";
   // ✅ Fetch course data here
-  const course = await getCourseById(courseId, cookies);
+  const course = await courseUtils.getById(courseId, cookies);
   if (!course) {
     return { redirect: { destination: "/404", permanent: false } };
   }
@@ -155,10 +155,9 @@ const CoursePage = ({ course }: { course: Course }) => {
 
       const cookies = parse(document.cookie || "");
       const access_token = cookies["access_token"];
-      const update = await updateProgress(
+      const update = await progressUtils.update(
         progress,
         currentLesson?._id,
-        access_token as string,
         course._id
       );
 

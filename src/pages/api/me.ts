@@ -6,6 +6,7 @@ interface User {
   id: string;
   name: string;
   email: string;
+  isTeacher?: boolean;
 }
 
 interface MeResponse {
@@ -71,5 +72,14 @@ export default async function handler(
     return res.status(401).json({ user: null });
   }
   const user: User = await response.json();
+  const fetchTeacherResponse = await fetch(`${API_URL}/teachers/checkUser`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  user.isTeacher = await fetchTeacherResponse.json();
+
   res.status(200).json({ user });
 }

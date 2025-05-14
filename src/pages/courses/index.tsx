@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Categories from "@/components/Courses/Categories";
 import Card from "@/components/Courses/Card";
-import { getCourses } from "@/utils/getCourses";
+import * as courseUtils from "@/utils/course";
 
 interface Course {
   title: string;
@@ -21,7 +21,7 @@ const Index = () => {
 
   useEffect(() => {
     async function fetchCourses() {
-      const { courses, error } = await getCourses();
+      const { courses, error } = await courseUtils.getAll();
       if (error) {
         setError(error);
       } else {

@@ -4,8 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Mail, Lock, User, Loader2, X, Check } from "lucide-react";
-import { checkUsername } from "@/utils/checkUsername";
-import { signup } from "@/utils/signup";
+import * as authUtils from "@/utils/auth";
 
 export default function SignUpModal({ onClose }: { onClose: () => void }) {
   const router = useRouter();
@@ -55,7 +54,7 @@ export default function SignUpModal({ onClose }: { onClose: () => void }) {
     setData({ ...data, username: value });
 
     try {
-      const exists = await checkUsername(value);
+      const exists = await authUtils.checkUsername(value);
       setUsernameExist(exists);
     } catch (err) {
       console.error("Username check failed:", err);
@@ -77,7 +76,7 @@ export default function SignUpModal({ onClose }: { onClose: () => void }) {
     }
 
     try {
-      await signup(data); // <- Cleaner call
+      await authUtils.signup(data); // <- Cleaner call
       router.refresh();
       onClose();
     } catch (error) {

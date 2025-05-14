@@ -1,9 +1,6 @@
-import { fetchUser } from "./fetchUser";
-
-export const updateProgress = async (
+export const update = async (
   status: string,
   lesson_id: string,
-  access_token: string,
   course_id: string
 ): Promise<boolean> => {
   const fetchUser = await fetch("/api/me", {

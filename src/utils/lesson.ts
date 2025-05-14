@@ -1,7 +1,3 @@
-// utils/getCourses.ts
-
-import { fetchUser } from "./fetchUser";
-
 interface Lesson {
   index: number;
   content: string;
@@ -11,7 +7,7 @@ interface Lesson {
   _id: string;
 }
 
-export const getLessonsByCourse = async (
+export const getByCourse = async (
   section_id: string,
   cookies: string
 ): Promise<{ lessons: Lesson[] }> => {

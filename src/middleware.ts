@@ -1,7 +1,7 @@
 // middleware.ts
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { fetchUser } from "./utils/fetchUser";
+import { fetchUser } from "./utils/user";
 
 export async function middleware(request: NextRequest) {
   const url = request.nextUrl.clone();

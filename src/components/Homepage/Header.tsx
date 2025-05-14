@@ -2,22 +2,25 @@ import React, { useState, useEffect } from "react";
 import { useRouter } from "next/router"; // Import useRouter hook
 import Image from "next/image";
 import Link from "next/link";
-import { User } from "lucide-react";
+import { CircleUserRound, User } from "lucide-react";
 import LoginModal from "../Login/LoginModal";
 import SignupModal from "../Login/SignupModal";
 import ResetPasswordModal from "../Login/ResetPasswordModal";
 import Search from "../Search/Search";
-import { handleLogout } from "@/utils/handleLogout";
+import * as authUtils from "@/utils/auth";
 
 type HeaderProps = {
-  user: { username: string; role: string } | undefined;
+  user: { username: string; isTeacher: boolean; email: string } | undefined;
 };
 
 const Header = ({ user }: HeaderProps) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(!!user);
   const [username, setUsername] = useState<string | undefined>(user?.username);
-  const [role, setRole] = useState<string | undefined>(user?.role);
+  const [email, setEmail] = useState<string | undefined>(user?.email);
+  const [isTeacher, setIsTeacher] = useState<boolean | undefined>(
+    user?.isTeacher
+  );
 
   // State for modals
   const [showLogin, setShowLogin] = useState(false);
@@ -67,18 +70,20 @@ const Header = ({ user }: HeaderProps) => {
   useEffect(() => {
     if (user) {
       setUsername(user.username);
-      setRole(user.role);
+      setIsTeacher(user.isTeacher);
+      setEmail(user.email);
       setIsLoggedIn(true);
     }
   }, [user]);
 
   // Handle logout
   const handleUserLogout = async () => {
-    const res = await handleLogout();
+    const res = await authUtils.logout();
     if (res.ok) {
       setIsLoggedIn(false);
       setUsername(undefined);
-      setRole(undefined);
+      setIsTeacher(undefined);
+      setEmail(undefined);
     }
   };
 
@@ -148,54 +153,67 @@ const Header = ({ user }: HeaderProps) => {
 
             {/* If logged in, show profile dropdown */}
             {isLoggedIn && user?.username ? (
-              <div className="relative">
-                <button
-                  className="text-white hover:text-pink-600 transition-colors duration-300"
-                  onClick={handleDropdown}
-                >
+              <div className="relative group">
+                <button className="text-white hover:text-pink-600 transition-colors duration-300">
                   <User />
                 </button>
-                {isDropdownOpen && (
-                  <div className="z-30 absolute right-0 mt-2 w-48 bg-white text-black shadow-lg rounded-lg overflow-hidden">
-                    <div className="px-4 py-2 border-b text-center font-medium">
-                      {user.username}
+
+                <div
+                  className="z-30 absolute right-0 mt-2 w-60 bg-white text-black shadow-lg rounded-lg overflow-hidden
+                    opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300
+                    "
+                >
+                  <div className="px-4 py-2 border-b flex items-center justify-between">
+                    <CircleUserRound size={36} />
+                    <div className="">
+                      <h1 className="font-bold">{user.username}</h1>
+                      <h3 className="text-sm">{user.email}</h3>
                     </div>
-                    {role && role === "instructor" ? (
-                      <Link
-                        href="/instructor"
-                        className="block px-4 py-2 hover:bg-gray-100 transition"
-                      >
-                        Dashboard
-                      </Link>
-                    ) : (
-                      <></>
-                    )}
-                    <Link
-                      href="/myCourses"
-                      className="block px-4 py-2 hover:bg-gray-100 transition"
-                    >
-                      My Courses
-                    </Link>
-                    <Link
-                      href="/profile"
-                      className="block px-4 py-2 hover:bg-gray-100 transition"
-                    >
-                      Profile
-                    </Link>
-                    <Link
-                      href="/settings"
-                      className="block px-4 py-2 hover:bg-gray-100 transition"
-                    >
-                      Settings
-                    </Link>
-                    <button
-                      onClick={handleUserLogout}
-                      className="w-full text-left px-4 py-2 hover:bg-gray-100 transition"
-                    >
-                      Logout
-                    </button>
                   </div>
-                )}
+
+                  {isTeacher ? (
+                    <Link
+                      href="/instructor"
+                      className="block px-4 py-2 hover:bg-gray-100 transition"
+                    >
+                      Dashboard
+                    </Link>
+                  ) : (
+                    <Link
+                      href="/join/instructor"
+                      className="block px-4 py-2 hover:bg-gray-100 transition"
+                    >
+                      Start Teaching
+                    </Link>
+                  )}
+                  <Link
+                    href="/myCourses"
+                    className="block px-4 py-2 hover:bg-gray-100 transition"
+                  >
+                    My Courses
+                  </Link>
+                  <hr />
+                  <Link
+                    href="/profile"
+                    className="block px-4 py-2 hover:bg-gray-100 transition"
+                  >
+                    Profile
+                  </Link>
+                  <Link
+                    href="/settings"
+                    className="block px-4 py-2 hover:bg-gray-100 transition"
+                  >
+                    Settings
+                  </Link>
+
+                  <hr />
+                  <button
+                    onClick={handleUserLogout}
+                    className="w-full text-left px-4 py-2 hover:bg-gray-100 transition"
+                  >
+                    Logout
+                  </button>
+                </div>
               </div>
             ) : (
               /* If not logged in, show login and signup buttons */

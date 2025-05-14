@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import CreateCourseForm from "../../components/Instructor/Createcourses";
 import { GetServerSideProps } from "next";
 import { parse } from "cookie";
-import { checkInstructorRole } from "@/utils/checkInstructorRole";
+import * as instructorUtils from "@/utils/instructor";
 import ManageCourses from "@/components/Instructor/ManageCourses";
 
 export const getServerSideProps: GetServerSideProps = async ({ req }) => {

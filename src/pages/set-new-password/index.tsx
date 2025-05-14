@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useRouter } from "next/router";
-import { resetPassword } from "@/utils/resetPassword";
+import * as authUtils from "@/utils/auth";
 
 export default function SetNewPasswordPage() {
   const [password, setPassword] = useState("");
@@ -20,7 +20,7 @@ export default function SetNewPasswordPage() {
     setLoading(true);
     setMessage("");
     try {
-      await resetPassword(password); // Call the resetPassword utility
+      await authUtils.resetPassword(password); // Call the resetPassword utility
       setMessage("Password updated successfully. Redirecting...");
       setTimeout(() => router.push("/"), 1500);
     } catch (error) {

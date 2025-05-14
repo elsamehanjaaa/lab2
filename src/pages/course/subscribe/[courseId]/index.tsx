@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import Image from "next/image";
-import { enrollInCourse } from "@/utils/enroll";
-import { getCourseById } from "@/utils/getCourseById";
+import * as enrollmentUtils from "@/utils/enrollment";
+import * as courseUtils from "@/utils/course";
 import { parse } from "cookie";
 import { LoaderCircle } from "lucide-react";
 
@@ -41,7 +41,7 @@ const Index = () => {
         const cookies = parse(document.cookie || "");
         const access_token = cookies["access_token"];
 
-        const courses = await getCourseById(
+        const courses = await courseUtils.getById(
           courseId as string,
           access_token as string
         );
@@ -70,7 +70,7 @@ const Index = () => {
   async function handleEnrollment() {
     try {
       setLoading(true);
-      const result = await enrollInCourse(courseId as string); // <- Cleaner call
+      const result = await enrollmentUtils.enroll(courseId as string); // <- Cleaner call
 
       // Redirect the user after successful enrollment
       router.push("/myCourses");

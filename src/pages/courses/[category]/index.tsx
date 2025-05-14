@@ -3,11 +3,24 @@ import { useRouter } from "next/router";
 import TopSection from "@/components/TopSection";
 import Categories from "@/components/Courses/Categories";
 import Card from "@/components/Courses/Card";
+import * as courseUtils from "@/utils/course";
+import * as categoryUtils from "@/utils/category";
 
+interface Course {
+  title: string;
+  description: string;
+  price: number;
+  rating: number;
+  status: boolean;
+  created_at: string;
+  thumbnail_url?: string;
+  slug: string;
+  _id: string;
+}
 const CategoryPage = () => {
-  const [courses, setCourses] = useState([]);
+  const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
-  const [categoryId, setCategoryId] = useState(null);
+  const [categoryId, setCategoryId] = useState<string | null>();
   const router = useRouter();
   const { category } = router.query;
 
@@ -15,19 +28,11 @@ const CategoryPage = () => {
     if (!category) return;
     async function getAll() {
       try {
-        const res = await fetch(
-          "http://localhost:5000/categories/checkCategoryName",
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            credentials: "include",
-            body: JSON.stringify({ slug: category }),
-          }
+        const category = await categoryUtils.checkCategoryName(
+          categoryId as string
         );
 
-        if (!res.ok) throw new Error(`HTTP Error! Status: ${res.status}`);
-        const result = await res.json();
-        setCategoryId(result._id);
+        setCategoryId(category._id);
       } catch (error) {
         console.error("Fetch error:", error);
       }
@@ -41,22 +46,12 @@ const CategoryPage = () => {
 
     async function getCourses() {
       try {
-        const res = await fetch(
-          "http://localhost:5000/courses/getCoursesByCategory",
-          {
-            // SHËNIM: ndrysho URL-në në endpointin e saktë
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            credentials: "include",
-            body: JSON.stringify({ id: categoryId }),
-          }
+        const fetched_categories = await courseUtils.getByCategory(
+          categoryId as string
         );
 
-        if (!res.ok) throw new Error(`HTTP Error! Status: ${res.status}`);
-        const result = await res.json();
-
         // Sigurohu që result është array, jo objekt i vetëm
-        setCourses(result);
+        setCourses(fetched_categories);
         setLoading(false); // ndal loading-un
       } catch (error) {
         console.error("Fetch error:", error);

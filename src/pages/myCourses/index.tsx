@@ -1,6 +1,5 @@
 // Inside pages/my-courses.tsx or similar
-
-import { getEnrollmentsByUser } from "@/utils/getEnrollmentsByUser";
+import * as enrollmentUtils from "@/utils/enrollment";
 import { parse } from "cookie";
 import { GetServerSideProps } from "next";
 import Link from "next/link";
@@ -12,6 +11,7 @@ export const getServerSideProps: GetServerSideProps = async ({ req }) => {
       cookie: req.headers.cookie || "",
     },
   });
+
   const { user } = await res.json();
 
   if (!user) {
@@ -23,51 +23,25 @@ export const getServerSideProps: GetServerSideProps = async ({ req }) => {
     };
   }
 
-  return {
-    props: { user },
-  };
+  return { props: {} };
 };
 
-interface Props {
-  user: { id: string; username: string };
-}
-
-const Index = ({ user }: Props) => {
-  const [loggedUser, setLoggedUser] = useState<
-    { id: string; username: string } | undefined
-  >(user);
-  const [courses, setCourses] = useState<
-    {
-      id: string;
-      title: string;
-      slug: string;
-      progress: number;
-      thumbnail_url: string;
-    }[]
-  >([]);
+const Index = () => {
+  const [courses, setCourses] = useState<any[]>([]);
 
   useEffect(() => {
-    if (!loggedUser) return;
     const fetchEnrollments = async () => {
-      const enrollments = await getEnrollmentsByUser(loggedUser.id); // optionally pass user.id if needed
-      if (Array.isArray(enrollments)) {
-        setCourses(
-          enrollments as {
-            id: string;
-            title: string;
-            slug: string;
-            progress: number;
-            thumbnail_url: string;
-          }[]
-        );
-      } else {
-        console.error("Unexpected response format:", enrollments);
-        setCourses([]);
-      }
+      const res = await fetch("http://localhost:3000/api/me", {
+        credentials: "include",
+      });
+
+      const { user } = await res.json();
+      const enrollments = await enrollmentUtils.getByUser(user.id);
+      setCourses(Array.isArray(enrollments) ? enrollments : []);
     };
 
     fetchEnrollments();
-  }, [loggedUser]);
+  }, []);
   return (
     <div className="p-4  max-w-3xl">
       <h1 className="text-2xl font-semibold mb-4">My Courses</h1>

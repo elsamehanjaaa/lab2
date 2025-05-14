@@ -3,8 +3,8 @@ import Section from "./Section";
 import StepButton from "./StepButton";
 import Thumbnail from "./Thumbnail";
 import Categories from "./Categories";
-import { fetchCategories } from "@/utils/fetchCategories";
-import { createCourse } from "@/utils/createCourse";
+import * as categoriesUtils from "@/utils/categories";
+import * as courseUtils from "@/utils/course";
 import { parse } from "cookie";
 
 const CreateCourseForm = () => {
@@ -22,7 +22,7 @@ const CreateCourseForm = () => {
   useEffect(() => {
     const getCategories = async () => {
       try {
-        const result = await fetchCategories();
+        const result = await categoriesUtils.getAll();
         setCategories(result);
       } catch (err) {
         console.error("Error fetching categories:", err);
@@ -165,7 +165,7 @@ const CreateCourseForm = () => {
       const access_token = cookies["access_token"];
       if (!access_token) throw new Error("No access token found");
 
-      const data = await createCourse(formData, access_token);
+      const data = await courseUtils.create(formData, access_token);
       console.log(data);
     } catch (error) {
       console.error("Error creating course:", error);

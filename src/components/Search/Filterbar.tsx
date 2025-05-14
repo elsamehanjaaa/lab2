@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { ChevronDown, ChevronUp, Star } from "lucide-react";
-import { fetchCategories } from "@/utils/fetchCategories";
+import { fetchCategories } from "@/utils/categories";
 
 const Dropdown = ({
   title,

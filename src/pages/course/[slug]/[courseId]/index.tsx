@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import Head from "next/head";
 import Image from "next/image";
-import { getCourseById } from "@/utils/getCourseById";
+import * as courseUtils from "@/utils/course";
 interface Course {
   title: string;
   description: string;
@@ -30,7 +30,7 @@ const Index = () => {
       setLoading(true);
       setError(null);
       try {
-        const fetchedCourse = await getCourseById(courseId as string);
+        const fetchedCourse = await courseUtils.getById(courseId as string);
 
         setCourse(fetchedCourse);
       } catch (error) {

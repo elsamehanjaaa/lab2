@@ -5,8 +5,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Mail, Lock, Loader2, BookOpen, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { loginUser } from "@/utils/loginUser";
-import { handleGoogleLogin } from "@/utils/handleGoogleLogin";
+import * as authUtils from "@/utils/auth";
 
 export default function LoginModal({
   onClose,
@@ -37,7 +36,7 @@ export default function LoginModal({
     setIsLoading(true);
 
     try {
-      const result = await loginUser(data); // data should include email and password
+      const result = await authUtils.login(data); // data should include email and password
       console.log("Login successful:", result);
       router.refresh();
       onClose(); // Close modal
@@ -140,7 +139,7 @@ export default function LoginModal({
               type="button"
               onClick={async () => {
                 try {
-                  await handleGoogleLogin();
+                  await authUtils.handleGoogleLogin();
                 } catch (err) {
                   alert("Failed to start Google login");
                   console.error(err);

@@ -1,4 +1,4 @@
-import { fetchCategories } from "@/utils/fetchCategories";
+import { fetchCategories } from "@/utils/categories";
 import React, { useEffect, useState, useRef } from "react";
 
 // Define the type for each category
@@ -28,18 +28,18 @@ const Categories = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
- useEffect(() => {
-     const getCategories = async () => {
-       try {
-         const result = await fetchCategories();
-         setCategories(result);
-       } catch (err) {
-         console.error("Error fetching categories:", err);
-       }
-     };
- 
-     getCategories();
-   }, []);
+  useEffect(() => {
+    const getCategories = async () => {
+      try {
+        const result = await fetchCategories();
+        setCategories(result);
+      } catch (err) {
+        console.error("Error fetching categories:", err);
+      }
+    };
+
+    getCategories();
+  }, []);
 
   // Split the categories into two parts: the first 7 categories and the rest
   const visibleCategories = categories.slice(0, 7); // First 7 categories

@@ -1,5 +1,5 @@
 // utils/getCourses.ts
-import { getLessonsByCourse } from "./getLessonsByCourse";
+import * as lessonUtils from "./lesson";
 
 interface Lesson {
   index: number;
@@ -20,7 +20,7 @@ interface SectionsWithLessons extends Section {
   lessons: Lesson[];
 }
 
-export const getSectionsByCourse = async (
+export const getByCourse = async (
   course_id: string,
   cookies: string
 ): Promise<SectionsWithLessons[]> => {
@@ -44,7 +44,7 @@ export const getSectionsByCourse = async (
     const sectionsWithLessons = await Promise.all(
       sections.map(async (s) => {
         try {
-          const { lessons } = await getLessonsByCourse(s._id, cookies);
+          const { lessons } = await lessonUtils.getByCourse(s._id, cookies);
           return { ...s, lessons };
         } catch (err) {
           console.error(`Failed to fetch lessons for section ${s._id}:`, err);
