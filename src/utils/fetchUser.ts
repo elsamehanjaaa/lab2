@@ -1,9 +1,9 @@
-export const fetchUser = async (access_token: string) => {
+export const fetchUser = async (access_token?: string) => {
   const response = await fetch("http://localhost:5000/auth/me", {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${access_token}`,
+      // Authorization: `Bearer ${access_token}`,
     },
     credentials: "include", // Ensure cookies are included
   });

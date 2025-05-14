@@ -10,13 +10,14 @@ import Search from "../Search/Search";
 import { handleLogout } from "@/utils/handleLogout";
 
 type HeaderProps = {
-  user?: { username: string };
+  user: { username: string; role: string } | undefined;
 };
 
 const Header = ({ user }: HeaderProps) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(!!user);
   const [username, setUsername] = useState<string | undefined>(user?.username);
+  const [role, setRole] = useState<string | undefined>(user?.role);
 
   // State for modals
   const [showLogin, setShowLogin] = useState(false);
@@ -66,6 +67,7 @@ const Header = ({ user }: HeaderProps) => {
   useEffect(() => {
     if (user) {
       setUsername(user.username);
+      setRole(user.role);
       setIsLoggedIn(true);
     }
   }, [user]);
@@ -76,11 +78,7 @@ const Header = ({ user }: HeaderProps) => {
     if (res.ok) {
       setIsLoggedIn(false);
       setUsername(undefined);
-
-      localStorage.removeItem("access_token");
-      localStorage.removeItem("refresh_token");
-      localStorage.removeItem("expires_at");
-      localStorage.removeItem("token_type");
+      setRole(undefined);
     }
   };
 
@@ -149,7 +147,7 @@ const Header = ({ user }: HeaderProps) => {
             </Link>
 
             {/* If logged in, show profile dropdown */}
-            {isLoggedIn && user ? (
+            {isLoggedIn && user?.username ? (
               <div className="relative">
                 <button
                   className="text-white hover:text-pink-600 transition-colors duration-300"
@@ -160,8 +158,18 @@ const Header = ({ user }: HeaderProps) => {
                 {isDropdownOpen && (
                   <div className="z-30 absolute right-0 mt-2 w-48 bg-white text-black shadow-lg rounded-lg overflow-hidden">
                     <div className="px-4 py-2 border-b text-center font-medium">
-                      {username}
+                      {user.username}
                     </div>
+                    {role && role === "instructor" ? (
+                      <Link
+                        href="/instructor"
+                        className="block px-4 py-2 hover:bg-gray-100 transition"
+                      >
+                        Dashboard
+                      </Link>
+                    ) : (
+                      <></>
+                    )}
                     <Link
                       href="/myCourses"
                       className="block px-4 py-2 hover:bg-gray-100 transition"

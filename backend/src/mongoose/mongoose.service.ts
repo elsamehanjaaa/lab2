@@ -14,10 +14,13 @@ export class MongooseService {
 
   // Get data by ID from a model
 
-  async getDataById<T extends Document>(model: Model<T>, id: string) {
+  async getDataById<T extends Document>(
+    model: Model<T>,
+    id: string,
+  ): Promise<T | null> {
     try {
       const data = await model.findById(id).exec();
-      if (!data) return {};
+      if (!data) return null;
       return data;
     } catch (error) {
       console.error(`Error fetching data by ID ${id}:`, error.message);

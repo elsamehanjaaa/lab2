@@ -1,4 +1,5 @@
 import { fetchUser } from "./fetchUser";
+import { parse } from "cookie";
 
 interface User {
   id: string;
@@ -13,17 +14,17 @@ interface EnrollmentData {
 
 export const enrollInCourse = async (courseId: string): Promise<any> => {
   // Check if the user is authenticated
-  const access_token = localStorage.getItem("access_token");
-  if (!access_token) {
-    throw new Error("Access token is missing");
-  }
-  const auth = await fetchUser(access_token);
 
-  const currentUser: User = {
-    id: auth.id,
-    name: auth.username,
-    email: auth.email,
-  };
+  const res = await fetch("/api/me", {
+    method: "GET",
+    credentials: "include", // ensure cookies are sent
+  });
+
+  const { user } = await res.json();
+
+  if (!user) {
+    throw new Error("User not authenticated");
+  }
 
   // Proceed with the enrollment process
   const enrollRes = await fetch("http://localhost:5000/enrollments", {
@@ -31,7 +32,7 @@ export const enrollInCourse = async (courseId: string): Promise<any> => {
     headers: { "Content-Type": "application/json" },
     credentials: "include",
     body: JSON.stringify({
-      user_id: currentUser.id,
+      user_id: user.id,
       course_id: courseId,
     } as EnrollmentData),
   });

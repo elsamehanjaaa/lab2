@@ -22,7 +22,7 @@ interface SectionsWithLessons extends Section {
 
 export const getSectionsByCourse = async (
   course_id: string,
-  access_token: string
+  cookies: string
 ): Promise<SectionsWithLessons[]> => {
   try {
     const res = await fetch(
@@ -44,7 +44,7 @@ export const getSectionsByCourse = async (
     const sectionsWithLessons = await Promise.all(
       sections.map(async (s) => {
         try {
-          const { lessons } = await getLessonsByCourse(s._id, access_token);
+          const { lessons } = await getLessonsByCourse(s._id, cookies);
           return { ...s, lessons };
         } catch (err) {
           console.error(`Failed to fetch lessons for section ${s._id}:`, err);

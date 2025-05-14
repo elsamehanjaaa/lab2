@@ -24,6 +24,7 @@ export class LessonsService {
   // Create a new lesson (in both Supabase and MongoDB)
   async create(createLessonDto: CreateLessonDto) {
     // Insert the lesson into Supabase (external database)
+
     const { data, error } = await this.supabaseService.insertData(
       'lessons',
       createLessonDto,
@@ -78,19 +79,6 @@ export class LessonsService {
     return allLessons.flat();
   }
 
-  async getLessonsLengthByCourseId(
-    course_id: string,
-    user_id: string,
-  ): Promise<number> {
-    try {
-      const lessons = await this.getLessonsByCourseId(course_id, user_id);
-      return lessons?.length || 0;
-    } catch (error) {
-      console.error('Failed to get lessons:', error);
-      return 0;
-    }
-  }
-
   async getLessonsBySectionId(
     section_id: string,
     user_id: string,
@@ -118,6 +106,33 @@ export class LessonsService {
       }),
     );
     return lessonsWithProgress;
+  }
+  // Update an existing lesson
+  async update(id: string, updateLessonDto: UpdateLessonDto) {
+    // Update in Supabase
+
+    const { data, error } = await this.supabaseService.updateData(
+      'lessons',
+      updateLessonDto,
+      id,
+    );
+
+    if (error) {
+      console.error('Error updating data in Supabase:', error);
+      throw error;
+    }
+
+    // Update in MongoDB
+    const mongo = await this.mongooseService.updateData(this.LessonsModel, id, {
+      ...updateLessonDto,
+      section_id: updateLessonDto.section_id?.toString(), // Convert section_id to string
+    });
+
+    if (!mongo) {
+      throw new Error('Error updating data in MongoDB');
+    }
+
+    return data;
   }
 
   // Remove a lesson by ID (from both Supabase and MongoDB)

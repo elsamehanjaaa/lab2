@@ -7,6 +7,6 @@ export class CreateSectionDto {
   @IsNumber()
   index: number;
 
-  @IsNumber()
-  course_id: number;
+  @IsString()
+  course_id: string;
 }

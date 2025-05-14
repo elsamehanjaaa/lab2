@@ -118,36 +118,17 @@ export class AuthController {
       refresh_token: tokens.refresh_token,
     });
   }
-  @Post('set-session')
-  async setSession(
-    @Body() body: { refresh_token: string; access_token: string },
-    @Res() res: Response,
-  ) {
-    if (!body.refresh_token || !body.access_token) {
+  @Post('refresh-session')
+  async refreshSession(@Body() { refresh_token }, @Res() res: Response) {
+    if (!refresh_token) {
       throw new HttpException('token not found', HttpStatus.UNAUTHORIZED);
     }
 
-    const tokens = await this.authService.setSession(
-      body.refresh_token,
-      body.access_token,
-    );
+    const tokens = await this.authService.refreshSession(refresh_token);
 
-    res.cookie('access_token', tokens.access_token, {
-      httpOnly: false,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
-      maxAge: 15 * 60 * 1000, // 15 minutes
-    });
-    res.cookie('refresh_token', tokens.refresh_token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
-      maxAge: 1 * 24 * 60 * 60 * 1000,
-    });
-    return res
-      .status(HttpStatus.OK)
-      .json({ access_token: tokens.access_token });
+    return res.status(HttpStatus.OK).json(tokens);
   }
+
   @Post('login-with-google')
   async login_with_google(@Res() response: Response) {
     try {
@@ -190,12 +171,19 @@ export class AuthController {
   @Get('me')
   async getProfile(@Req() req: Request, @Res() res: Response) {
     const user = req.user as any;
+
     return res.status(HttpStatus.OK).json({ ...user });
   }
 
   @Post('send-reset-password')
   async sendResetPassword(@Body() body: { email: string }) {
     return await this.authService.sendResetPassword(body.email);
+  }
+  @UseGuards(JwtAuthGuard)
+  @Post('get-role')
+  async getRole(@Req() req: Request, @Res() res: Response) {
+    const user = req.user as any;
+    return res.status(HttpStatus.OK).json({ ...user });
   }
 
   @Patch('reset-password')

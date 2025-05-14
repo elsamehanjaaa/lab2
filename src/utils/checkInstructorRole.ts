@@ -1,14 +1,17 @@
-import { fetchUser } from "./fetchUser";
-
 export const checkInstructorRole = async (
   access_token: string
 ): Promise<boolean> => {
-  const user = await fetchUser(access_token);
-  if (!user) {
-    return false;
-  }
+  const res = await fetch("http://localhost:5000/auth/get-role", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${access_token}`,
+    },
+    credentials: "include",
+  });
 
-  if (user.role == "instructor") {
+  const data = await res.json();
+  if (data.role === "instructor") {
     return true;
   }
   return false; // Assuming result is a boolean

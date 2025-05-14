@@ -13,10 +13,18 @@ interface Lesson {
 
 export const getLessonsByCourse = async (
   section_id: string,
-  access_token: string
+  cookies: string
 ): Promise<{ lessons: Lesson[] }> => {
   try {
-    const user = await fetchUser(access_token);
+    const fetchUser = await fetch("http://localhost:3000/api/me", {
+      method: "GET",
+      headers: {
+        cookie: cookies,
+      },
+    });
+
+    const { user } = await fetchUser.json();
+
     if (!user) {
       return { lessons: [] };
     }

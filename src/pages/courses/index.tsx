@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Categories from "@/components/Courses/Categories";
 import Card from "@/components/Courses/Card";
-import { getCourses } from "@/utils/getCourses"; // Import the getCourses utility
+import { getCourses } from "@/utils/getCourses";
 
 interface Course {
   title: string;

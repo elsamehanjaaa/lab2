@@ -78,8 +78,9 @@ export class SectionService {
   // Update section by ID (in both Supabase and MongoDB)
   async update(id: string, updateSectionDto: UpdateSectionDto) {
     // Update the section in Supabase
+
     const { data, error } = await this.supabaseService.updateData(
-      'section',
+      'sections',
       updateSectionDto,
       id,
     );

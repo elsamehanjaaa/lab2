@@ -8,6 +8,7 @@ interface LessonProps {
     content?: string;
     type: string;
     video?: File | null;
+    video_url: string;
     url: string;
   };
   sectionId: number;
@@ -28,6 +29,7 @@ const Lesson: React.FC<LessonProps> = ({
 }) => {
   return (
     <div className="flex flex-col mb-4 border-b pb-4">
+      <h1>Lesson {lesson.id}:</h1>
       <input
         type="text"
         value={lesson.title}
@@ -87,10 +89,14 @@ const Lesson: React.FC<LessonProps> = ({
                         text-transparent text-sm mb-2  file:mr-4 file:py-2 file:px-4
               file:rounded-lg file:border-0 file:font-semibold
               file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-          />{" "}
-          {lesson.video && (
-            <p className="text-m  mt-1">Selected: {lesson.video.name}</p>
-          )}
+          />
+          {lesson.video ? (
+            <p className="text-m mt-1">Selected: {lesson.video.name}</p>
+          ) : lesson.video_url ? (
+            <p className="text-m mt-1">
+              File: {lesson.video_url.split("/").pop()}
+            </p>
+          ) : null}
         </div>
       )}
       <input

@@ -11,6 +11,7 @@ import { LessonsService } from 'src/lessons/lessons.service';
 import { SectionModule } from 'src/section/section.module';
 import { CoursesModule } from 'src/courses/courses.module';
 import { EnrollmentsModule } from 'src/enrollments/enrollments.module';
+import { EnrollmentsService } from 'src/enrollments/enrollments.service';
 
 @Module({
   imports: [
@@ -28,11 +29,11 @@ import { EnrollmentsModule } from 'src/enrollments/enrollments.module';
     SupabaseService,
     MongooseService,
     SectionService,
-    LessonsService,
+    // ← do NOT re-provide LessonsService, EnrollmentsService, etc.
   ],
   exports: [
-    ProgressService,
-    MongooseModule, // ✅ this makes the ProgressModel available to other modules
+    ProgressService, // ← make sure this is here
+    MongooseModule, // ← so that the ProgressModel token is shared
   ],
 })
 export class ProgressModule {}

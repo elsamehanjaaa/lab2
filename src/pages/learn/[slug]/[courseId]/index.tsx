@@ -41,11 +41,11 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const courseId = params?.courseId as string;
 
   if (!courseId) {
-    return { redirect: { destination: "/404", permanent: false } };
+    return { redirect: { destination: "/", permanent: false } };
   }
 
-  const cookies = parse(req.headers.cookie || "");
-  const access_token = cookies["access_token"];
+  const parsedCookies = parse(req.headers.cookie || "");
+  const access_token = parsedCookies["access_token"];
 
   if (!access_token) {
     return {
@@ -56,12 +56,15 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const access = await checkEnrollment(courseId, access_token);
   if (!access) {
     return {
-      redirect: { destination: "/unauthorized", permanent: false },
+      redirect: { destination: "/", permanent: false },
     };
   }
-
+  const cookies = req.headers.cookie || "";
   // ✅ Fetch course data here
-  const course = await getCourseById(courseId, access_token);
+  const course = await getCourseById(courseId, cookies);
+  if (!course) {
+    return { redirect: { destination: "/404", permanent: false } };
+  }
 
   return {
     props: {
@@ -150,10 +153,12 @@ const CoursePage = ({ course }: { course: Course }) => {
         return;
       if (currentLesson.status === "completed") return;
 
-      await updateProgress(
+      const cookies = parse(document.cookie || "");
+      const access_token = cookies["access_token"];
+      const update = await updateProgress(
         progress,
         currentLesson?._id,
-        localStorage.getItem("access_token") as string,
+        access_token as string,
         course._id
       );
 
@@ -178,7 +183,7 @@ const CoursePage = ({ course }: { course: Course }) => {
   );
 
   return (
-    <div className="-mt-[100px]">
+    <div className="">
       <div className="absolute top-0 left-0 p-3">
         <Link href="/">
           <Image

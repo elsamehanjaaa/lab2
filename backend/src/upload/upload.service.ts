@@ -23,7 +23,12 @@ export class UploadService {
         if (err) reject(err);
         else {
           const durationInSeconds = metadata.format.duration ?? 0;
-          const durationInMinutes = Math.floor(durationInSeconds / 60);
+          let durationInMinutes: number;
+          if (typeof metadata.format.duration !== 'number') {
+            durationInMinutes = 0;
+          } else {
+            durationInMinutes = Math.floor(durationInSeconds / 60);
+          }
           resolve(durationInMinutes);
         }
       });

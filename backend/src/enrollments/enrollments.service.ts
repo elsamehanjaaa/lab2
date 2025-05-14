@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { CreateEnrollmentDto } from './dto/create-enrollment.dto';
 import { UpdateEnrollmentDto } from './dto/update-enrollment.dto';
 import { SupabaseService } from 'src/supabase/supabase.service';
@@ -15,11 +15,14 @@ export class EnrollmentsService {
   constructor(
     private readonly supabaseService: SupabaseService,
     private readonly mongooseService: MongooseService,
-    private readonly progressService: ProgressService,
+    @Inject(forwardRef(() => LessonsService))
     private readonly lessonsService: LessonsService,
+
+    @Inject(forwardRef(() => ProgressService))
+    private readonly progressService: ProgressService, // This is the dependency at index 3
     @InjectModel(Enrollments.name)
     private readonly EnrollmentsModel: Model<Enrollments>,
-    @InjectModel(Courses.name) private readonly CoursesModel: Model<Courses>, // Inject Categories model
+    @InjectModel(Courses.name) private readonly CoursesModel: Model<Courses>,
   ) {}
   async create(createEnrollmentDto: CreateEnrollmentDto) {
     const { data, error } = await this.supabaseService.insertData(
@@ -83,11 +86,38 @@ export class EnrollmentsService {
     return true;
   }
   async updateProgress(updateEnrollmentDto: UpdateEnrollmentDto) {
-    const lessons = await this.lessonsService.getLessonsLengthByCourseId(
+    const lessons = await this.lessonsService.getLessonsByCourseId(
       updateEnrollmentDto.course_id as string,
       updateEnrollmentDto.user_id as string,
     );
-    const percent = 100 / lessons;
+
+    // Extract lesson IDs
+    const lesson_ids = lessons.map((lesson) => lesson._id);
+
+    // Initialize counter for completed lessons
+    let completedLessons = 0;
+
+    // Iterate over each lesson and check its progress
+    for (const lesson_id of lesson_ids) {
+      // Get the progress status of the current lesson
+      const lesson = await this.progressService.checkStatus(
+        lesson_id,
+        updateEnrollmentDto.user_id as string,
+      );
+
+      // If the status is "completed", increment the completed lessons counter
+      if (lesson && lesson.status === 'completed') {
+        completedLessons++;
+      }
+    }
+
+    // Now, completedLessons contains the number of completed lessons
+
+    // Calculate total lessons for the course
+    const totalLessons = lesson_ids.length;
+    const progressPercentage = Math.ceil(
+      (completedLessons / totalLessons) * 100,
+    );
 
     const enrollment = await this.EnrollmentsModel.findOne({
       user_id: updateEnrollmentDto.user_id,
@@ -96,15 +126,11 @@ export class EnrollmentsService {
     if (!enrollment) {
       throw new Error('Enrollment not found');
     }
-    const newPercent = Math.min(
-      Math.ceil(+enrollment.progress + +percent),
-      100,
-    );
 
     const { data, error } = await this.supabaseService.updateData(
       'enrollments',
       {
-        progress: newPercent,
+        progress: progressPercentage,
       },
       enrollment?._id ??
         (() => {
@@ -120,7 +146,7 @@ export class EnrollmentsService {
         course_id: updateEnrollmentDto.course_id,
       },
       {
-        progress: newPercent,
+        progress: progressPercentage,
       },
     );
   }

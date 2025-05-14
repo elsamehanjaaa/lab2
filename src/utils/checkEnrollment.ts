@@ -4,10 +4,6 @@ export const checkEnrollment = async (
   course_id: string,
   access_token: string
 ): Promise<boolean> => {
-  const user = await fetchUser(access_token);
-  if (!user) {
-    return false;
-  }
   if (!course_id) {
     return false;
   }

@@ -11,16 +11,6 @@ export async function middleware(request: NextRequest) {
 
   const token = request.cookies.get("access_token")?.value;
 
-  // Redirect logged-in users away from the login page
-  if (token && (pathname === "/login" || pathname === "/signup")) {
-    return NextResponse.redirect(new URL("/", request.url));
-  }
-
-  // Redirect non-authenticated users trying to access protected routes
-  if (!token && pathname.startsWith("/protected")) {
-    return NextResponse.redirect(new URL("/login", request.url));
-  }
-
   // if (
   //   url.pathname.split("/").length === 4 &&
   //   (url.pathname.startsWith("/course/") ||
@@ -45,7 +35,6 @@ export async function middleware(request: NextRequest) {
 // Configuring middleware to run on specific routes
 export const config = {
   matcher: [
-    "/login",
     "/protected/:path*",
     "/course/:path*",
     "/course/subscribe/:path*",

@@ -1,11 +1,12 @@
 // utils/recoverySession.ts
 
+import { parse } from "cookie";
 export const recoverSession = async (): Promise<
   { username: any } | undefined
 > => {
   try {
-    const refresh_token = localStorage.getItem("refresh_token");
-
+    const cookies = parse(document.cookie || "");
+    const refresh_token = cookies["refresh_token"];
     if (!refresh_token) {
       return undefined;
     }

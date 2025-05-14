@@ -2,9 +2,10 @@ import React, { useState, useEffect } from "react";
 
 type ThumbnailProps = {
   onThumbnailChange: (file: File | null) => void;
+  initialUrl?: string;
 };
 
-const Thumbnail = ({ onThumbnailChange }: ThumbnailProps) => {
+const Thumbnail = ({ onThumbnailChange, initialUrl }: ThumbnailProps) => {
   const [thumbnailPreview, setThumbnailPreview] = useState<string | null>(null);
 
   const handleThumbnailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -30,9 +31,9 @@ const Thumbnail = ({ onThumbnailChange }: ThumbnailProps) => {
       </div>
 
       <div className="rounded border w-40 h-40 flex items-center justify-center">
-        {thumbnailPreview ? (
+        {thumbnailPreview || initialUrl ? (
           <img
-            src={thumbnailPreview}
+            src={thumbnailPreview || initialUrl}
             alt="Thumbnail Preview"
             className="object-cover w-full h-full"
           />

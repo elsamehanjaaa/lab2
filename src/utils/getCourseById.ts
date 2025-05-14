@@ -11,7 +11,10 @@ interface Course {
   created_at: string;
   slug: string;
   sections: SectionsWithLessons[];
+  thumbnail_url: string;
+  instructor_name: string;
   _id: string;
+  categories: number[];
 }
 interface SectionsWithLessons {
   index: number;
@@ -22,8 +25,8 @@ interface SectionsWithLessons {
 }
 export const getCourseById = async (
   course_id: string,
-  access_token: string
-): Promise<Course> => {
+  cookies?: any
+): Promise<Course | null> => {
   try {
     const res = await fetch(`http://localhost:5000/courses/${course_id}`, {
       method: "GET",
@@ -36,22 +39,13 @@ export const getCourseById = async (
     }
 
     const course = await res.json();
-
-    const sections = await getSectionsByCourse(course_id, access_token);
-    course.sections = sections;
+    if (cookies) {
+      const sections = await getSectionsByCourse(course_id, cookies);
+      course.sections = sections;
+    }
     return { ...course };
   } catch (error) {
     console.error("Fetch error:", error);
-    return {
-      title: "",
-      description: "",
-      price: 0,
-      rating: 0,
-      status: false,
-      created_at: "",
-      slug: "",
-      sections: [],
-      _id: "",
-    };
+    return null;
   }
 };

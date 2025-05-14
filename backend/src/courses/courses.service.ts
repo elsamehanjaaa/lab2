@@ -10,6 +10,7 @@ import { Courses } from '../schemas/courses.schema';
 import { Categories } from '../schemas/categories.schema'; // Import the Categories model
 import { Enrollments } from 'src/schemas/enrollments.schema';
 import { LessonsService } from 'src/lessons/lessons.service';
+import { ProgressService } from 'src/progress/progress.service';
 
 @Injectable()
 export class CoursesService {
@@ -18,6 +19,7 @@ export class CoursesService {
     private readonly mongooseService: MongooseService,
     private readonly sectionService: SectionService,
     private readonly lessonsService: LessonsService,
+    private readonly progressService: ProgressService,
     @InjectModel(Courses.name) private readonly CoursesModel: Model<Courses>, // Inject Courses model
     @InjectModel(Categories.name)
     private readonly CategoriesModel: Model<Categories>,
@@ -246,8 +248,25 @@ export class CoursesService {
 
   // Get a course by ID
   async findOne(id: string) {
-    return await this.CoursesModel.findOne({ _id: id }).exec();
+    const course = await this.mongooseService.getDataById<Courses>(
+      this.CoursesModel,
+      id,
+    );
+    if (!course) return [];
+
+    const auth = await this.supabaseService.auth();
+    const user = await auth.admin.getUserById(
+      (course as Courses).instructor_id,
+    );
+
+    const { instructor_id, ...courseWithoutInstructorId } = course.toObject();
+
+    return {
+      ...courseWithoutInstructorId,
+      instructor_name: user.data.user?.user_metadata.full_name || 'Unknown',
+    };
   }
+
   async getCoursesByInstructor(instructor_id: string): Promise<Courses[]> {
     try {
       // Find courses with the exact instructor_id
@@ -260,28 +279,114 @@ export class CoursesService {
     }
   }
   // Update a course
-  async update(id: string, updateCourseDto: UpdateCourseDto) {
-    //   const { data, error } = await this.supabaseService.updateData(
-    //     'courses',
-    //     updateCourseDto,
-    //     id,
-    //   );
-    //   if (error) {
-    //     console.error('Error inserting data:', error);
-    //     throw error;
-    //   }
-    //   const mongo = await this.mongooseService.updateData(this.CoursesModel, id, {
-    //     ...updateCourseDto,
-    //     categories: updateCourseDto.categories,
-    //   });
-    //   if (!mongo) {
-    //     throw Error('Error inserting data into MongoDB');
-    //   }
-    // }
-    // // Remove a course
-    // async remove(id: string) {
-    //   await this.supabaseService.deleteData('courses', id.toString());
-    //   await this.mongooseService.deleteData(this.CoursesModel, id.toString());
-    //   return { message: 'Course deleted successfully' };
+  async update(id: string, updateCourseDto: UpdateCourseDto, sections: any[]) {
+    // Update slug
+    const generateSlug = (title: string): string => {
+      return title
+        .toLowerCase()
+        .replace(/\s+/g, '-')
+        .replace(/&/g, 'and')
+        .replace(/[^a-z0-9\-]/g, '')
+        .trim();
+    };
+
+    if (updateCourseDto.title) {
+      updateCourseDto.slug = generateSlug(updateCourseDto.title);
+    }
+
+    // Update in Supabase
+
+    const { data, error } = await this.supabaseService.updateData(
+      'courses',
+      updateCourseDto,
+      id,
+    );
+    if (error) {
+      console.error('Error updating Supabase data:', error);
+      throw error;
+    }
+
+    // Update in MongoDB
+    const mongo = await this.mongooseService.updateData(this.CoursesModel, id, {
+      ...updateCourseDto,
+      categories: (updateCourseDto.categories ?? []).map((category) =>
+        parseInt(category, 10),
+      ),
+    });
+    if (!mongo) {
+      throw Error('Error updating data in MongoDB');
+    }
+
+    // Update sections and lessons
+    const existingSections =
+      await this.sectionService.getSectionsByCourseId(id);
+
+    const sectionPromises = sections.map(async (sectionDto) => {
+      let section = existingSections.find((s) => s._id === sectionDto._id);
+
+      // Create if not exists
+      if (!section) {
+        const created = await this.sectionService.create({
+          title: sectionDto.title,
+          index: sectionDto.id,
+          course_id: sectionDto.course_id,
+        });
+        section = created[0];
+      } else {
+        // Update if exists
+        const updatedSection = await this.sectionService.update(section._id, {
+          title: sectionDto.title,
+          index: sectionDto.index,
+        });
+      }
+
+      if (!section) {
+        throw new Error('Section not found');
+      }
+      const existingLessons = await this.lessonsService.getLessonsBySectionId(
+        section.id,
+        updateCourseDto.instructor_id || '',
+      );
+
+      const lessonPromises = sectionDto.lessons.map(async (lessonDto) => {
+        let lesson = existingLessons.find((l) => l._id === lessonDto._id);
+
+        const baseLesson = {
+          title: lessonDto.title,
+          content: lessonDto.content || '',
+          video_url: lessonDto.video_url,
+          duration: lessonDto.duration,
+          section_id: section.id,
+          type: lessonDto.type,
+          index: lessonDto.id || lessonDto.index,
+          ...(lessonDto.url && { url: lessonDto.url }),
+        };
+
+        if (!lesson) {
+          const createdLesson = await this.lessonsService.create(baseLesson);
+
+          const enrolledUsers = await this.EnrollmetsModel.find({
+            course_id: id,
+          }).select('user_id');
+
+          const user_ids = enrolledUsers.map((user) => {
+            return user.user_id;
+          });
+
+          const progressPromises = user_ids.map(async (id) => {
+            await this.progressService.createOne(id, createdLesson[0].id);
+          });
+          await Promise.all(progressPromises);
+        } else {
+          await this.lessonsService.update(lesson._id, baseLesson);
+        }
+      });
+
+      await Promise.all(lessonPromises);
+    });
+
+    await Promise.all(sectionPromises);
+
+    return { message: 'Course updated successfully' };
   }
 }

@@ -1,6 +1,5 @@
 // Inside pages/my-courses.tsx or similar
 
-import { fetchUser } from "@/utils/fetchUser";
 import { getEnrollmentsByUser } from "@/utils/getEnrollmentsByUser";
 import { parse } from "cookie";
 import { GetServerSideProps } from "next";
@@ -8,19 +7,13 @@ import Link from "next/link";
 import React, { useEffect, useState } from "react";
 
 export const getServerSideProps: GetServerSideProps = async ({ req }) => {
-  const cookies = parse(req.headers.cookie || "");
-  const access_token = cookies["access_token"];
+  const res = await fetch("http://localhost:3000/api/me", {
+    headers: {
+      cookie: req.headers.cookie || "",
+    },
+  });
+  const { user } = await res.json();
 
-  if (!access_token) {
-    return {
-      redirect: {
-        destination: "/",
-        permanent: false,
-      },
-    };
-  }
-
-  const user = await fetchUser(access_token);
   if (!user) {
     return {
       redirect: {
@@ -31,16 +24,18 @@ export const getServerSideProps: GetServerSideProps = async ({ req }) => {
   }
 
   return {
-    props: { user }, // 👈 Pass user to the component
+    props: { user },
   };
 };
 
 interface Props {
   user: { id: string; username: string };
-  access_token: string;
 }
 
-const Index = ({ user, access_token }: Props) => {
+const Index = ({ user }: Props) => {
+  const [loggedUser, setLoggedUser] = useState<
+    { id: string; username: string } | undefined
+  >(user);
   const [courses, setCourses] = useState<
     {
       id: string;
@@ -52,8 +47,9 @@ const Index = ({ user, access_token }: Props) => {
   >([]);
 
   useEffect(() => {
+    if (!loggedUser) return;
     const fetchEnrollments = async () => {
-      const enrollments = await getEnrollmentsByUser(user.id); // optionally pass user.id if needed
+      const enrollments = await getEnrollmentsByUser(loggedUser.id); // optionally pass user.id if needed
       if (Array.isArray(enrollments)) {
         setCourses(
           enrollments as {
@@ -71,8 +67,7 @@ const Index = ({ user, access_token }: Props) => {
     };
 
     fetchEnrollments();
-  }, [user.id]); // 👈 Trigger useEffect when user.id is available
-
+  }, [loggedUser]);
   return (
     <div className="p-4  max-w-3xl">
       <h1 className="text-2xl font-semibold mb-4">My Courses</h1>

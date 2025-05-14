@@ -2,16 +2,18 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import Image from "next/image";
 import { enrollInCourse } from "@/utils/enroll";
+import { getCourseById } from "@/utils/getCourseById";
+import { parse } from "cookie";
+import { LoaderCircle } from "lucide-react";
 
 // Interfaces
 interface Course {
-  id: string;
   title: string;
   description: string;
   // Fushat shtesë si opsionale:
   price?: number;
   rating?: number;
-  status?: string;
+  status?: boolean;
   created_at?: string;
   slug?: string;
 }
@@ -25,7 +27,7 @@ interface User {
 const Index = () => {
   const router = useRouter();
   const { courseId } = router.query;
-
+  const [loading, setLoading] = useState<boolean>(false);
   // Mbajmë kursin dhe përdoruesin në state
   const [course, setCourse] = useState<Course | null>(null);
   const [user, setUser] = useState<User | null>(null);
@@ -36,18 +38,14 @@ const Index = () => {
 
     async function fetchCourse() {
       try {
-        const res = await fetch(`http://localhost:5000/courses/${courseId}`, {
-          method: "GET",
-          headers: { "Content-Type": "application/json" },
-          credentials: "include",
-        });
+        const cookies = parse(document.cookie || "");
+        const access_token = cookies["access_token"];
 
-        if (!res.ok) {
-          throw new Error(`HTTP Error! Status: ${res.status}`);
-        }
-
-        const result = await res.json();
-        setCourse(result);
+        const courses = await getCourseById(
+          courseId as string,
+          access_token as string
+        );
+        setCourse(courses);
       } catch (error) {
         console.error("Fetch error:", error);
       }
@@ -55,15 +53,27 @@ const Index = () => {
 
     fetchCourse();
   }, [courseId]);
+  useEffect(() => {
+    if (loading) {
+      document.body.style.overflow = "hidden"; // disable scroll
+    } else {
+      document.body.style.overflow = ""; // reset to default
+    }
 
+    // Optional: reset on unmount
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [loading]);
   // Handle enrollment logic
 
   async function handleEnrollment() {
     try {
+      setLoading(true);
       const result = await enrollInCourse(courseId as string); // <- Cleaner call
 
       // Redirect the user after successful enrollment
-      router.push("/");
+      router.push("/myCourses");
     } catch (error) {
       console.error("Enrollment error:", error);
       alert(error instanceof Error ? error.message : "Enrollment failed");
@@ -81,6 +91,11 @@ const Index = () => {
 
   return (
     <div>
+      {loading && (
+        <div className="absolute w-full h-full bg-gray-300 opacity-50 flex justify-center items-center">
+          <LoaderCircle className="animate-spin w-8 h-8 text-gray-700" />
+        </div>
+      )}
       <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
         <h1 className="text-3xl font-bold text-gray-900">
           Next.js Course Enrollment

@@ -9,6 +9,9 @@ import { CoursesModule } from 'src/courses/courses.module'; // Import CoursesMod
 import { ProgressModule } from 'src/progress/progress.module';
 import { SectionService } from 'src/section/section.service';
 import { SectionModule } from 'src/section/section.module';
+import { EnrollmentsModule } from 'src/enrollments/enrollments.module';
+import { EnrollmentsService } from 'src/enrollments/enrollments.service';
+import { ProgressService } from 'src/progress/progress.service';
 
 @Module({
   imports: [
@@ -16,9 +19,16 @@ import { SectionModule } from 'src/section/section.module';
     forwardRef(() => CoursesModule), // Handle circular dependency if needed
     forwardRef(() => ProgressModule), // Handle circular dependency if needed
     forwardRef(() => SectionModule), // Handle circular dependency if needed
+    forwardRef(() => EnrollmentsModule), // Handle circular dependency if needed
   ],
   controllers: [LessonsController],
-  providers: [LessonsService, SupabaseService, MongooseService, SectionService],
-  exports: [MongooseModule], // ✅ Export MongooseModule to make LessonsModel available
+  providers: [
+    LessonsService,
+    SupabaseService,
+    MongooseService,
+    SectionService,
+    ProgressService,
+  ],
+  exports: [LessonsService, MongooseModule], // ✅ Export MongooseModule to make LessonsModel available
 })
 export class LessonsModule {}

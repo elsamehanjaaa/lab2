@@ -19,6 +19,7 @@ export const getEnrollmentsByUser = async (user_id: string): Promise<{}> => {
     }
 
     const courses = await res.json();
+
     const data = courses.map(
       (course: {
         _id: any;

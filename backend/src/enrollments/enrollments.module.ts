@@ -9,7 +9,7 @@ import { CoursesModule } from 'src/courses/courses.module'; // ✅
 import { ProgressService } from 'src/progress/progress.service';
 import { SectionService } from 'src/section/section.service';
 import { LessonsService } from 'src/lessons/lessons.service';
-import { ProgressModule } from 'src/progress/progress.module';
+import { ProgressModule } from 'src/progress/progress.module'; // Import ProgressModule
 import { SectionModule } from 'src/section/section.module';
 import { LessonsModule } from 'src/lessons/lessons.module';
 
@@ -19,18 +19,16 @@ import { LessonsModule } from 'src/lessons/lessons.module';
       { name: Enrollments.name, schema: EnrollmentsSchema },
     ]),
     forwardRef(() => CoursesModule),
-    forwardRef(() => ProgressModule),
+    forwardRef(() => ProgressModule), // ← this must be present
     forwardRef(() => LessonsModule),
     forwardRef(() => SectionModule),
   ],
   controllers: [EnrollmentsController],
   providers: [
-    EnrollmentsService,
-    SupabaseService,
-    MongooseService,
-    ProgressService,
-    SectionService,
-    LessonsService,
+    EnrollmentsService, // only the things this module _owns_
+    SupabaseService, // if you really need Supabase directly here
+    MongooseService, // same for your wrapper
+    SectionService, // if you use it in EnrollmentsService
   ],
   exports: [EnrollmentsService, MongooseModule],
 })

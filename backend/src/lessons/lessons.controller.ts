@@ -47,10 +47,10 @@ export class LessonsController {
       body.user_id,
     );
   }
-  // @Patch(':id')
-  // update(@Param('id') id: string, @Body() updateLessonDto: UpdateLessonDto) {
-  //   return this.lessonsService.update(id, updateLessonDto);
-  // }
+  @Patch(':id')
+  update(@Param('id') id: string, @Body() updateLessonDto: UpdateLessonDto) {
+    return this.lessonsService.update(id, updateLessonDto);
+  }
 
   @Delete(':id')
   remove(@Param('id') id: string) {

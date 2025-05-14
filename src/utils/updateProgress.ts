@@ -6,9 +6,15 @@ export const updateProgress = async (
   access_token: string,
   course_id: string
 ): Promise<boolean> => {
-  const user = await fetchUser(access_token);
+  const fetchUser = await fetch("/api/me", {
+    method: "GET",
+    credentials: "include", // ensure cookies are sent
+  });
+
+  const { user } = await fetchUser.json();
+
   if (!user) {
-    return false;
+    throw new Error("User not authenticated");
   }
   const user_id = user.id;
   if (!status.match(/^(not_started|incomplete|completed)$/)) {
@@ -25,7 +31,6 @@ export const updateProgress = async (
   if (!res.ok) {
     throw new Error("Failed to update progresse");
   }
-  console.log(res);
 
   const result = await res.json();
   return result;

@@ -2,15 +2,18 @@ import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import Head from "next/head";
 import Image from "next/image";
-
+import { getCourseById } from "@/utils/getCourseById";
 interface Course {
   title: string;
   description: string;
   price: number;
   rating: number;
+  status: boolean;
+  created_at: string;
   slug: string;
-  courseId: string;
-  thumbnail_url?: string;
+  thumbnail_url: string;
+  instructor_name: string;
+  _id: string;
 }
 
 const Index = () => {
@@ -27,23 +30,9 @@ const Index = () => {
       setLoading(true);
       setError(null);
       try {
-        const res = await fetch(`http://localhost:5000/courses/${courseId}`, {
-          method: "GET",
-          headers: { "Content-Type": "application/json" },
-          credentials: "include",
-        });
+        const fetchedCourse = await getCourseById(courseId as string);
 
-        if (!res.ok) {
-          if (res.status === 404) {
-            // router.replace("/course/not-found");
-            return;
-          } else {
-            throw new Error(`HTTP Error! Status: ${res.status}`);
-          }
-        }
-
-        const result = await res.json();
-        setCourse(result);
+        setCourse(fetchedCourse);
       } catch (error) {
         console.error("Fetch error:", error);
         setError("An error occurred while fetching the course.");
@@ -103,7 +92,9 @@ const Index = () => {
 
                   <div className="mb-4">
                     <span className="text-gray-600">Created by</span>{" "}
-                    <span className="text-blue-600">John Doe</span>
+                    <span className="text-blue-600">
+                      {course.instructor_name}
+                    </span>
                   </div>
 
                   <div className="mb-4">

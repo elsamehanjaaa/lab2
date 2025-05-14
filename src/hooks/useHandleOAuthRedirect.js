@@ -19,11 +19,6 @@ export function useHandleOAuthRedirect() {
         await fetchUser();
         if (access_token) {
           
-          localStorage.setItem("access_token", access_token);
-          localStorage.setItem("refresh_token", refresh_token);
-          localStorage.setItem("expires_at", expires_at ?? "");
-          localStorage.setItem("token_type", token_type ?? "");
-          
           window.history.replaceState({}, document.title, "/");
           // window.location.href('/')
 

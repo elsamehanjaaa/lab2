@@ -2,7 +2,6 @@ import Hero from "@/components/Homepage/Hero";
 import React from "react";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import { cookies } from "next/headers";
 import { recoverSession } from "@/utils/recoverSession";
 
 const index = () => {

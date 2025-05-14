@@ -1,5 +1,4 @@
-// components/Section.tsx
-import React from "react";
+import React, { useState } from "react";
 import Lesson from "./Lesson";
 
 interface SectionProps {
@@ -28,41 +27,58 @@ const Section: React.FC<SectionProps> = ({
   onSectionChange,
   onRemoveLesson,
 }) => {
+  const [showLessons, setShowLessons] = useState(false); // 👈 Toggle state
+
   return (
     <div className="mt-6 p-4 bg-gray-300 rounded-lg">
-      <div className="flex justify-between">
+      <div className="flex justify-between items-center">
+        <label className=" text-xl pr-2">Title:</label>
         <input
           type="text"
           value={section.title}
           onChange={(e) => onSectionChange(section.id, e.target.value)}
           placeholder="Section Title"
-          className="w-full border bg-gray-200 border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 mb-2"
+          className="w-full border bg-gray-200 border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 mr-2"
         />
         <button
           type="button"
-          onClick={() => onRemoveSection(section.id)}
-          className="bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-6 rounded-lg transition"
+          onClick={() => setShowLessons(!showLessons)}
+          className="bg-blue-600 hover:bg-blue-700 w-36 text-white text-sm p-2 rounded-lg transition mr-2"
         >
-          Remove Section
+          {showLessons ? "Hide Lessons" : "View Lessons"}
+        </button>
+        <button
+          type="button"
+          onClick={() => onRemoveSection(section.id)}
+          className="bg-red-600 hover:bg-red-700 text-white text-sm  p-2 rounded-lg transition"
+        >
+          Remove
         </button>
       </div>
 
-      {section.lessons.map((lesson) => (
-        <Lesson
-          key={lesson.id}
-          lesson={lesson}
-          sectionId={section.id}
-          onChange={onLessonChange}
-          onRemove={onRemoveLesson}
-        />
-      ))}
-      <button
-        type="button"
-        onClick={() => onAddLesson(section.id)}
-        className="w-full md:w-auto bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-lg transition mb-4"
-      >
-        Add Lesson
-      </button>
+      {showLessons && (
+        <>
+          <br />
+          <hr />
+          <br />
+          {section.lessons.map((lesson) => (
+            <Lesson
+              key={`${section.id},${lesson.id}`}
+              lesson={lesson}
+              sectionId={section.id}
+              onChange={onLessonChange}
+              onRemove={onRemoveLesson}
+            />
+          ))}
+          <button
+            type="button"
+            onClick={() => onAddLesson(section.id)}
+            className="w-full md:w-auto bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-lg transition mt-2"
+          >
+            Add Lesson
+          </button>
+        </>
+      )}
     </div>
   );
 };

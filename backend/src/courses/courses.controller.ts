@@ -108,14 +108,10 @@ export class CoursesController {
       data: courseData,
     };
   }
-  @UseGuards(JwtAuthGuard)
+
   @Post('getCoursesByInstructor')
-  getCoursesByInstructor(@Req() request: Request) {
-    if (!request.user) {
-      throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
-    }
-    const { id } = request.user as any;
-    return this.coursesService.getCoursesByInstructor(id);
+  getCoursesByInstructor(@Body() body: { user_id: string }) {
+    return this.coursesService.getCoursesByInstructor(body.user_id);
   }
 
   // Get all courses
@@ -185,9 +181,67 @@ export class CoursesController {
   }
 
   // Update a course by its ID
+  @UseGuards(JwtAuthGuard)
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateCourseDto: UpdateCourseDto) {
-    return this.coursesService.update(id, updateCourseDto);
+  @UseInterceptors(AnyFilesInterceptor())
+  async updateCourse(
+    @Param('id') id: string,
+    @UploadedFiles() files: Express.Multer.File[],
+    @Body('courseData') rawCourseData: string,
+    @Req() request: Request,
+  ) {
+    const courseData = JSON.parse(rawCourseData);
+
+    // Process uploaded files
+    for (const file of files) {
+      const thumbnail = file.fieldname.match('thumbnail');
+      if (thumbnail) {
+        try {
+          const { url } = await this.uploadService.handleThumbnailUpload(
+            file,
+            courseData.title,
+          );
+          courseData.thumbnail_url = url;
+        } catch (error) {
+          console.error(error);
+        }
+        continue;
+      }
+
+      const matches = file.fieldname.match(/videos\[(\d+)\]\[(\d+)\]/);
+
+      if (!matches) continue;
+
+      const sectionId = parseInt(matches[1]);
+      const lessonId = parseInt(matches[2]);
+
+      const section = courseData.sections.find((s: any) => s.id === sectionId);
+      if (!section) continue;
+
+      const lesson = section.lessons.find((l: any) => l.id === lessonId);
+      if (!lesson) continue;
+
+      try {
+        const { url, duration } = await this.uploadService.handleVideoUpload(
+          file,
+          courseData.title,
+          lesson.title,
+        );
+        lesson.video_url = url;
+        lesson.duration = duration;
+      } catch (error) {
+        console.error(`Failed to process video for lesson ${lessonId}:`, error);
+      }
+    }
+
+    const { sections, ...restCourseData } = courseData;
+
+    await this.coursesService.update(id, restCourseData, sections);
+
+    return {
+      message: 'Course updated successfully',
+      data: courseData,
+    };
   }
 
   // Remove a course by its ID

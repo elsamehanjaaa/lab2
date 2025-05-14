@@ -1,12 +1,13 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import CreateCourseForm from "../../components/Instructor/Createcourses";
 import { GetServerSideProps } from "next";
 import { parse } from "cookie";
 import { checkInstructorRole } from "@/utils/checkInstructorRole";
+import ManageCourses from "@/components/Instructor/ManageCourses";
 
 export const getServerSideProps: GetServerSideProps = async ({ req }) => {
-  const cookies = parse(req.headers.cookie || "");
-  const access_token = cookies["access_token"];
+  const parsedCookies = parse(req.headers.cookie || "");
+  const access_token = parsedCookies["access_token"];
 
   if (!access_token) {
     return {
@@ -18,6 +19,7 @@ export const getServerSideProps: GetServerSideProps = async ({ req }) => {
   }
 
   const access = await checkInstructorRole(access_token);
+
   if (!access) {
     return {
       redirect: {
@@ -26,13 +28,13 @@ export const getServerSideProps: GetServerSideProps = async ({ req }) => {
       },
     };
   }
+  const cookies = req.headers.cookie;
   return {
-    props: {}, // Return an empty props object as a fallback
+    props: { cookies }, // Return an empty props object as a fallback
   };
 };
-export default function TeacherDashboard() {
+export default function TeacherDashboard({ cookies }: { cookies: string }) {
   const [activeTab, setActiveTab] = useState("");
-
   const renderContent = () => {
     switch (activeTab) {
       case "create-course":
@@ -40,7 +42,7 @@ export default function TeacherDashboard() {
       case "account-settings":
         return <div>Account Settings Section</div>;
       case "manage-courses":
-        return <div>Manage Courses Section</div>;
+        return <ManageCourses cookies={cookies} />;
       case "manage-students":
         return <div>Manage Students Section</div>;
       default:
@@ -51,7 +53,7 @@ export default function TeacherDashboard() {
   };
 
   return (
-    <div className="flex min-h-screen bg-gray-100 -mt-[100px]">
+    <div className="flex min-h-screen bg-gray-100">
       <aside className="w-64 bg-white shadow p-6">
         <h2 className="text-xl font-bold mb-6">Teacher Dashboard</h2>
         <nav className="flex flex-col gap-3">

@@ -17,6 +17,6 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "src/pages/api/contact.js"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "src/pages/api/contact.js", "src/components/learn/VideoPlayer.jsx", "src/hooks/useHandleOAuthRedirect.js"],
   "exclude": ["node_modules"]
 }

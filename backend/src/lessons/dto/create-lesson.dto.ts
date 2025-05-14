@@ -8,7 +8,7 @@ export class CreateLessonDto {
   content: string;
 
   @IsNumber()
-  index: number;
+  index?: number;
 
   @IsString()
   video_url: string;
@@ -17,7 +17,7 @@ export class CreateLessonDto {
   @IsNumber()
   duration: number;
   @IsString()
-  url: string;
+  url?: string;
 
   @IsNumber()
   section_id: number;

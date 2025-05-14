@@ -3,7 +3,7 @@ import Sidebar from "@/components/Sidebar";
 
 const Index = () => {
   return (
-    <div className="flex -mt-20">
+    <div className="flex">
       <Sidebar />
       <div className="flex-1 p-8">
         {/* Your dashboard content goes here */}
