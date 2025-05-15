@@ -22,7 +22,7 @@ const StepButton: React.FC<StepButtonProps> = ({
         <button
           type="button"
           onClick={() => setStep(step + 1)}
-          className="w-40 bg-blue-600 flex justify-around relative hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-lg transition"
+          className="w-40 bg-blue-900 flex justify-around relative hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-lg transition"
         >
           Next
           <div className="absolute right-4">
@@ -65,7 +65,7 @@ const StepButton: React.FC<StepButtonProps> = ({
           <button
             type="button"
             onClick={() => setStep(step + 1)}
-            className="w-40 bg-blue-600 flex justify-around relative hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-lg transition"
+            className="w-40 bg-blue-900 flex justify-around relative  text-white font-medium py-2 px-6 rounded-lg transition"
           >
             Next
             <div className="absolute right-4">

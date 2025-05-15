@@ -2,7 +2,8 @@ import Hero from "@/components/Homepage/Hero";
 import React from "react";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import { recoverSession } from "@/utils/recoverSession";
+import * as authUtils from "@/utils/auth"
+
 
 const index = () => {
   const router = useRouter();
@@ -17,7 +18,7 @@ const index = () => {
       const type = params.get("type");
       if (type === "recovery" && access_token && refresh_token) {
         // Send tokens to your NestJS backend
-        await recoverSession()
+        await authUtils.recoverSession()
           .then(() => {
             router.push("/set-new-password"); // Or wherever your password form is
           })

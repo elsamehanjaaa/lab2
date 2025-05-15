@@ -43,7 +43,7 @@ const Section: React.FC<SectionProps> = ({
         <button
           type="button"
           onClick={() => setShowLessons(!showLessons)}
-          className="bg-blue-600 hover:bg-blue-700 w-36 text-white text-sm p-2 rounded-lg transition mr-2"
+          className="bg-blue-900 hover:bg-blue-700 w-36 text-white text-sm p-2 rounded-lg transition mr-2"
         >
           {showLessons ? "Hide Lessons" : "View Lessons"}
         </button>
@@ -73,7 +73,7 @@ const Section: React.FC<SectionProps> = ({
           <button
             type="button"
             onClick={() => onAddLesson(section.id)}
-            className="w-full md:w-auto bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-lg transition mt-2"
+            className="w-full md:w-auto bg-blue-900 hover:bg-blue-600 text-white font-medium py-2 px-6 rounded-lg transition mt-2"
           >
             Add Lesson
           </button>

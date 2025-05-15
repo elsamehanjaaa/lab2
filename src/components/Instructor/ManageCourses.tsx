@@ -1,4 +1,4 @@
-import { getCoursesByInstructor } from "@/utils/getCoursesByInstructor";
+import * as courseUtils from "@/utils/course";
 import React, { useEffect, useState } from "react";
 import EditCourseForm from "./EditCourse";
 
@@ -20,25 +20,28 @@ const ManageCourses = ({ cookies }: { cookies: string }) => {
   const [editingCourseId, setEditingCourseId] = useState<string>("");
   useEffect(() => {
     const fetchCourses = async () => {
-      try {
-        // Fetch the current user
-        const userRes = await fetch("/api/me");
-        const userData = await userRes.json();
-        const userId = userData?.user?.id;
+  try {
+    const userRes = await fetch("/api/me");
+    const userData = await userRes.json();
+    const userId = userData?.user?.id;
 
-        if (!userId) {
-          console.error("User not found");
-          return;
-        }
-        const response = await getCoursesByInstructor(userId);
+    if (!userId) {
+      console.error("User not found");
+      return;
+    }
 
-        setCourses(response);
-      } catch (err) {
-        console.error("Error fetching courses", err);
-      } finally {
-        setLoading(false);
-      }
-    };
+    const response = await courseUtils.getById(userId);
+    console.log("Fetched courses response:", response);
+
+    // adjust this based on your actual console output
+    setCourses(response); // or [response]
+  } catch (err) {
+    console.error("Error fetching courses", err);
+  } finally {
+    setLoading(false);
+  }
+};
+
 
     fetchCourses();
   }, []);

@@ -18,7 +18,7 @@ export const getServerSideProps: GetServerSideProps = async ({ req }) => {
     };
   }
 
-  const access = await checkInstructorRole(access_token);
+  const access = await instructorUtils.checkInstructorRole(access_token);
 
   if (!access) {
     return {
@@ -54,35 +54,51 @@ export default function TeacherDashboard({ cookies }: { cookies: string }) {
 
   return (
     <div className="flex min-h-screen bg-gray-100">
-      <aside className="w-64 bg-white shadow p-6">
-        <h2 className="text-xl font-bold mb-6">Teacher Dashboard</h2>
-        <nav className="flex flex-col gap-3">
-          <button
-            onClick={() => setActiveTab("account-settings")}
-            className="text-left px-4 py-2 rounded hover:bg-gray-200"
-          >
-            Account Settings
-          </button>
-          <button
-            onClick={() => setActiveTab("create-course")}
-            className="text-left px-4 py-2 rounded hover:bg-gray-200"
-          >
-            Create Course
-          </button>
-          <button
-            onClick={() => setActiveTab("manage-courses")}
-            className="text-left px-4 py-2 rounded hover:bg-gray-200"
-          >
-            Manage Courses
-          </button>
-          <button
-            onClick={() => setActiveTab("manage-students")}
-            className="text-left px-4 py-2 rounded hover:bg-gray-200"
-          >
-            Manage Students
-          </button>
-        </nav>
-      </aside>
+      <aside className="w-70 bg-gray-900 text-white shadow-lg p-6 rounded-r-2xl min-h-screen">
+  <h2 className="text-2xl font-bold mb-8 tracking-wide">Teacher Dashboard</h2>
+  <nav className="flex flex-col gap-4">
+    <button
+      onClick={() => setActiveTab("account-settings")}
+      className={`flex items-center gap-3 px-4 py-2 rounded-md transition-all ${
+        activeTab === "account-settings"
+          ? "bg-blue-400 text-white"
+          : "hover:bg-gray-800"
+      }`}
+    >
+      <i className="fas fa-cog" /> Account Settings
+    </button>
+    <button
+      onClick={() => setActiveTab("create-course")}
+      className={`flex items-center gap-3 px-4 py-2 rounded-md transition-all ${
+        activeTab === "create-course"
+          ? "bg-blue-400 text-white"
+          : "hover:bg-gray-800"
+      }`}
+    >
+      <i className="fas fa-plus" /> Create Course
+    </button>
+    <button
+      onClick={() => setActiveTab("manage-courses")}
+      className={`flex items-center gap-3 px-4 py-2 rounded-md transition-all ${
+        activeTab === "manage-courses"
+          ? "bg-blue-400 text-white"
+          : "hover:bg-gray-800"
+      }`}
+    >
+      <i className="fas fa-tasks" /> Manage Courses
+    </button>
+    <button
+      onClick={() => setActiveTab("manage-students")}
+      className={`flex items-center gap-3 px-4 py-2 rounded-md transition-all ${
+        activeTab === "manage-students"
+          ? "bg-blue-400 text-white"
+          : "hover:bg-gray-800"
+      }`}
+    >
+      <i className="fas fa-users" /> Manage Students
+    </button>
+  </nav>
+</aside>
 
       <main className="flex-1 p-10">{renderContent()}</main>
     </div>
