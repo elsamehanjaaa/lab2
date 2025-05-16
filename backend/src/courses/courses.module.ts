@@ -13,6 +13,8 @@ import { LessonsService } from 'src/lessons/lessons.service'; // Import LessonsS
 import { UploadService } from 'src/upload/upload.service';
 import { R2Service } from 'src/r2/r2.service';
 import { ProgressModule } from 'src/progress/progress.module';
+import { CourseDetailsService } from 'src/course_details/course_details.service';
+import { CourseDetailsModule } from 'src/course_details/course_details.module';
 
 @Module({
   imports: [
@@ -22,6 +24,7 @@ import { ProgressModule } from 'src/progress/progress.module';
     forwardRef(() => LessonsModule),
     forwardRef(() => ProgressModule),
     forwardRef(() => EnrollmentsModule),
+    forwardRef(() => CourseDetailsModule),
   ],
   controllers: [CoursesController],
   providers: [
@@ -29,6 +32,7 @@ import { ProgressModule } from 'src/progress/progress.module';
     SupabaseService,
     MongooseService,
     LessonsService,
+    CourseDetailsService,
     R2Service,
     UploadService, // Add LessonsService to providers
   ],
@@ -37,4 +41,4 @@ import { ProgressModule } from 'src/progress/progress.module';
     MongooseModule, // ✅ Export MongooseModule to share CoursesModel
   ],
 })
-export class CoursesModule {}
+export class CoursesModule { }

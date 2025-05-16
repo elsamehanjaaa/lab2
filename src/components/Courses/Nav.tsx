@@ -34,9 +34,8 @@ const Nav: React.FC<NavProps> = ({ course }) => {
 
   return (
     <div
-      className={`${
-        showNav ? "top-0 z-10" : "-top-[100px]"
-      } transition-all fixed bg-[#201c24] text-white px-6 py-4 backdrop-blur-md w-full`}
+      className={`${showNav ? "top-0 z-10" : "-top-[100px]"
+        } transition-all fixed bg-[#201c24] text-white px-6 py-4 backdrop-blur-md w-full`}
     >
       <div className="max-w-7xl mx-auto flex justify-between items-center">
         {course && (

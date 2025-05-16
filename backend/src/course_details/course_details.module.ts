@@ -17,5 +17,6 @@ import {
   ],
   controllers: [CourseDetailsController],
   providers: [CourseDetailsService, SupabaseService, MongooseService],
+  exports: [CourseDetailsService, MongooseModule],
 })
-export class CourseDetailsModule {}
+export class CourseDetailsModule { }

@@ -14,7 +14,7 @@ export class CourseDetailsService {
     private readonly mongooseService: MongooseService,
     @InjectModel(CourseDetails.name)
     private readonly CourseDetailsModel: Model<CourseDetails>,
-  ) {}
+  ) { }
 
   async create(createCourseDetailDto: CreateCourseDetailDto) {
     const { data, error } = await this.supabaseService.insertData(

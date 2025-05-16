@@ -29,7 +29,7 @@ export class CoursesController {
   constructor(
     private readonly coursesService: CoursesService,
     private readonly uploadService: UploadService,
-  ) {}
+  ) { }
 
   // Create a new course
   @UseGuards(JwtAuthGuard)
@@ -99,9 +99,11 @@ export class CoursesController {
         // Optionally: Keep processing other files but mark this lesson as failed
       }
     }
-    const { sections, ...restCourseData } = courseData;
+    const { sections, description, requirements, learnings, shortDescription, ...restCourseData } = courseData;
+    restCourseData.description = shortDescription
+    const courseDetailsData = { description, requirements, learn: learnings }
+    const data = await this.coursesService.create(restCourseData, sections, id, courseDetailsData);
 
-    const data = await this.coursesService.create(restCourseData, sections, id);
     // Save to database
     return {
       message: 'Course created successfully',

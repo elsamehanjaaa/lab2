@@ -11,7 +11,7 @@ import { ChevronRight } from "lucide-react";
 const CreateCourseForm = () => {
   const [step, setStep] = useState(1);
   const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
+  const [shortDescription, setShortDescription] = useState("");
   const [price, setPrice] = useState("");
   const [categories, setCategories] = useState<any[]>([]);
   const [thumbnail, setThumbnail] = useState<Blob | null>(null);
@@ -19,6 +19,9 @@ const CreateCourseForm = () => {
   const [sections, setSections] = useState<any[]>([]);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const [learnings, setLearnings] = useState([""]);
+  const [requirements, setRequirements] = useState([""]);
+  const [description, setDescription] = useState("");
 
   useEffect(() => {
     const getCategories = async () => {
@@ -60,11 +63,11 @@ const CreateCourseForm = () => {
       prevSections.map((section) =>
         section.id === sectionId
           ? {
-              ...section,
-              lessons: section.lessons.map((lesson: { id: number }) =>
-                lesson.id === lessonId ? { ...lesson, [field]: value } : lesson
-              ),
-            }
+            ...section,
+            lessons: section.lessons.map((lesson: { id: number }) =>
+              lesson.id === lessonId ? { ...lesson, [field]: value } : lesson
+            ),
+          }
           : section
       )
     );
@@ -94,16 +97,20 @@ const CreateCourseForm = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!title || !description || !price || !selectedCategories || !sections) {
+    if (!title || !shortDescription || !price || !selectedCategories || !sections || !description || !learnings || !requirements) {
       alert("Please Fill all data");
       return;
     }
     const courseData = {
       title,
-      description,
+      shortDescription,
       price: parseFloat(price),
       categories: selectedCategories,
       sections,
+      description,
+      learnings,
+      requirements,
+
     };
 
     const formData = new FormData();
@@ -131,16 +138,26 @@ const CreateCourseForm = () => {
     });
 
     try {
-      const cookies = parse(document.cookie || "");
-      const access_token = cookies["access_token"];
-      if (!access_token) throw new Error("No access token found");
-      const data = await courseUtils.create(formData, access_token);
+      const data = await courseUtils.create(formData);
       console.log(data);
     } catch (error) {
       console.error("Error creating course:", error);
     }
   };
+  const handleLearningChange = (index: number, value: string) => {
+    const updated = [...learnings];
+    updated[index] = value;
+    setLearnings(updated);
+  };
 
+  const handleRequirementChange = (index: number, value: string) => {
+    const updated = [...requirements];
+    updated[index] = value;
+    setRequirements(updated);
+  };
+
+  const addLearning = () => setLearnings([...learnings, ""]);
+  const addRequirement = () => setRequirements([...requirements, ""]);
   return (
     <div className="max-w-5xl mx-auto p-8 lg:p-12 bg-gradient-to-br from-white to-blue-50 shadow-xl rounded-3xl min-h-[800px] flex flex-col justify-between border border-blue-100">
       <div>
@@ -167,7 +184,7 @@ const CreateCourseForm = () => {
                   <div className="text-blue-800 w-8 h-8 rounded-full flex items-center justify-center mr-2">1</div>
                   Course Information
                 </h2>
-                
+
                 <Thumbnail onThumbnailChange={setThumbnail} />
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8">
@@ -199,8 +216,8 @@ const CreateCourseForm = () => {
                 <div className="mt-8 space-y-2">
                   <label className="block text-sm font-medium text-gray-700">Course Description</label>
                   <textarea
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
+                    value={shortDescription}
+                    onChange={(e) => setShortDescription(e.target.value)}
                     rows={4}
                     required
                     placeholder="Provide a compelling description of your course..."
@@ -227,7 +244,7 @@ const CreateCourseForm = () => {
                   <div className="text-blue-800 w-8 h-8 rounded-full flex items-center justify-center mr-2">2</div>
                   Course Content
                 </h2>
-                
+
                 {sections.length === 0 && (
                   <div className="text-center py-12 bg-blue-50 rounded-xl border border-dashed border-blue-200">
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 mx-auto text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -236,7 +253,7 @@ const CreateCourseForm = () => {
                     <p className="text-gray-600 mt-4">Start building your course by adding sections</p>
                   </div>
                 )}
-                
+
                 {sections.map((section) => (
                   <Section
                     key={section.id}
@@ -261,6 +278,73 @@ const CreateCourseForm = () => {
                 </button>
               </div>
             )}
+            {step === 3
+              && (
+                <div className="bg-white p-8 rounded-2xl shadow-lg border border-blue-100 animate-fade-in">
+                  <h2 className="text-2xl font-bold text-blue-900 mb-6 flex items-center">
+                    <div className="text-blue-800 w-8 h-8 rounded-full flex items-center justify-center mr-2">3</div>
+                    Course Details
+                  </h2>
+
+                  <div className="mt-8 space-y-2">
+                    <label className="block text-sm font-medium text-gray-700">What you will learn</label>
+                    {learnings.map((item, index) => (
+                      <input
+                        key={index}
+                        type="text"
+                        value={item}
+                        onChange={(e) => handleLearningChange(index, e.target.value)}
+                        placeholder={`e.g., Learn concept ${index + 1}`}
+                        required
+                        className="w-full mb-2 border border-gray-300 rounded-xl px-4 py-3 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all"
+                      />
+                    ))}
+                    <button
+                      type="button"
+                      onClick={addLearning}
+                      className="text-sm text-blue-600 hover:underline"
+                    >
+                      + Add more
+                    </button>
+                  </div>
+
+                  {/* Course Description */}
+                  <div className="mt-8 space-y-2">
+                    <label className="block text-sm font-medium text-gray-700">Course Description</label>
+                    <textarea
+                      value={description}
+                      onChange={(e) => setDescription(e.target.value)}
+                      rows={4}
+                      required
+                      placeholder="Provide a compelling description of your course..."
+                      className="w-full border border-gray-300 rounded-xl px-4 py-3 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all"
+                    />
+                  </div>
+
+                  {/* Requirements */}
+                  <div className="mt-8 space-y-2">
+                    <label className="block text-sm font-medium text-gray-700">Requirements</label>
+                    {requirements.map((item, index) => (
+                      <input
+                        key={index}
+                        type="text"
+                        value={item}
+                        onChange={(e) => handleRequirementChange(index, e.target.value)}
+                        placeholder={`e.g., Have basic knowledge of HTML (${index + 1})`}
+                        required
+                        className="w-full mb-2 border border-gray-300 rounded-xl px-4 py-3 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all"
+                      />
+                    ))}
+                    <button
+                      type="button"
+                      onClick={addRequirement}
+                      className="text-sm text-blue-600 hover:underline"
+                    >
+                      + Add more
+                    </button>
+                  </div>
+                </div>
+              )}
           </div>
 
           <div className="pt-10">

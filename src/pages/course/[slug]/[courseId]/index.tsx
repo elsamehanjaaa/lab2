@@ -1,19 +1,24 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/router";
 import Head from "next/head";
 import Image from "next/image";
-import * as courseUtils from "@/utils/course";
+import Nav from "../../../../components/Courses/Nav";
+import CourseHeader from "../../../../components/Courses/CoursesHeader";
+
 interface Course {
   title: string;
   description: string;
   price: number;
   rating: number;
-  status: boolean;
-  created_at: string;
   slug: string;
-  thumbnail_url: string;
-  instructor_name: string;
-  _id: string;
+  courseId: string;
+  thumbnail_url?: string;
+  instructorName?: string;
+  instructorPicture?: string;
+  instructorBio?: string;
+  categories?: string[];
+  updatedAt?: string;
+  languages?: string[];
 }
 
 const Index = () => {
@@ -22,115 +27,159 @@ const Index = () => {
   const [course, setCourse] = useState<Course | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [hoverThumbnail, setHoverThumbnail] = useState(false);
+  const courseContentRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!courseId) return;
 
-    async function getCourse() {
-      setLoading(true);
-      setError(null);
-      try {
-        const fetchedCourse = await courseUtils.getById(courseId as string);
 
-        setCourse(fetchedCourse);
-      } catch (error) {
-        console.error("Fetch error:", error);
+    async function fetchCourse() {
+      try {
+        const res = await fetch(`http://localhost:5000/courses/${courseId}`, {
+          method: "GET",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+        });
+
+
+        if (!res.ok) throw new Error("Failed to fetch course");
+
+        const result = await res.json();
+        // Fetch category names
+        const categoryNames = await Promise.all(
+          result.categories.map(async (categoryId: string) => {
+            const categoryRes = await fetch(`http://localhost:5000/categories/${categoryId}`);
+            if (!categoryRes.ok) throw new Error("Failed to fetch category");
+            const category = await categoryRes.json();
+            return category.name;
+          })
+        );
+
+        // Merge category names into the course object
+        const courseWithCategoryNames = {
+          ...result,
+          categories: categoryNames,
+        };
+        console.log(courseWithCategoryNames);
+
+        setCourse(courseWithCategoryNames);
+      } catch (err) {
         setError("An error occurred while fetching the course.");
-        setCourse(null);
       } finally {
         setLoading(false);
       }
     }
 
-    getCourse();
+
+    fetchCourse();
   }, [courseId]);
+
+
+  const handleThumbnailClick = () => {
+    if (courseContentRef.current) {
+      const navHeight = document.querySelector("div.fixed")?.clientHeight || 0;
+      window.scrollTo({
+        top: courseContentRef.current.offsetTop - navHeight,
+        behavior: "smooth",
+      });
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-100">
-      <Head>
-        <title>Enroll in Course</title>
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
+      {/* ✅ Top Navigation */}
+      <Nav course={course} />
 
-      <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-        <h1 className="text-3xl font-bold text-gray-900">Course Enrollment</h1>
-      </div>
+      {/* ✅ Course Header */}
+      {course && (
+        <CourseHeader
+          course={course}
+          hoverThumbnail={hoverThumbnail}
+          setHoverThumbnail={setHoverThumbnail}
+          handleThumbnailClick={handleThumbnailClick}
+        />
+      )}
 
-      <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-        {loading && (
-          <p className="text-center text-gray-700 text-lg">Loading course...</p>
-        )}
-
-        {error && <p className="text-center text-red-600 text-lg">{error}</p>}
+      {/* ✅ Main Content */}
+      <main className="max-w-7xl mx-auto py-8 px-4">
+        {loading && <p className="text-center text-lg text-gray-700">Loading course...</p>}
+        {error && <p className="text-center text-red-500">{error}</p>}
 
         {!loading && !error && course && (
-          <div className="md:grid md:grid-cols-3 md:gap-6">
-            <div className="md:col-span-2">
-              <div className="shadow overflow-hidden sm:rounded-md">
-                <div className="px-4 py-5 bg-white sm:p-6">
-                  <div className="flex justify-center mb-6">
-                    <div className="relative w-full aspect-w-16 aspect-h-9">
-                      <Image
-                        src={course.thumbnail_url || "/images/no-thumbnail.png"}
-                        alt="Thumbnail"
-                        className="object-cover rounded-md max-h-[400px]"
-                        width={800}
-                        height={400}
-                      />
-                    </div>
-                  </div>
 
-                  <h2 className="text-2xl font-semibold mb-4">
-                    {course.title}
-                  </h2>
-                  <p className="text-gray-700 mb-4">{course.description}</p>
 
-                  <div className="flex items-center mb-4">
-                    <span className="text-yellow-500 mr-2">★★★★☆</span>
-                    <span className="text-gray-600">{course.rating}</span>
-                  </div>
-
-                  <div className="mb-4">
-                    <span className="text-gray-600">Created by</span>{" "}
-                    <span className="text-blue-600">
-                      {course.instructor_name}
-                    </span>
-                  </div>
-
-                  <div className="mb-4">
-                    <span className="text-gray-600">Language:</span>{" "}
-                    <span className="text-blue-600">English</span>
-                  </div>
-
-                  <button
-                    className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-                    onClick={() => router.push(`/course/subscribe/${courseId}`)}
-                  >
-                    Enroll Now
-                  </button>
-                </div>
-              </div>
+          <div className="space-y-10">
+            {/* What You'll Learn */}
+            <div className="bg-white shadow p-6 rounded-md">
+              <h3 className="text-xl font-semibold mb-4">What you'll learn</h3>
+              <ul className="list-disc list-inside text-gray-700 space-y-1">
+                <li>Understand core concepts of Next.js</li>
+              </ul>
             </div>
 
-            <div className="md:col-span-1">
-              <div className="shadow overflow-hidden sm:rounded-md">
-                <div className="px-4 py-5 bg-white sm:p-6">
-                  <h3 className="text-lg font-semibold mb-4">
-                    What you will learn
-                  </h3>
-                  <ul className="list-disc list-inside">
-                    <li>Learn Next.js fundamentals</li>
-                    <li>Build server-side rendered apps</li>
-                    <li>Implement API routes</li>
-                    <li>Deploy your Next.js applications</li>
-                  </ul>
+            {/* Explore Related Content */}
+            {course.categories && course.categories.length > 0 && (
+              <div className="bg-white shadow p-6 rounded-md">
+                <h3 className="text-xl font-semibold mb-4">Explore Related Content</h3>
+                <div className="flex gap-3 flex-wrap">
+                  {course.categories.map((category) => (
+                    <button
+                      key={category}
+                      className="bg-purple-700 hover:bg-purple-800 px-4 py-1 rounded text-sm"
+                      onClick={() =>
+                        router.push(`/courses/category/${encodeURIComponent(category)}`)
+                      }
+                    >
+                      {category}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <div className="bg-white shadow p-6 rounded-md">
+              <h3 className="text-xl font-semibold mb-4">Requirements</h3>
+              <ul className="list-disc list-inside text-gray-700 space-y-1">
+                <li>Understand core concepts of Next.js</li>
+              </ul>
+            </div>
+            {/* Course Content */}
+            <div ref={courseContentRef} className="bg-white shadow p-6 rounded-md">
+              <h3 className="text-xl font-semibold mb-4">Course Content</h3>
+              <div className="space-y-4">
+                <div className="flex justify-between border-b pb-2">
+                  <span>1. Welcome & Introduction</span>
+                  <span>5 min</span>
+                </div>
+                <div className="flex justify-between border-b pb-2">
+                  <span>2. What is Next.js?</span>
+                  <span>12 min</span>
+                </div>
+                {/* Add more lessons here dynamically if needed */}
+              </div>
+            </div>
+            {/* Instructor Section */}
+            <div className="bg-white shadow p-6 rounded-md">
+              <h3 className="text-xl font-semibold mb-4">Instructor</h3>
+              <div className="flex items-center gap-6">
+                <div className="w-24 h-24 rounded-full overflow-hidden">
+                  <img
+                    src={"/images/default-avatar.png"}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <div>
+                  <h4 className="text-lg font-bold">Name here</h4>
+                  <p className="text-gray-600">instruktor bio</p>
                 </div>
               </div>
             </div>
           </div>
-        )}
-      </main>
-    </div>
+        )
+        }
+      </main >
+    </div >
   );
 };
 

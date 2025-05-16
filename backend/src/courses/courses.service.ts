@@ -11,6 +11,7 @@ import { Categories } from '../schemas/categories.schema'; // Import the Categor
 import { Enrollments } from 'src/schemas/enrollments.schema';
 import { LessonsService } from 'src/lessons/lessons.service';
 import { ProgressService } from 'src/progress/progress.service';
+import { CourseDetailsService } from 'src/course_details/course_details.service';
 
 @Injectable()
 export class CoursesService {
@@ -20,18 +21,24 @@ export class CoursesService {
     private readonly sectionService: SectionService,
     private readonly lessonsService: LessonsService,
     private readonly progressService: ProgressService,
+    private readonly courseDetailsService: CourseDetailsService,
     @InjectModel(Courses.name) private readonly CoursesModel: Model<Courses>, // Inject Courses model
     @InjectModel(Categories.name)
     private readonly CategoriesModel: Model<Categories>,
     @InjectModel(Enrollments.name)
     private readonly EnrollmetsModel: Model<Enrollments>, // Inject Categories model
-  ) {}
+  ) { }
 
   // Create a new course
   async create(
     createCourseDto: CreateCourseDto,
     sections: any[],
     user_id: string,
+    courseDetailsData: {
+      description: string;
+      learn: string[],
+      requirements: string[]
+    }
   ) {
     const generateSlug = (title: string): string => {
       return title
@@ -93,7 +100,10 @@ export class CoursesService {
     });
     // Wait for all async operations to complete
     await Promise.all(createLessonsPromises);
-    return data;
+
+
+    await this.courseDetailsService.create({ course_id: data[0].id, ...courseDetailsData });
+    return data[0];
   }
 
   // Get all courses

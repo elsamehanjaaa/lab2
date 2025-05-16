@@ -1,4 +1,4 @@
-import { fetchCategories } from "@/utils/categories";
+import * as categoryUtils from "@/utils/categories";
 import React, { useEffect, useState, useRef } from "react";
 
 // Define the type for each category
@@ -31,7 +31,7 @@ const Categories = () => {
   useEffect(() => {
     const getCategories = async () => {
       try {
-        const result = await fetchCategories();
+        const result = await categoryUtils.getAll();
         setCategories(result);
       } catch (err) {
         console.error("Error fetching categories:", err);
@@ -52,11 +52,10 @@ const Categories = () => {
       {/* Navigation Menu */}
       <div
         ref={navRef}
-        className={`inset-x-0 bg-[#e9ada4] m-0 p-0 transition-all ${
-          isSticky
+        className={`inset-x-0 bg-[#e9ada4] m-0 p-0 transition-all ${isSticky
             ? "fixed top-[100px] left-0 w-full shadow-lg z-50"
             : "relative"
-        }`}
+          }`}
       >
         <nav className="flex justify-between py-2 text-white">
           {visibleCategories.map((category, i) => (
