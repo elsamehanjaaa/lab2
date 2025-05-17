@@ -7,7 +7,7 @@ interface Lesson {
   _id: string;
 }
 
-export const getByCourse = async (
+export const getBySection = async (
   section_id: string,
   cookies: string
 ): Promise<{ lessons: Lesson[] }> => {
@@ -31,6 +31,34 @@ export const getByCourse = async (
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ section_id, user_id }),
+        credentials: "include",
+      }
+    );
+
+    if (!res.ok) {
+      throw new Error(`HTTP Error! Status: ${res.status}`);
+    }
+
+    const lessons = await res.json();
+
+    return { lessons };
+  } catch (error) {
+    console.error("Fetch error:", error);
+    return {
+      lessons: [],
+    };
+  }
+};
+export const getTitlesBySection = async (
+  section_id: string
+): Promise<{ lessons: Lesson[] }> => {
+  try {
+    const res = await fetch(
+      `http://localhost:5000/lessons/getLessonsBySection`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ section_id }),
         credentials: "include",
       }
     );

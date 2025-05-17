@@ -47,6 +47,10 @@ export class LessonsController {
       body.user_id,
     );
   }
+  @Post('getLessonsTitleBySectionId')
+  async getLessonsTitleBySectionId(@Body() body: { section_id: string }) {
+    return this.lessonsService.getLessonsTitleBySectionId(body.section_id);
+  }
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateLessonDto: UpdateLessonDto) {
     return this.lessonsService.update(id, updateLessonDto);

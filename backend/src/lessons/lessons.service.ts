@@ -107,6 +107,19 @@ export class LessonsService {
     );
     return lessonsWithProgress;
   }
+  async getLessonsTitleBySectionId(section_id: string): Promise<any[]> {
+    const lessons = await this.LessonsModel.find({
+      section_id: section_id,
+    })
+      .sort({ index: 1 })
+      .exec();
+
+    if (!lessons) {
+      return [];
+    }
+
+    return lessons;
+  }
   // Update an existing lesson
   async update(id: string, updateLessonDto: UpdateLessonDto) {
     // Update in Supabase

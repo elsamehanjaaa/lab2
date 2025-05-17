@@ -8,7 +8,8 @@ import * as courseUtils from "@/utils/course";
 import { parse } from "cookie";
 import { ChevronRight } from "lucide-react";
 
-const CreateCourseForm = () => {
+const CreateCourseForm = ({ cookies }: { cookies: string }) => {
+  const [loading, setLoading] = useState(false);
   const [step, setStep] = useState(1);
   const [title, setTitle] = useState("");
   const [shortDescription, setShortDescription] = useState("");
@@ -58,16 +59,21 @@ const CreateCourseForm = () => {
     );
   };
 
-  const handleLessonChange = (sectionId: number, lessonId: number, field: string, value?: any) => {
+  const handleLessonChange = (
+    sectionId: number,
+    lessonId: number,
+    field: string,
+    value?: any
+  ) => {
     setSections((prevSections) =>
       prevSections.map((section) =>
         section.id === sectionId
           ? {
-            ...section,
-            lessons: section.lessons.map((lesson: { id: number }) =>
-              lesson.id === lessonId ? { ...lesson, [field]: value } : lesson
-            ),
-          }
+              ...section,
+              lessons: section.lessons.map((lesson: { id: number }) =>
+                lesson.id === lessonId ? { ...lesson, [field]: value } : lesson
+              ),
+            }
           : section
       )
     );
@@ -85,22 +91,39 @@ const CreateCourseForm = () => {
     setSections((prevSections) =>
       prevSections.map((section) =>
         section.id === sectionId
-          ? { ...section, lessons: section.lessons.filter((lesson: { id: number }) => lesson.id !== lessonId) }
+          ? {
+              ...section,
+              lessons: section.lessons.filter(
+                (lesson: { id: number }) => lesson.id !== lessonId
+              ),
+            }
           : section
       )
     );
   };
 
   const handleRemoveSection = (sectionId: number) => {
-    setSections((prevSections) => prevSections.filter((section) => section.id !== sectionId));
+    setSections((prevSections) =>
+      prevSections.filter((section) => section.id !== sectionId)
+    );
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!title || !shortDescription || !price || !selectedCategories || !sections || !description || !learnings || !requirements) {
+    if (
+      !title ||
+      !shortDescription ||
+      !price ||
+      !selectedCategories ||
+      !sections ||
+      !description ||
+      !learnings ||
+      !requirements
+    ) {
       alert("Please Fill all data");
       return;
     }
+    // setLoading(true);
     const courseData = {
       title,
       shortDescription,
@@ -110,7 +133,6 @@ const CreateCourseForm = () => {
       description,
       learnings,
       requirements,
-
     };
 
     const formData = new FormData();
@@ -118,10 +140,12 @@ const CreateCourseForm = () => {
       ...courseData,
       sections: courseData.sections.map((section) => ({
         ...section,
-        lessons: section.lessons.map((lesson: { [x: string]: any; video: any }) => {
-          const { video, ...rest } = lesson;
-          return rest;
-        }),
+        lessons: section.lessons.map(
+          (lesson: { [x: string]: any; video: any }) => {
+            const { video, ...rest } = lesson;
+            return rest;
+          }
+        ),
       })),
     };
 
@@ -138,9 +162,14 @@ const CreateCourseForm = () => {
     });
 
     try {
-      const data = await courseUtils.create(formData);
+      console.log(cookies);
+      const parsedCookies = parse(cookies);
+      const token = parsedCookies.access_token || "";
+
+      const data = await courseUtils.create(formData, token);
       console.log(data);
     } catch (error) {
+      setLoading(false);
       console.error("Error creating course:", error);
     }
   };
@@ -163,8 +192,19 @@ const CreateCourseForm = () => {
       <div>
         <div className="flex items-center mb-8 pb-4 border-b border-blue-200">
           <div className="bg-blue-900 text-white p-3 rounded-2xl mr-4">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-8 w-8"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
+              />
             </svg>
           </div>
           <h1 className="text-4xl font-extrabold text-gray-900 flex items-center">
@@ -172,16 +212,23 @@ const CreateCourseForm = () => {
             <span className="ml-3 text-blue-900">
               <ChevronRight size={24} />
             </span>
-            <span className="text-lg ml-2 font-medium text-blue-900">Step {step} of 3</span>
+            <span className="text-lg ml-2 font-medium text-blue-900">
+              Step {step} of 3
+            </span>
           </h1>
         </div>
 
-        <form onSubmit={handleSubmit} className="flex-grow flex flex-col justify-between">
+        <form
+          onSubmit={handleSubmit}
+          className="flex-grow flex flex-col justify-between"
+        >
           <div className="space-y-10">
             {step === 1 && (
               <div className="bg-white p-8 rounded-2xl shadow-lg border border-blue-100 animate-fade-in">
                 <h2 className="text-2xl font-bold text-blue-900 mb-6 flex items-center">
-                  <div className="text-blue-800 w-8 h-8 rounded-full flex items-center justify-center mr-2">1</div>
+                  <div className="text-blue-800 w-8 h-8 rounded-full flex items-center justify-center mr-2">
+                    1
+                  </div>
                   Course Information
                 </h2>
 
@@ -189,7 +236,9 @@ const CreateCourseForm = () => {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8">
                   <div className="space-y-2">
-                    <label className="block text-sm font-medium text-gray-700">Course Title</label>
+                    <label className="block text-sm font-medium text-gray-700">
+                      Course Title
+                    </label>
                     <input
                       type="text"
                       value={title}
@@ -201,7 +250,9 @@ const CreateCourseForm = () => {
                   </div>
 
                   <div className="space-y-2">
-                    <label className="block text-sm font-medium text-gray-700">Price ($)</label>
+                    <label className="block text-sm font-medium text-gray-700">
+                      Price ($)
+                    </label>
                     <input
                       type="number"
                       value={price}
@@ -214,7 +265,9 @@ const CreateCourseForm = () => {
                 </div>
 
                 <div className="mt-8 space-y-2">
-                  <label className="block text-sm font-medium text-gray-700">Course Description</label>
+                  <label className="block text-sm font-medium text-gray-700">
+                    Course Description
+                  </label>
                   <textarea
                     value={shortDescription}
                     onChange={(e) => setShortDescription(e.target.value)}
@@ -241,16 +294,31 @@ const CreateCourseForm = () => {
             {step === 2 && (
               <div className="bg-white p-8 rounded-2xl shadow-lg border border-blue-100 animate-fade-in">
                 <h2 className="text-2xl font-bold text-blue-900 mb-6 flex items-center">
-                  <div className="text-blue-800 w-8 h-8 rounded-full flex items-center justify-center mr-2">2</div>
+                  <div className="text-blue-800 w-8 h-8 rounded-full flex items-center justify-center mr-2">
+                    2
+                  </div>
                   Course Content
                 </h2>
 
                 {sections.length === 0 && (
                   <div className="text-center py-12 bg-blue-50 rounded-xl border border-dashed border-blue-200">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 mx-auto text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-16 w-16 mx-auto text-blue-400"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
+                      />
                     </svg>
-                    <p className="text-gray-600 mt-4">Start building your course by adding sections</p>
+                    <p className="text-gray-600 mt-4">
+                      Start building your course by adding sections
+                    </p>
                   </div>
                 )}
 
@@ -271,80 +339,104 @@ const CreateCourseForm = () => {
                   onClick={handleAddSection}
                   className="mt-6 w-full bg-blue-900 hover:from-blue-600 hover:to-blue-800 text-white font-medium py-3 px-6 rounded-xl transition shadow-md hover:shadow-lg flex items-center justify-center"
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-5 w-5 mr-2"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M12 4v16m8-8H4"
+                    />
                   </svg>
                   Add New Section
                 </button>
               </div>
             )}
-            {step === 3
-              && (
-                <div className="bg-white p-8 rounded-2xl shadow-lg border border-blue-100 animate-fade-in">
-                  <h2 className="text-2xl font-bold text-blue-900 mb-6 flex items-center">
-                    <div className="text-blue-800 w-8 h-8 rounded-full flex items-center justify-center mr-2">3</div>
-                    Course Details
-                  </h2>
-
-                  <div className="mt-8 space-y-2">
-                    <label className="block text-sm font-medium text-gray-700">What you will learn</label>
-                    {learnings.map((item, index) => (
-                      <input
-                        key={index}
-                        type="text"
-                        value={item}
-                        onChange={(e) => handleLearningChange(index, e.target.value)}
-                        placeholder={`e.g., Learn concept ${index + 1}`}
-                        required
-                        className="w-full mb-2 border border-gray-300 rounded-xl px-4 py-3 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all"
-                      />
-                    ))}
-                    <button
-                      type="button"
-                      onClick={addLearning}
-                      className="text-sm text-blue-600 hover:underline"
-                    >
-                      + Add more
-                    </button>
+            {step === 3 && (
+              <div className="bg-white p-8 rounded-2xl shadow-lg border border-blue-100 animate-fade-in">
+                <h2 className="text-2xl font-bold text-blue-900 mb-6 flex items-center">
+                  <div className="text-blue-800 w-8 h-8 rounded-full flex items-center justify-center mr-2">
+                    3
                   </div>
+                  Course Details
+                </h2>
 
-                  {/* Course Description */}
-                  <div className="mt-8 space-y-2">
-                    <label className="block text-sm font-medium text-gray-700">Course Description</label>
-                    <textarea
-                      value={description}
-                      onChange={(e) => setDescription(e.target.value)}
-                      rows={4}
+                <div className="mt-8 space-y-2">
+                  <label className="block text-sm font-medium text-gray-700">
+                    What you will learn
+                  </label>
+                  {learnings.map((item, index) => (
+                    <input
+                      key={index}
+                      type="text"
+                      value={item}
+                      onChange={(e) =>
+                        handleLearningChange(index, e.target.value)
+                      }
+                      placeholder={`e.g., Learn concept ${index + 1}`}
                       required
-                      placeholder="Provide a compelling description of your course..."
-                      className="w-full border border-gray-300 rounded-xl px-4 py-3 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all"
+                      className="w-full mb-2 border border-gray-300 rounded-xl px-4 py-3 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all"
                     />
-                  </div>
-
-                  {/* Requirements */}
-                  <div className="mt-8 space-y-2">
-                    <label className="block text-sm font-medium text-gray-700">Requirements</label>
-                    {requirements.map((item, index) => (
-                      <input
-                        key={index}
-                        type="text"
-                        value={item}
-                        onChange={(e) => handleRequirementChange(index, e.target.value)}
-                        placeholder={`e.g., Have basic knowledge of HTML (${index + 1})`}
-                        required
-                        className="w-full mb-2 border border-gray-300 rounded-xl px-4 py-3 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all"
-                      />
-                    ))}
-                    <button
-                      type="button"
-                      onClick={addRequirement}
-                      className="text-sm text-blue-600 hover:underline"
-                    >
-                      + Add more
-                    </button>
-                  </div>
+                  ))}
+                  <button
+                    type="button"
+                    onClick={addLearning}
+                    className="text-sm text-blue-600 hover:underline"
+                  >
+                    + Add more
+                  </button>
                 </div>
-              )}
+
+                {/* Course Description */}
+                <div className="mt-8 space-y-2">
+                  <label className="block text-sm font-medium text-gray-700">
+                    Course Description
+                  </label>
+                  <textarea
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    rows={4}
+                    required
+                    placeholder="Provide a compelling description of your course..."
+                    className="w-full border border-gray-300 rounded-xl px-4 py-3 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all"
+                  />
+                </div>
+
+                {/* Requirements */}
+                <div className="mt-8 space-y-2">
+                  <label className="block text-sm font-medium text-gray-700">
+                    Requirements
+                  </label>
+                  {requirements.map((item, index) => (
+                    <input
+                      key={index}
+                      type="text"
+                      value={item}
+                      onChange={(e) =>
+                        handleRequirementChange(index, e.target.value)
+                      }
+                      placeholder={`e.g., Have basic knowledge of HTML (${
+                        index + 1
+                      })`}
+                      required
+                      className="w-full mb-2 border border-gray-300 rounded-xl px-4 py-3 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all"
+                    />
+                  ))}
+                  <button
+                    type="button"
+                    onClick={addRequirement}
+                    className="text-sm text-blue-600 hover:underline"
+                  >
+                    + Add more
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
 
           <div className="pt-10">
@@ -353,6 +445,7 @@ const CreateCourseForm = () => {
               setStep={setStep}
               totalSteps={3}
               submit={(e) => handleSubmit(e)}
+              loading={loading}
             />
           </div>
         </form>

@@ -12,6 +12,7 @@ import { Enrollments } from 'src/schemas/enrollments.schema';
 import { LessonsService } from 'src/lessons/lessons.service';
 import { ProgressService } from 'src/progress/progress.service';
 import { CourseDetailsService } from 'src/course_details/course_details.service';
+import { CategoriesService } from 'src/categories/categories.service';
 
 @Injectable()
 export class CoursesService {
@@ -22,6 +23,7 @@ export class CoursesService {
     private readonly lessonsService: LessonsService,
     private readonly progressService: ProgressService,
     private readonly courseDetailsService: CourseDetailsService,
+    private readonly categoriesService: CategoriesService,
     @InjectModel(Courses.name) private readonly CoursesModel: Model<Courses>, // Inject Courses model
     @InjectModel(Categories.name)
     private readonly CategoriesModel: Model<Categories>,
@@ -36,9 +38,9 @@ export class CoursesService {
     user_id: string,
     courseDetailsData: {
       description: string;
-      learn: string[],
-      requirements: string[]
-    }
+      learn: string[];
+      requirements: string[];
+    },
   ) {
     const generateSlug = (title: string): string => {
       return title
@@ -101,9 +103,11 @@ export class CoursesService {
     // Wait for all async operations to complete
     await Promise.all(createLessonsPromises);
 
-
-    await this.courseDetailsService.create({ course_id: data[0].id, ...courseDetailsData });
-    return data[0];
+    await this.courseDetailsService.create({
+      course_id: data[0].id,
+      ...courseDetailsData,
+    });
+    return data;
   }
 
   // Get all courses
@@ -269,12 +273,25 @@ export class CoursesService {
       (course as Courses).instructor_id,
     );
 
-    const { instructor_id, ...courseWithoutInstructorId } = course.toObject();
+    const { instructor_id, categories, ...courseWithoutInstructorId } =
+      course.toObject();
 
-    return {
-      ...courseWithoutInstructorId,
-      instructor_name: user.data.user?.user_metadata.full_name || 'Unknown',
-    };
+    const fetchedCategories = await Promise.all(
+      course.categories.map(async (id) => {
+        const category = await this.categoriesService.findOne(id.toString());
+        return { name: category?.name, slug: category?.slug };
+      }),
+    );
+
+    const details = await this.courseDetailsService.findOne(id);
+    courseWithoutInstructorId.categories = fetchedCategories;
+    courseWithoutInstructorId.learn = details?.learn;
+    courseWithoutInstructorId.requirements = details?.requirements;
+    courseWithoutInstructorId.fullDescription = details?.description;
+    courseWithoutInstructorId.instructor_name =
+      user.data.user?.user_metadata.full_name || 'Unknown';
+
+    return courseWithoutInstructorId;
   }
 
   async getCoursesByInstructor(instructor_id: string): Promise<Courses[]> {

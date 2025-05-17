@@ -1,5 +1,5 @@
-import React from "react";
-import { ArrowLeft, ArrowRight } from "lucide-react"; // assuming you're using Feather Icons
+import React, { useState } from "react";
+import { ArrowLeft, ArrowRight, LoaderCircle } from "lucide-react"; // assuming you're using Feather Icons
 
 type StepButtonProps = {
   step: number;
@@ -7,6 +7,7 @@ type StepButtonProps = {
   totalSteps: number;
   submit: (e: any) => void;
   finalStepTitle?: string;
+  loading: boolean;
 };
 
 const StepButton: React.FC<StepButtonProps> = ({
@@ -15,6 +16,7 @@ const StepButton: React.FC<StepButtonProps> = ({
   totalSteps,
   submit,
   finalStepTitle,
+  loading,
 }) => {
   return (
     <div className="flex justify-between mt-8">
@@ -43,10 +45,17 @@ const StepButton: React.FC<StepButtonProps> = ({
           </button>
           <button
             type="button"
+            disabled={loading}
             onClick={(e) => submit(e)}
-            className="w-40 bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-6 rounded-lg transition"
+            className={`w-40 ${
+              loading ? "bg-green-700 cursor-not-allowed" : "bg-green-600"
+            } hover: text-white font-medium py-2 px-6 rounded-lg transition align-middle`}
           >
-            {finalStepTitle || "Create Course"}
+            {loading ? (
+              <LoaderCircle className="animate-spin w-8 h-8 text-gray-700 mx-auto" />
+            ) : (
+              finalStepTitle || "Create Course"
+            )}
           </button>
         </>
       ) : (

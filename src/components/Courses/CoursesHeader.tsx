@@ -3,20 +3,24 @@
 import React from "react";
 import { useRouter } from "next/router";
 import Image from "next/image";
+import Link from "next/link";
 
 interface Course {
+  _id: string;
   title: string;
   description: string;
   price: number;
   slug: string;
-  courseId: string;
   thumbnail_url?: string;
-  instructorName?: string;
-  categories?: string[];
+  instructor_name?: string;
+  categories?: Categories[];
   updatedAt?: string;
   languages?: string[];
 }
-
+interface Categories {
+  name: string;
+  slug: string;
+}
 interface CourseHeaderProps {
   course: Course | null;
   hoverThumbnail: boolean;
@@ -40,15 +44,13 @@ const CourseHeader: React.FC<CourseHeaderProps> = ({
           {course?.categories && (
             <div className="flex gap-3 mb-4 flex-wrap">
               {course.categories.map((cat) => (
-                <button
-                  key={cat}
-                  className="bg-purple-700 hover:bg-purple-800 px-4 py-1 rounded text-sm"
-                  onClick={() =>
-                    router.push(`/courses/category/${encodeURIComponent(cat)}`)
-                  }
+                <Link
+                  key={cat.name}
+                  className="bg-purple-700 cursor-pointer px-4 py-1 rounded text-sm"
+                  href={`/courses/${encodeURIComponent(cat.slug)}`}
                 >
-                  {cat}
-                </button>
+                  {cat.name}
+                </Link>
               ))}
             </div>
           )}
@@ -76,7 +78,7 @@ const CourseHeader: React.FC<CourseHeaderProps> = ({
             <p className="mb-1">
               Created by{" "}
               <span className="text-blue-400">
-                {course?.instructorName || "Unknown"}
+                {course?.instructor_name || "Unknown"}
               </span>
             </p>
             <p>

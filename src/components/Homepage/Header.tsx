@@ -8,12 +8,26 @@ import SignupModal from "../Login/SignupModal";
 import ResetPasswordModal from "../Login/ResetPasswordModal";
 import Search from "../Search/Search";
 import * as authUtils from "@/utils/auth";
+import { useModalStore } from "@/stores/modalStore";
 
 type HeaderProps = {
   user: { username: string; isTeacher: boolean; email: string } | undefined;
 };
+// Replace all useState modal hooks with Zustand
+
+// Inside the Header component:
 
 const Header = ({ user }: HeaderProps) => {
+  const {
+    showLogin,
+    showSignup,
+    showResetPassword,
+    setShowLogin,
+    setShowSignup,
+    setShowResetPassword,
+    closeAllModals,
+  } = useModalStore();
+  const router = useRouter();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(!!user);
   const [username, setUsername] = useState<string | undefined>(user?.username);
@@ -22,36 +36,22 @@ const Header = ({ user }: HeaderProps) => {
     user?.isTeacher
   );
 
-  // State for modals
-  const [showLogin, setShowLogin] = useState(false);
-  const [showSignup, setShowSignup] = useState(false);
-  const [showResetPassword, setShowResetPassword] = useState(false);
-
   // State for dropdown (when user is logged in)
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   // State for mobile menu
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-
   function handleShowLogin() {
     closeAllModals();
     setShowLogin(true);
   }
-
   function handleShowSignup() {
     closeAllModals();
     setShowSignup(true);
   }
-
   function handleShowResetPassword() {
     closeAllModals();
     setShowResetPassword(true);
-  }
-
-  function closeAllModals() {
-    setShowResetPassword(false);
-    setShowLogin(false);
-    setShowSignup(false);
   }
 
   // Listen for scroll to add a shadow or style changes
@@ -84,6 +84,7 @@ const Header = ({ user }: HeaderProps) => {
       setUsername(undefined);
       setIsTeacher(undefined);
       setEmail(undefined);
+      router.reload();
     }
   };
 

@@ -5,9 +5,12 @@ import * as enrollmentUtils from "@/utils/enrollment";
 import * as courseUtils from "@/utils/course";
 import { parse } from "cookie";
 import { LoaderCircle } from "lucide-react";
+import { GetServerSideProps } from "next";
+import { useModalStore } from "@/stores/modalStore";
 
 // Interfaces
 interface Course {
+  _id: string;
   title: string;
   description: string;
   // Fushat shtesë si opsionale:
@@ -24,35 +27,60 @@ interface User {
   email: string;
 }
 
-const Index = () => {
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const cookies = parse(context.req.headers.cookie as string);
+  const access_token = cookies.access_token;
+  let alreadyEnrolled = false;
+  const { courseId } = context.query;
+
+  if (!courseId || typeof courseId !== "string") {
+    return {
+      redirect: {
+        destination: "/",
+        permanent: false,
+      },
+    };
+  }
+
+  const course = await courseUtils.getById(courseId);
+  if (!course) {
+    return {
+      redirect: {
+        destination: "/404",
+        permanent: false,
+      },
+    };
+  }
+  if (access_token) {
+    alreadyEnrolled = await enrollmentUtils.checkAccess(courseId, access_token);
+    if (alreadyEnrolled) {
+      return {
+        redirect: {
+          destination: `/learn/${course.slug}/${course._id}`,
+          permanent: false,
+        },
+      };
+    }
+  }
+  return {
+    props: { course, isLoggedIn: !!access_token },
+  };
+};
+const Index = ({
+  course,
+  isLoggedIn,
+}: {
+  course: Course;
+  isLoggedIn: boolean;
+}) => {
+  const setShowLogin = useModalStore((state) => state.setShowLogin);
+  const closeAllModals = useModalStore((state) => state.closeAllModals);
+
   const router = useRouter();
-  const { courseId } = router.query;
   const [loading, setLoading] = useState<boolean>(false);
   // Mbajmë kursin dhe përdoruesin në state
-  const [course, setCourse] = useState<Course | null>(null);
   const [user, setUser] = useState<User | null>(null);
 
-  // Fetch course by ID (kur change-het courseId)
-  useEffect(() => {
-    if (!courseId) return;
-
-    async function fetchCourse() {
-      try {
-        const cookies = parse(document.cookie || "");
-        const access_token = cookies["access_token"];
-
-        const courses = await courseUtils.getById(
-          courseId as string,
-          access_token as string
-        );
-        setCourse(courses);
-      } catch (error) {
-        console.error("Fetch error:", error);
-      }
-    }
-
-    fetchCourse();
-  }, [courseId]);
   useEffect(() => {
     if (loading) {
       document.body.style.overflow = "hidden"; // disable scroll
@@ -67,10 +95,21 @@ const Index = () => {
   }, [loading]);
   // Handle enrollment logic
 
+  useEffect(() => {
+    if (!isLoggedIn) {
+      closeAllModals();
+      setShowLogin(true);
+    }
+  }, [isLoggedIn]);
   async function handleEnrollment() {
+    if (!isLoggedIn) {
+      closeAllModals();
+      setShowLogin(true);
+      return;
+    }
     try {
       setLoading(true);
-      const result = await enrollmentUtils.enroll(courseId as string); // <- Cleaner call
+      await enrollmentUtils.enroll(course._id); // <- Cleaner call
 
       // Redirect the user after successful enrollment
       router.push("/myCourses");

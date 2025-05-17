@@ -17,6 +17,7 @@ const EditCourseForm: React.FC<EditCourseFormProps> = ({
   cookies,
   onClose,
 }) => {
+  const [loading, setLoading] = useState(false);
   const [step, setStep] = useState(1);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -64,6 +65,7 @@ const EditCourseForm: React.FC<EditCourseFormProps> = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true);
     const courseData = {
       title,
       description,
@@ -106,6 +108,7 @@ const EditCourseForm: React.FC<EditCourseFormProps> = ({
       const data = await courseUtils.edit(id, formData, access_token);
       if (data) onClose();
     } catch (error) {
+      setLoading(false);
       console.error("Error updating course:", error);
     }
   };
@@ -298,6 +301,7 @@ const EditCourseForm: React.FC<EditCourseFormProps> = ({
               totalSteps={3}
               submit={(e) => handleSubmit(e)}
               finalStepTitle="Edit course"
+              loading={loading}
             />
           </>
         )}

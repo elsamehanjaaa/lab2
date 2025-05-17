@@ -1,5 +1,5 @@
 "use server"
-import { fetchUser } from "@/utils/user";
+import * as authUtils from "@/utils/auth";
 import { useEffect } from "react";
 
 export function useHandleOAuthRedirect() {
@@ -16,11 +16,10 @@ export function useHandleOAuthRedirect() {
         document.cookie = `access_token=${access_token}; path=/; Secure; SameSite=Lax`;
         document.cookie = `refresh_token=${refresh_token}; path=/; Secure; SameSite=Lax`;
 
-        await fetchUser();
+        await authUtils.setSession(access_token,refresh_token);
         if (access_token) {
           
           window.history.replaceState({}, document.title, "/");
-          // window.location.href('/')
 
         }
       }

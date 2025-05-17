@@ -22,24 +22,24 @@ const CategoryPage = () => {
   const [loading, setLoading] = useState(true);
   const [categoryId, setCategoryId] = useState<string | null>();
   const router = useRouter();
-  const { category } = router.query;
+  const { slug } = router.query;
 
   useEffect(() => {
-    if (!category) return;
+    if (!slug) return;
     async function getAll() {
       try {
-        const category = await categoryUtils.checkCategoryName(
-          categoryId as string
+        const fetchedCategory = await categoryUtils.checkCategoryName(
+          slug as string
         );
 
-        setCategoryId(category._id);
+        setCategoryId(fetchedCategory._id);
       } catch (error) {
         console.error("Fetch error:", error);
       }
     }
 
     getAll();
-  }, [category]);
+  }, [slug]);
 
   useEffect(() => {
     if (!categoryId) return;

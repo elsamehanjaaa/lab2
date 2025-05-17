@@ -58,9 +58,14 @@ const Section: React.FC<SectionProps> = ({
 
       {showLessons && (
         <>
-          <br />
-          <hr />
-          <br />
+          <hr className="mt-4" />
+          <button
+            type="button"
+            onClick={() => onAddLesson(section.id)}
+            className="w-full md:w-auto my-4 bg-blue-900 hover:bg-blue-600 text-white font-medium py-2 px-6 rounded-lg transition"
+          >
+            Add Lesson
+          </button>
           {section.lessons.map((lesson) => (
             <Lesson
               key={`${section.id},${lesson.id}`}
@@ -70,13 +75,6 @@ const Section: React.FC<SectionProps> = ({
               onRemove={onRemoveLesson}
             />
           ))}
-          <button
-            type="button"
-            onClick={() => onAddLesson(section.id)}
-            className="w-full md:w-auto bg-blue-900 hover:bg-blue-600 text-white font-medium py-2 px-6 rounded-lg transition mt-2"
-          >
-            Add Lesson
-          </button>
         </>
       )}
     </div>

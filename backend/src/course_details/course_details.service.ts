@@ -14,7 +14,7 @@ export class CourseDetailsService {
     private readonly mongooseService: MongooseService,
     @InjectModel(CourseDetails.name)
     private readonly CourseDetailsModel: Model<CourseDetails>,
-  ) { }
+  ) {}
 
   async create(createCourseDetailDto: CreateCourseDetailDto) {
     const { data, error } = await this.supabaseService.insertData(
@@ -27,10 +27,14 @@ export class CourseDetailsService {
       throw error;
     }
 
-    const mongo = await this.mongooseService.insertData(this.CourseDetailsModel, {
-      ...createCourseDetailDto,
-      _id: data[0].id,
-    });
+    let { course_id, ...restCourseDetailDto } = createCourseDetailDto;
+    const mongo = await this.mongooseService.insertData(
+      this.CourseDetailsModel,
+      {
+        ...restCourseDetailDto,
+        _id: course_id,
+      },
+    );
 
     if (!mongo) {
       throw new Error('Error inserting data into MongoDB');
@@ -43,8 +47,8 @@ export class CourseDetailsService {
     return `This action returns all courseDetails`;
   }
 
-  findOne(id: string) {
-    return `This action returns a #${id} courseDetail`;
+  async findOne(id: string) {
+    return await this.mongooseService.getDataById(this.CourseDetailsModel, id);
   }
 
   update(id: string, updateCourseDetailDto: UpdateCourseDetailDto) {

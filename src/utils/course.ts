@@ -27,8 +27,7 @@ interface GetCoursesResponse {
   error?: string;
 }
 
-export const create = async (courseData: FormData) => {
-  const token = "eyJhbGciOiJIUzI1NiIsImtpZCI6ImtnbGpIZlNKMGJ2ZmZYYUoiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL2lqdHRscGZ6dHpnZ2hraGlrZWN1LnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiJjZTAyM2VmZi0zNTNlLTQzMDQtYTJjOC0yN2MwYTU2ODgzZDEiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzQ3NDA1MzA4LCJpYXQiOjE3NDc0MDE3MDgsImVtYWlsIjoieGVudG9ybzAwMEBnbWFpbC5jb20iLCJwaG9uZSI6IiIsImFwcF9tZXRhZGF0YSI6eyJwcm92aWRlciI6ImVtYWlsIiwicHJvdmlkZXJzIjpbImVtYWlsIiwiZ29vZ2xlIl0sInJvbGUiOiJpbnN0cnVjdG9yIn0sInVzZXJfbWV0YWRhdGEiOnsiYXZhdGFyX3VybCI6Imh0dHBzOi8vbGgzLmdvb2dsZXVzZXJjb250ZW50LmNvbS9hL0FDZzhvY0txQ0lhUC1DUTloTVNmWWpEWGl4UFZBR3RMWFpxUkMzZl9qRHlOQ3M0aWlPLUF0dz1zOTYtYyIsImVtYWlsIjoieGVudG9ybzAwMEBnbWFpbC5jb20iLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwiZnVsbF9uYW1lIjoieGVuIHRvcm8iLCJpc3MiOiJodHRwczovL2FjY291bnRzLmdvb2dsZS5jb20iLCJuYW1lIjoieGVuIHRvcm8iLCJwaG9uZV92ZXJpZmllZCI6ZmFsc2UsInBpY3R1cmUiOiJodHRwczovL2xoMy5nb29nbGV1c2VyY29udGVudC5jb20vYS9BQ2c4b2NLcUNJYVAtQ1E5aE1TZllqRFhpeFBWQUd0TFhacVJDM2ZfakR5TkNzNGlpTy1BdHc9czk2LWMiLCJwcm92aWRlcl9pZCI6IjEwNTcxNjE4NTUzODg5MDE1MDg1NyIsInN1YiI6IjEwNTcxNjE4NTUzODg5MDE1MDg1NyJ9LCJyb2xlIjoiYXV0aGVudGljYXRlZCIsImFhbCI6ImFhbDEiLCJhbXIiOlt7Im1ldGhvZCI6InBhc3N3b3JkIiwidGltZXN0YW1wIjoxNzQ3NDAxNzA4fV0sInNlc3Npb25faWQiOiJmNGY1NTkzMC05MTQ3LTQ2ZmQtOTUyOS00OGJmYTkzMWNiNDAiLCJpc19hbm9ueW1vdXMiOmZhbHNlfQ.nxSqqPJhvWJ5A7tfSpV8IKRerMXrVgsBGeyCnORAkh4"
+export const create = async (courseData: FormData, token: string) => {
   const response = await fetch("http://localhost:5000/courses", {
     method: "POST",
     headers: {
@@ -80,9 +79,17 @@ export const getById = async (
     }
 
     const course = await res.json();
+
     if (cookies) {
       const sections = await sectionUtils.getByCourse(course_id, cookies);
       course.sections = sections;
+    } else {
+      const sections = await sectionUtils.getTitlesByCourse(course_id);
+      course.sections = sections;
+    }
+
+    if (!course || course.length === 0) {
+      return null;
     }
     return { ...course };
   } catch (error) {

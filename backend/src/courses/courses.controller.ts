@@ -50,6 +50,7 @@ export class CoursesController {
       const thumbnail = file.fieldname.match('thumbnail');
       if (thumbnail) {
         try {
+          console.log('uploading thumbnail');
           const { url } = await this.uploadService.handleThumbnailUpload(
             file,
             courseData.title,
@@ -83,6 +84,7 @@ export class CoursesController {
 
       try {
         // Upload video and get metadata
+        console.log('uploading video ' + file.originalname);
         const { url, duration } = await this.uploadService.handleVideoUpload(
           file,
           courseData.title,
@@ -92,6 +94,7 @@ export class CoursesController {
         // Update lesson with video details
         lesson.video_url = url;
         lesson.duration = duration;
+        console.log('uploaded ' + duration);
 
         // Clean up temporary file
       } catch (error) {
@@ -99,10 +102,22 @@ export class CoursesController {
         // Optionally: Keep processing other files but mark this lesson as failed
       }
     }
-    const { sections, description, requirements, learnings, shortDescription, ...restCourseData } = courseData;
-    restCourseData.description = shortDescription
-    const courseDetailsData = { description, requirements, learn: learnings }
-    const data = await this.coursesService.create(restCourseData, sections, id, courseDetailsData);
+    const {
+      sections,
+      description,
+      requirements,
+      learnings,
+      shortDescription,
+      ...restCourseData
+    } = courseData;
+    restCourseData.description = shortDescription;
+    const courseDetailsData = { description, requirements, learn: learnings };
+    const data = await this.coursesService.create(
+      restCourseData,
+      sections,
+      id,
+      courseDetailsData,
+    );
 
     // Save to database
     return {

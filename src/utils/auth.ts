@@ -145,11 +145,14 @@ export const resetPassword = async (password: string): Promise<void> => {
     );
   }
 };
-export const setSession = async (): Promise<{ username: any } | undefined> => {
+export const setSession = async ({
+  access_token,
+  refresh_token,
+}: {
+  access_token: string;
+  refresh_token: string;
+}): Promise<{ username: any } | undefined> => {
   try {
-    const refresh_token = localStorage.getItem("refresh_token");
-    const access_token = localStorage.getItem("access_token");
-
     if (!refresh_token || !access_token) {
       return undefined;
     }
