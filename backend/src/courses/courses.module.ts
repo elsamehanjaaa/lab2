@@ -15,6 +15,7 @@ import { R2Service } from 'src/r2/r2.service';
 import { ProgressModule } from 'src/progress/progress.module';
 import { CourseDetailsService } from 'src/course_details/course_details.service';
 import { CourseDetailsModule } from 'src/course_details/course_details.module';
+import { SectionService } from 'src/section/section.service';
 
 @Module({
   imports: [
@@ -31,7 +32,6 @@ import { CourseDetailsModule } from 'src/course_details/course_details.module';
     CoursesService,
     SupabaseService,
     MongooseService,
-    LessonsService,
     CourseDetailsService,
     R2Service,
     UploadService, // Add LessonsService to providers
@@ -41,4 +41,4 @@ import { CourseDetailsModule } from 'src/course_details/course_details.module';
     MongooseModule, // ✅ Export MongooseModule to share CoursesModel
   ],
 })
-export class CoursesModule { }
+export class CoursesModule {}

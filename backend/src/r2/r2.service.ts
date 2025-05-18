@@ -1,6 +1,11 @@
 import { Injectable } from '@nestjs/common';
 // import { File } from 'multer';
-import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
+import {
+  PutObjectCommand,
+  S3Client,
+  DeleteObjectCommand,
+} from '@aws-sdk/client-s3';
+
 import { v4 as uuid } from 'uuid';
 // import { Readable } from 'stream';
 import { config } from 'dotenv';
@@ -56,5 +61,14 @@ export class R2Service {
     await this.s3Client.send(command);
 
     return `${process.env.Cloudflare_Thumbnail_Public_Url}/${key}`;
+  }
+  async deleteFile(bucket: string, key: string): Promise<void> {
+    const command = new DeleteObjectCommand({
+      Bucket: bucket,
+      Key: key,
+    });
+
+    const res = await this.s3Client.send(command);
+    console.log(res);
   }
 }

@@ -8,7 +8,13 @@ import * as courseUtils from "@/utils/course";
 import { parse } from "cookie";
 import { ChevronRight } from "lucide-react";
 
-const CreateCourseForm = ({ cookies }: { cookies: string }) => {
+const CreateCourseForm = ({
+  cookies,
+  onCourseCreated,
+}: {
+  cookies: string;
+  onCourseCreated: () => void;
+}) => {
   const [loading, setLoading] = useState(false);
   const [step, setStep] = useState(1);
   const [title, setTitle] = useState("");
@@ -123,7 +129,7 @@ const CreateCourseForm = ({ cookies }: { cookies: string }) => {
       alert("Please Fill all data");
       return;
     }
-    // setLoading(true);
+    setLoading(true);
     const courseData = {
       title,
       shortDescription,
@@ -168,6 +174,8 @@ const CreateCourseForm = ({ cookies }: { cookies: string }) => {
 
       const data = await courseUtils.create(formData, token);
       console.log(data);
+      setLoading(false);
+      onCourseCreated();
     } catch (error) {
       setLoading(false);
       console.error("Error creating course:", error);

@@ -263,7 +263,14 @@ export class CoursesController {
 
   // Remove a course by its ID
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    // return this.coursesService.remove(id);
+  async remove(@Param('id') id: string) {
+    const { slug } = await this.coursesService.findOne(id);
+
+    await this.coursesService.remove(id);
+
+    await this.uploadService.handleDeleteFile(
+      'thumbnails',
+      `${slug}/thumbnail`,
+    );
   }
 }

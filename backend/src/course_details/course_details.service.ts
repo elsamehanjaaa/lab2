@@ -51,11 +51,30 @@ export class CourseDetailsService {
     return await this.mongooseService.getDataById(this.CourseDetailsModel, id);
   }
 
-  update(id: string, updateCourseDetailDto: UpdateCourseDetailDto) {
-    return `This action updates a #${id} courseDetail`;
+  async update(id: string, updateCourseDetailDto: UpdateCourseDetailDto) {
+    try {
+      const { data, error } = await this.supabaseService.updateData(
+        'course_details',
+        updateCourseDetailDto,
+        id,
+        'course_id',
+      );
+      if (error) throw new Error('Error updating data into Supabase');
+      await this.mongooseService.updateData(
+        this.CourseDetailsModel,
+        id,
+        updateCourseDetailDto,
+      );
+      return data;
+    } catch (error) {
+      console.log(error);
+
+      throw new Error('Error updating data into MongoDB');
+    }
   }
 
-  remove(id: string) {
-    return `This action removes a #${id} courseDetail`;
+  async remove(id: string) {
+    await this.supabaseService.deleteData('course_details', id, 'course_id');
+    await this.mongooseService.deleteData(this.CourseDetailsModel, id);
   }
 }

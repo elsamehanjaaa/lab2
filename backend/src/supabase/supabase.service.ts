@@ -134,12 +134,17 @@ export class SupabaseService {
     }
   }
 
-  async updateData(table: string, data: any, id: string) {
+  async updateData(
+    table: string,
+    data: any,
+    keyValue: string,
+    keyName: string = 'id',
+  ) {
     try {
       const { data: updatedData, error } = await this.supabase
         .from(table)
         .update(data)
-        .match({ id })
+        .match({ [keyName]: keyValue })
         .select();
       if (error) throw error;
       return { data: updatedData, error };
@@ -148,9 +153,12 @@ export class SupabaseService {
     }
   }
 
-  async deleteData(table: string, id: string) {
+  async deleteData(table: string, keyValue: string, keyName: string = 'id') {
     try {
-      const { error } = await this.supabase.from(table).delete().match({ id });
+      const { error } = await this.supabase
+        .from(table)
+        .delete()
+        .match({ [keyName]: keyValue });
       if (error) throw error;
     } catch (error) {
       throw error;

@@ -101,7 +101,7 @@ export default function ResetPasswordModal({
               disabled={isLoading}
               className="w-full bg-blue-600 text-white py-3 rounded-xl hover:bg-blue-700 flex items-center justify-center disabled:opacity-50"
             >
-              {isLoading && <Loader2 className="mr-2 h-5 w-5 animate-spin" />}
+              {isLoading && <Loading show={isLoading} />}
               {isLoading ? "Signing in..." : "Sign in"}
             </button>
             <div className="text-center mt-4">

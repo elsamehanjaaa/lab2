@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { CreateSectionDto } from './dto/create-section.dto';
 import { UpdateSectionDto } from './dto/update-section.dto';
 import { SupabaseService } from 'src/supabase/supabase.service';
@@ -7,12 +7,15 @@ import { MongooseService } from 'src/mongoose/mongoose.service';
 import { Model } from 'mongoose';
 import { Section } from 'src/schemas/section.schema';
 import { Courses } from 'src/schemas/courses.schema';
+import { LessonsService } from 'src/lessons/lessons.service';
 
 @Injectable()
 export class SectionService {
   constructor(
     private readonly supabaseService: SupabaseService,
     private readonly mongooseService: MongooseService,
+    @Inject(forwardRef(() => LessonsService)) // Use forwardRef and Inject here
+    private readonly lessonsService: LessonsService,
     @InjectModel(Section.name)
     private readonly SectionsModel: Model<Section>,
     @InjectModel(Courses.name)
@@ -66,15 +69,23 @@ export class SectionService {
 
   // Remove a section by ID (from both Supabase and MongoDB)
   async remove(id: string) {
-    // Delete the section from Supabase
-    await this.supabaseService.deleteData('section', id);
+    try {
+      await this.lessonsService.removeBySection(id);
 
-    // Delete the section from MongoDB
-    await this.mongooseService.deleteData(this.SectionsModel, id);
+      await this.supabaseService.deleteData('sections', id);
 
+      await this.mongooseService.deleteData(this.SectionsModel, id);
+      return { message: 'Section deleted successfully' };
+    } catch (error) {
+      throw new Error(`Failed to delete section: ${error.message}`);
+    }
+  }
+  async removeByCourse(course_id: string) {
+    // Delete the lesson from Supabase
+    const sections = await this.getSectionsByCourseId(course_id);
+    await Promise.all(sections.map((section) => this.remove(section._id)));
     return { message: 'Section deleted successfully' };
   }
-
   // Update section by ID (in both Supabase and MongoDB)
   async update(id: string, updateSectionDto: UpdateSectionDto) {
     // Update the section in Supabase

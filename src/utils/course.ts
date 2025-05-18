@@ -7,6 +7,9 @@ interface Course {
   rating: number;
   status: boolean;
   created_at: string;
+  fullDescription: string;
+  requirements: string[];
+  learn: string[];
   slug: string;
   sections: SectionsWithLessons[];
   thumbnail_url: string;
@@ -164,5 +167,22 @@ export const getByCategory = async (category_id: string): Promise<Course[]> => {
   } catch (error) {
     console.error("Fetch error:", error);
     return [];
+  }
+};
+
+export const remove = async (id: string): Promise<boolean> => {
+  try {
+    const res = await fetch(`http://localhost:5000/courses/${id}`, {
+      // SHËNIM: ndrysho URL-në në endpointin e saktë
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+    });
+
+    if (!res.ok) throw new Error(`HTTP Error! Status: ${res.status}`);
+    return true;
+  } catch (error) {
+    console.error("Fetch error:", error);
+    return false;
   }
 };

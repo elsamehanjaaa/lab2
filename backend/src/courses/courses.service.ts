@@ -9,6 +9,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Courses } from '../schemas/courses.schema';
 import { Categories } from '../schemas/categories.schema'; // Import the Categories model
 import { Enrollments } from 'src/schemas/enrollments.schema';
+import { Section } from 'src/schemas/section.schema';
 import { LessonsService } from 'src/lessons/lessons.service';
 import { ProgressService } from 'src/progress/progress.service';
 import { CourseDetailsService } from 'src/course_details/course_details.service';
@@ -29,7 +30,9 @@ export class CoursesService {
     private readonly CategoriesModel: Model<Categories>,
     @InjectModel(Enrollments.name)
     private readonly EnrollmetsModel: Model<Enrollments>, // Inject Categories model
-  ) { }
+    @InjectModel(Section.name)
+    private readonly SectionsModel: Model<Section>, // Inject Categories model
+  ) {}
 
   // Create a new course
   async create(
@@ -279,7 +282,11 @@ export class CoursesService {
     const fetchedCategories = await Promise.all(
       course.categories.map(async (id) => {
         const category = await this.categoriesService.findOne(id.toString());
-        return { name: category?.name, slug: category?.slug };
+        return {
+          id: category?._id,
+          name: category?.name,
+          slug: category?.slug,
+        };
       }),
     );
 
@@ -316,16 +323,18 @@ export class CoursesService {
         .replace(/[^a-z0-9\-]/g, '')
         .trim();
     };
-
-    if (updateCourseDto.title) {
-      updateCourseDto.slug = generateSlug(updateCourseDto.title);
+    const { requirements, fullDescription, learn, ...coursedata } =
+      updateCourseDto;
+    if (coursedata.title) {
+      coursedata.slug = generateSlug(coursedata.title);
     }
 
     // Update in Supabase
+    console.log(coursedata);
 
     const { data, error } = await this.supabaseService.updateData(
       'courses',
-      updateCourseDto,
+      coursedata,
       id,
     );
     if (error) {
@@ -335,85 +344,106 @@ export class CoursesService {
 
     // Update in MongoDB
     const mongo = await this.mongooseService.updateData(this.CoursesModel, id, {
-      ...updateCourseDto,
-      categories: (updateCourseDto.categories ?? []).map((category) =>
+      ...coursedata,
+      categories: (coursedata.categories ?? []).map((category) =>
         parseInt(category, 10),
       ),
     });
     if (!mongo) {
       throw Error('Error updating data in MongoDB');
     }
+    if (coursedata.sections) {
+      // Update sections and lessons
+      const existingSections =
+        await this.sectionService.getSectionsByCourseId(id);
 
-    // Update sections and lessons
-    const existingSections =
-      await this.sectionService.getSectionsByCourseId(id);
+      const sectionPromises = sections.map(async (sectionDto) => {
+        let section = existingSections.find((s) => s._id === sectionDto._id);
 
-    const sectionPromises = sections.map(async (sectionDto) => {
-      let section = existingSections.find((s) => s._id === sectionDto._id);
-
-      // Create if not exists
-      if (!section) {
-        const created = await this.sectionService.create({
-          title: sectionDto.title,
-          index: sectionDto.id,
-          course_id: sectionDto.course_id,
-        });
-        section = created[0];
-      } else {
-        // Update if exists
-        const updatedSection = await this.sectionService.update(section._id, {
-          title: sectionDto.title,
-          index: sectionDto.index,
-        });
-      }
-
-      if (!section) {
-        throw new Error('Section not found');
-      }
-      const existingLessons = await this.lessonsService.getLessonsBySectionId(
-        section.id,
-        updateCourseDto.instructor_id || '',
-      );
-
-      const lessonPromises = sectionDto.lessons.map(async (lessonDto) => {
-        let lesson = existingLessons.find((l) => l._id === lessonDto._id);
-
-        const baseLesson = {
-          title: lessonDto.title,
-          content: lessonDto.content || '',
-          video_url: lessonDto.video_url,
-          duration: lessonDto.duration,
-          section_id: section.id,
-          type: lessonDto.type,
-          index: lessonDto.id || lessonDto.index,
-          ...(lessonDto.url && { url: lessonDto.url }),
-        };
-
-        if (!lesson) {
-          const createdLesson = await this.lessonsService.create(baseLesson);
-
-          const enrolledUsers = await this.EnrollmetsModel.find({
-            course_id: id,
-          }).select('user_id');
-
-          const user_ids = enrolledUsers.map((user) => {
-            return user.user_id;
+        // Create if not exists
+        if (!section) {
+          const created = await this.sectionService.create({
+            title: sectionDto.title,
+            index: sectionDto.id,
+            course_id: sectionDto.course_id,
           });
-
-          const progressPromises = user_ids.map(async (id) => {
-            await this.progressService.createOne(id, createdLesson[0].id);
-          });
-          await Promise.all(progressPromises);
+          section = created[0];
         } else {
-          await this.lessonsService.update(lesson._id, baseLesson);
+          // Update if exists
+          const updatedSection = await this.sectionService.update(section._id, {
+            title: sectionDto.title,
+            index: sectionDto.index,
+          });
         }
+
+        if (!section) {
+          throw new Error('Section not found');
+        }
+        const existingLessons = await this.lessonsService.getLessonsBySectionId(
+          section.id,
+          coursedata.instructor_id || '',
+        );
+
+        const lessonPromises = sectionDto.lessons.map(async (lessonDto) => {
+          let lesson = existingLessons.find((l) => l._id === lessonDto._id);
+
+          const baseLesson = {
+            title: lessonDto.title,
+            content: lessonDto.content || '',
+            video_url: lessonDto.video_url,
+            duration: lessonDto.duration,
+            section_id: section.id,
+            type: lessonDto.type,
+            index: lessonDto.id || lessonDto.index,
+            ...(lessonDto.url && { url: lessonDto.url }),
+          };
+
+          if (!lesson) {
+            const createdLesson = await this.lessonsService.create(baseLesson);
+
+            const enrolledUsers = await this.EnrollmetsModel.find({
+              course_id: id,
+            }).select('user_id');
+
+            const user_ids = enrolledUsers.map((user) => {
+              return user.user_id;
+            });
+
+            const progressPromises = user_ids.map(async (id) => {
+              await this.progressService.createOne(id, createdLesson[0].id);
+            });
+            await Promise.all(progressPromises);
+          } else {
+            await this.lessonsService.update(lesson._id, baseLesson);
+          }
+        });
+
+        await Promise.all(lessonPromises);
       });
 
-      await Promise.all(lessonPromises);
+      await Promise.all(sectionPromises);
+    }
+
+    await this.courseDetailsService.update(id, {
+      description: fullDescription,
+      learn,
+      requirements,
     });
 
-    await Promise.all(sectionPromises);
-
     return { message: 'Course updated successfully' };
+  }
+  async remove(id: string) {
+    try {
+      // Find courses with the exact instructor_id
+      await this.sectionService.removeByCourse(id);
+
+      await this.courseDetailsService.remove(id);
+
+      await this.supabaseService.deleteData('courses', id);
+
+      await this.mongooseService.deleteData(this.CoursesModel, id);
+    } catch (error) {
+      throw new Error('Error fetching courses: ' + error.message);
+    }
   }
 }

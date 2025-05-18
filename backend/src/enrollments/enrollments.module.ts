@@ -22,13 +22,13 @@ import { LessonsModule } from 'src/lessons/lessons.module';
     forwardRef(() => ProgressModule), // ← this must be present
     forwardRef(() => LessonsModule),
     forwardRef(() => SectionModule),
+    forwardRef(() => EnrollmentsModule),
   ],
   controllers: [EnrollmentsController],
   providers: [
     EnrollmentsService, // only the things this module _owns_
     SupabaseService, // if you really need Supabase directly here
     MongooseService, // same for your wrapper
-    SectionService, // if you use it in EnrollmentsService
   ],
   exports: [EnrollmentsService, MongooseModule],
 })

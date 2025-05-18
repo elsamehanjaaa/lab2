@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { Mail, Lock, Loader2, BookOpen, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import * as authUtils from "@/utils/auth";
+import Loading from "../loading";
 
 export default function LoginModal({
   onClose,
@@ -118,7 +119,7 @@ export default function LoginModal({
               disabled={isLoading}
               className="w-full bg-blue-900 text-white py-3 rounded-xl hover:bg-blue-700 flex items-center justify-center disabled:opacity-50"
             >
-              {isLoading && <Loader2 className="mr-2 h-5 w-5 animate-spin" />}
+              {isLoading && <Loading show={isLoading} />}
               {isLoading ? "Signing in..." : "Sign in"}
             </button>
             <div className="text-center mt-4">

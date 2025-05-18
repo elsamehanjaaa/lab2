@@ -37,6 +37,6 @@ export class ProgressController {
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.progressService.remove(+id);
+    return this.progressService.remove(id);
   }
 }

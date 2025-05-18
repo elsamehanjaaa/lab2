@@ -1,6 +1,7 @@
 import * as courseUtils from "@/utils/course";
 import React, { useEffect, useState } from "react";
 import EditCourseForm from "./EditCourse";
+import ConfirmModal from "@/components/ConfirmModal";
 
 interface Course {
   title: string;
@@ -20,6 +21,10 @@ const ManageCourses = ({
   cookies: string;
   onCreateCourse: () => void;
 }) => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [pendingAction, setPendingAction] = useState<() => void>(
+    () => () => {}
+  );
   const [courses, setCourses] = useState<Course[] | null>([]);
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState(false);
@@ -36,7 +41,7 @@ const ManageCourses = ({
           return;
         }
 
-        const response = await courseUtils.getById(userId);
+        const response = await courseUtils.getByInstructor(userId);
         // adjust this based on your actual console output
 
         setCourses(
@@ -58,6 +63,25 @@ const ManageCourses = ({
     setEditingCourseId(course_id);
     setEditing(true);
   };
+  const handleDelete = (courseId: string) => {
+    setPendingAction(() => async () => {
+      console.log("Deleting course with ID:", courseId);
+      try {
+        await courseUtils.remove(courseId);
+
+        setCourses((prev) => prev?.filter((c) => c._id !== courseId) || []);
+      } catch (err) {
+        setIsModalOpen(false);
+        return;
+      }
+    });
+    setIsModalOpen(true);
+  };
+  const confirm = () => {
+    pendingAction();
+    setIsModalOpen(false);
+  };
+
   if (loading) return <p>Loading...</p>;
   if (editing)
     return (
@@ -89,28 +113,69 @@ const ManageCourses = ({
           </button>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {courses?.map((course, index) => (
-            <div
-              key={index}
-              className="bg-white p-4 shadow rounded-lg border"
-              onClick={() => handleCourseClick(course._id)}
-            >
-              <img
-                src={course.thumbnail_url}
-                alt={course.title}
-                className="w-full h-40 object-cover rounded"
-              />
-              <h2 className="mt-2 text-lg font-medium">{course.title}</h2>
-              <h2 className="mt-2 text-lg font-medium">{course.description}</h2>
-              <p className="text-sm text-gray-600">${course.price}</p>
-              <p className="text-sm text-gray-600">
-                Created on: {new Date(course.created_at).toLocaleDateString()}
-              </p>
-            </div>
-          ))}
+        <div className="overflow-x-auto">
+          <table className="min-w-full table-auto border border-gray-300">
+            <thead className="bg-gray-100">
+              <tr>
+                <th className="px-4 py-2 border">Thumbnail</th>
+                <th className="px-4 py-2 border">Title</th>
+                <th className="px-4 py-2 border">Description</th>
+                <th className="px-4 py-2 border">Price</th>
+                <th className="px-4 py-2 border">Created At</th>
+                <th className="px-4 py-2 border">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {courses?.map((course, index) => (
+                <tr key={index} className="hover:bg-gray-50 cursor-pointer">
+                  <td className="px-4 py-2 border">
+                    <img
+                      src={course.thumbnail_url}
+                      alt={course.title}
+                      className="h-20 w-32 object-cover rounded-md"
+                    />
+                  </td>
+                  <td className="px-4 py-2 border">{course.title}</td>
+                  <td className="px-4 py-2 border">{course.description}</td>
+                  <td className="px-4 py-2 border">${course.price}</td>
+                  <td className="px-4 py-2 border">
+                    {new Date(course.created_at).toLocaleDateString()}
+                  </td>
+                  <td className="px-4 py-2 border space-x-2">
+                    <button
+                      className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleCourseClick(course._id);
+                      }}
+                    >
+                      Edit
+                    </button>
+                    <button
+                      className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDelete(course._id);
+                      }}
+                    >
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       )}
+      <ConfirmModal
+        isOpen={isModalOpen}
+        title="Delete Course"
+        message="Are you sure you want to delete this course?"
+        confirmText="Delete"
+        cancelText="Cancel"
+        onConfirm={confirm}
+        onCancel={() => setIsModalOpen(false)}
+      />
     </div>
   );
 };

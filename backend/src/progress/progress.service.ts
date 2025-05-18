@@ -16,6 +16,7 @@ export class ProgressService {
     private readonly supabaseService: SupabaseService,
     private readonly mongooseService: MongooseService,
     private readonly enrollmentsService: EnrollmentsService,
+    @Inject(forwardRef(() => LessonsService)) // Use forwardRef and Inject here
     private readonly lessonsService: LessonsService,
     @InjectModel(Progress.name)
     private readonly ProgressModel: Model<Progress>,
@@ -127,7 +128,25 @@ export class ProgressService {
     return `This action returns a #${id} progress`;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} progress`;
+  async removeByUser(user_id: string) {
+    // Delete the lesson from Supabase
+    const progresses = await this.ProgressModel.find({ user_id });
+    await Promise.all(progresses.map((progress) => this.remove(progress._id)));
+    return { message: 'Lesson deleted successfully' };
+  }
+  async removeByLesson(lesson_id: string) {
+    // Delete the lesson from Supabase
+    const progresses = await this.ProgressModel.find({ lesson_id });
+    await Promise.all(progresses.map((progress) => this.remove(progress._id)));
+    return { message: 'Lesson deleted successfully' };
+  }
+  async remove(id: string) {
+    // Delete the lesson from Supabase
+    await this.supabaseService.deleteData('progress', id);
+
+    // Delete the lesson from MongoDB
+    await this.mongooseService.deleteData(this.ProgressModel, id);
+
+    return { message: 'Lesson deleted successfully' };
   }
 }

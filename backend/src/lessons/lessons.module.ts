@@ -12,23 +12,30 @@ import { SectionModule } from 'src/section/section.module';
 import { EnrollmentsModule } from 'src/enrollments/enrollments.module';
 import { EnrollmentsService } from 'src/enrollments/enrollments.service';
 import { ProgressService } from 'src/progress/progress.service';
+import { Progress, ProgressSchema } from 'src/schemas/progress.schema';
+import { UploadService } from 'src/upload/upload.service';
+import { R2Service } from 'src/r2/r2.service';
 
 @Module({
   imports: [
-    MongooseModule.forFeature([{ name: Lessons.name, schema: LessonsSchema }]), // Ensure LessonsModel is registered here
-    forwardRef(() => CoursesModule), // Handle circular dependency if needed
-    forwardRef(() => ProgressModule), // Handle circular dependency if needed
-    forwardRef(() => SectionModule), // Handle circular dependency if needed
-    forwardRef(() => EnrollmentsModule), // Handle circular dependency if needed
+    MongooseModule.forFeature([{ name: Lessons.name, schema: LessonsSchema }]), // For LessonsModel
+    MongooseModule.forFeature([
+      { name: Progress.name, schema: ProgressSchema },
+    ]), // Explicitly import for ProgressModel
+    forwardRef(() => CoursesModule),
+    forwardRef(() => ProgressModule),
+    forwardRef(() => SectionModule),
+    forwardRef(() => EnrollmentsModule),
   ],
   controllers: [LessonsController],
   providers: [
     LessonsService,
     SupabaseService,
+    UploadService,
+    R2Service,
     MongooseService,
-    SectionService,
     ProgressService,
   ],
-  exports: [LessonsService, MongooseModule], // ✅ Export MongooseModule to make LessonsModel available
+  exports: [LessonsService, MongooseModule],
 })
 export class LessonsModule {}

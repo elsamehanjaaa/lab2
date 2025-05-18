@@ -18,22 +18,12 @@ import { EnrollmentsService } from 'src/enrollments/enrollments.service';
     MongooseModule.forFeature([
       { name: Progress.name, schema: ProgressSchema },
     ]),
+    forwardRef(() => EnrollmentsModule),
     forwardRef(() => LessonsModule),
     forwardRef(() => SectionModule),
-    forwardRef(() => CoursesModule),
-    forwardRef(() => EnrollmentsModule),
   ],
   controllers: [ProgressController],
-  providers: [
-    ProgressService,
-    SupabaseService,
-    MongooseService,
-    SectionService,
-    // ← do NOT re-provide LessonsService, EnrollmentsService, etc.
-  ],
-  exports: [
-    ProgressService, // ← make sure this is here
-    MongooseModule, // ← so that the ProgressModel token is shared
-  ],
+  providers: [ProgressService, SupabaseService, MongooseService],
+  exports: [ProgressService, MongooseModule],
 })
 export class ProgressModule {}

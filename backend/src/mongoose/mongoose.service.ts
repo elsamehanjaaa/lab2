@@ -117,7 +117,7 @@ export class MongooseService {
     id: Object,
   ): Promise<void> {
     try {
-      const result = await model.findOneAndDelete(id).exec();
+      const result = await model.findByIdAndDelete(id).exec();
       if (!result) throw new Error('Data not found for deletion');
     } catch (error) {
       console.error(`Error deleting data by ID ${id}:`, error.message);

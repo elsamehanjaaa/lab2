@@ -72,4 +72,7 @@ export class UploadService {
 
     return { url };
   }
+  async handleDeleteFile(bucket: string, key: string): Promise<void> {
+    return await this.r2Service.deleteFile(bucket, key);
+  }
 }

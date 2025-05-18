@@ -50,7 +50,6 @@ export const getByCourse = async (
       sections.map(async (s) => {
         try {
           const { lessons } = await lessonUtils.getBySection(s._id, cookies);
-          console.log(s._id);
           return { ...s, lessons };
         } catch (err) {
           console.error(`Failed to fetch lessons for section ${s._id}:`, err);

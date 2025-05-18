@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { CreateLessonDto } from './dto/create-lesson.dto';
 import { UpdateLessonDto } from './dto/update-lesson.dto';
 import { SupabaseService } from 'src/supabase/supabase.service';
@@ -8,13 +8,18 @@ import { Model } from 'mongoose';
 import { Lessons } from 'src/schemas/lessons.schema';
 import { Progress } from 'src/schemas/progress.schema';
 import { SectionService } from 'src/section/section.service';
+import { ProgressService } from 'src/progress/progress.service';
+import { UploadService } from 'src/upload/upload.service';
 
 @Injectable()
 export class LessonsService {
   constructor(
     private readonly supabaseService: SupabaseService,
     private readonly mongooseService: MongooseService,
+    @Inject(forwardRef(() => SectionService)) // Use forwardRef and Inject here
     private readonly sectionService: SectionService,
+    private readonly progressService: ProgressService,
+    private readonly uploadService: UploadService,
     @InjectModel(Lessons.name)
     private readonly LessonsModel: Model<Lessons>,
     @InjectModel(Progress.name)
@@ -62,7 +67,7 @@ export class LessonsService {
 
   // Find lessons by course ID from MongoDB
 
-  async getLessonsByCourseId(course_id: string, user_id: string) {
+  async getLessonsByCourseId(course_id: string, user_id?: string) {
     const sections = await this.sectionService.getSectionsByCourseId(course_id);
 
     if (!sections || sections.length === 0) {
@@ -72,7 +77,11 @@ export class LessonsService {
 
     const allLessons = await Promise.all(
       sections.map(async (section) => {
-        return await this.getLessonsBySectionId(section._id, user_id);
+        if (user_id) {
+          return await this.getLessonsBySectionId(section._id, user_id);
+        } else {
+          return await this.getLessonsBySectionId(section._id);
+        }
       }),
     );
 
@@ -81,7 +90,7 @@ export class LessonsService {
 
   async getLessonsBySectionId(
     section_id: string,
-    user_id: string,
+    user_id?: string,
   ): Promise<any[]> {
     const lessons = await this.LessonsModel.find({
       section_id: section_id,
@@ -92,20 +101,23 @@ export class LessonsService {
     if (!lessons) {
       return [];
     }
-    const lessonsWithProgress = await Promise.all(
-      lessons.map(async (lesson) => {
-        const progress = await this.ProgressModel.findOne({
-          lesson_id: lesson._id,
-          user_id: user_id,
-        });
-        const status = progress ? progress.status : null;
-        return {
-          ...lesson.toObject(),
-          status,
-        };
-      }),
-    );
-    return lessonsWithProgress;
+    if (user_id) {
+      const lessonsWithProgress = await Promise.all(
+        lessons.map(async (lesson) => {
+          const progress = await this.ProgressModel.findOne({
+            lesson_id: lesson._id,
+            user_id: user_id,
+          });
+          const status = progress ? progress.status : null;
+          return {
+            ...lesson.toObject(),
+            status,
+          };
+        }),
+      );
+      return lessonsWithProgress;
+    }
+    return lessons;
   }
   async getLessonsTitleBySectionId(section_id: string): Promise<any[]> {
     const lessons = await this.LessonsModel.find({
@@ -150,12 +162,33 @@ export class LessonsService {
 
   // Remove a lesson by ID (from both Supabase and MongoDB)
   async remove(id: string) {
+    try {
+      const lesson = await this.findOne(id);
+      // Delete the lesson from Supabase
+      await this.supabaseService.deleteData('lessons', id);
+
+      // Delete the lesson from MongoDB
+      await this.mongooseService.deleteData(this.LessonsModel, id);
+
+      await this.progressService.removeByLesson(id);
+
+      const key = lesson?.video_url.replace(
+        (process.env.Cloudflare_Lessons_Public_Url as string) + '/',
+        '',
+      ) as string;
+      console.log(key);
+
+      await this.uploadService.handleDeleteFile('lessons', key);
+
+      return { message: 'Lesson deleted successfully' };
+    } catch (error) {
+      throw new Error(`Failed to delete esson: ${error.message}`);
+    }
+  }
+  async removeBySection(section_id: string) {
     // Delete the lesson from Supabase
-    await this.supabaseService.deleteData('lessons', id);
-
-    // Delete the lesson from MongoDB
-    await this.mongooseService.deleteData(this.LessonsModel, id);
-
+    const lessons = await this.getLessonsBySectionId(section_id);
+    await Promise.all(lessons.map((lesson) => this.remove(lesson._id)));
     return { message: 'Lesson deleted successfully' };
   }
 }

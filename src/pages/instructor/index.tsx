@@ -48,7 +48,12 @@ export default function TeacherDashboard({ cookies }: { cookies: string }) {
   const renderContent = () => {
     switch (activeTab) {
       case "create-course":
-        return <CreateCourseForm cookies={cookies} />;
+        return (
+          <CreateCourseForm
+            cookies={cookies}
+            onCourseCreated={() => setActiveTab("manage-courses")}
+          />
+        );
       case "account-settings":
         return <div>Account Settings Section</div>;
       case "manage-courses":

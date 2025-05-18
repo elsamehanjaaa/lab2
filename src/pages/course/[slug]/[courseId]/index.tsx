@@ -135,9 +135,10 @@ const Index = ({
             <div className="bg-white shadow p-6 rounded-md">
               <h3 className="text-xl font-semibold mb-4">What you'll learn</h3>
               <ul className="list-disc list-inside text-gray-700 space-y-1">
-                {course.learn.map((learn, index) => {
-                  return <li key={index}>{learn}</li>;
-                })}
+                {course.learn &&
+                  course.learn.map((learn, index) => {
+                    return <li key={index}>{learn}</li>;
+                  })}
               </ul>
             </div>
 
@@ -148,15 +149,16 @@ const Index = ({
                   Explore Related Content
                 </h3>
                 <div className="flex gap-3 flex-wrap">
-                  {course.categories.map((category) => (
-                    <Link
-                      href={`/courses/${encodeURIComponent(category.slug)}`}
-                      key={category.name}
-                      className=" text-purple-700 border-1 border-purple-600 hover:text-white hover:bg-purple-600 cursor-pointer px-4 py-1 rounded "
-                    >
-                      {category.name}
-                    </Link>
-                  ))}
+                  {course.categories &&
+                    course.categories.map((category) => (
+                      <Link
+                        href={`/courses/${encodeURIComponent(category.slug)}`}
+                        key={category.name}
+                        className=" text-purple-700 border-1 border-purple-600 hover:text-white hover:bg-purple-600 cursor-pointer px-4 py-1 rounded "
+                      >
+                        {category.name}
+                      </Link>
+                    ))}
                 </div>
               </div>
             )}
@@ -164,9 +166,10 @@ const Index = ({
             <div className="bg-white shadow p-6 rounded-md">
               <h3 className="text-xl font-semibold mb-4">Requirements</h3>
               <ul className="list-disc list-inside text-gray-700 space-y-1">
-                {course.requirements.map((requirement, index) => {
-                  return <li key={index}>{requirement}</li>;
-                })}
+                {course.requirements &&
+                  course.requirements.map((requirement, index) => {
+                    return <li key={index}>{requirement}</li>;
+                  })}
               </ul>
             </div>
             {/* Course Content */}

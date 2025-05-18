@@ -37,8 +37,9 @@ const Categories: React.FC<CategoriesProps> = ({
         ) : (
           selectedCategories.map((categoryId) => {
             const category = categories.find(
-              (c) => Number(c._id) === categoryId
+              (c) => Number(c._id) == categoryId
             );
+
             return (
               category && (
                 <span
