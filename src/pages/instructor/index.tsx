@@ -55,7 +55,7 @@ export default function TeacherDashboard({ cookies }: { cookies: string }) {
           />
         );
       case "account-settings":
-        return <div>Account Settings Section</div>;
+        return <div >Account Settings Section</div>;
       case "manage-courses":
         return (
           <ManageCourses

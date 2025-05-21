@@ -151,6 +151,12 @@ const Header = ({ user }: HeaderProps) => {
             >
               Contact Us
             </Link>
+             <Link
+              href="/cartpage"
+              className=" text-3xl"
+            >
+              🛒
+            </Link>
 
             {/* If logged in, show profile dropdown */}
             {isLoggedIn && user?.username ? (

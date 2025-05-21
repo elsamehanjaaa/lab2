@@ -76,11 +76,27 @@ const SearchPage = () => {
 
   return (
     <div>
-      <TopSection
-        title={`Results for: '${query}'`}
-        text1={`${courses.length}`}
-        text2="Courses Available"
-      />
+       <div className="relative text-white overflow-hidden">
+  {/* Background image */}
+  <div className="absolute inset-0 bg-[url('/images/background.PNG')] bg-cover bg-center" />
+  <div className="absolute inset-0 bg-blue-950/20" /> {/* Optional: dark overlay for contrast */}
+
+  {/* Content */}
+  <div className="relative max-w-7xl mx-auto px-4 py-32 sm:px-6 lg:px-8">
+    <div className="max-w-2xl">
+      {/* Query results (if any) */}
+      {query && (
+        <div className="mb-6">
+          <p className="text-white text-2xl font-semibold mb-1">
+            Showing results for: <span className="italic font-bold text-blue-900">"{query}"</span>
+          </p>
+          <p className="text-white text-lg">{courses.length} course{courses.length !== 1 ? 's' : ''} found</p>
+        </div>
+      )}
+    </div>
+  </div>
+</div>
+
 
       <div className="max-w-6xl mx-auto mt-8 px-4">
         {/* Header with Filter + Sort */}

@@ -9,8 +9,7 @@ interface TopSectionProps {
 const TopSection: React.FC<TopSectionProps> = ({ title, text1, text2 }) => {
   return (
     <div
-      className="relative w-full min-h-[400px] flex items-end p-12 text-white"
-      style={{ background: "linear-gradient(to bottom, #47d6e8, #e9ada4)" }}
+      className="relative w-full min-h-[400px] flex items-end p-12 text-white absolute inset-0 bg-[url('/images/background.PNG')] bg-cover bg-center"
     >
       <div className="absolute bottom-25 left-20">
         <h1 className="text-5xl font-bold">{title}</h1>
