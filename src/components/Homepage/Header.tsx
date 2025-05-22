@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useRouter } from "next/router"; // Import useRouter hook
 import Image from "next/image";
 import Link from "next/link";
-import { CircleUserRound, User } from "lucide-react";
+import { CircleUserRound, User, ShoppingBag } from "lucide-react";
 import LoginModal from "../Login/LoginModal";
 import SignupModal from "../Login/SignupModal";
 import ResetPasswordModal from "../Login/ResetPasswordModal";
@@ -155,7 +155,7 @@ const Header = ({ user }: HeaderProps) => {
               href="/cartpage"
               className=" text-3xl"
             >
-              🛒
+             <ShoppingBag size={20} />
             </Link>
 
             {/* If logged in, show profile dropdown */}
@@ -297,6 +297,12 @@ const Header = ({ user }: HeaderProps) => {
               >
                 Contact Us
               </Link>
+               <Link
+              href="/cartpage"
+              className=" text-2xl"
+            >
+              <ShoppingBag size={20} />
+            </Link>
 
               {isLoggedIn && username ? (
                 <>
