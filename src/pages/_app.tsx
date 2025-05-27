@@ -1,4 +1,3 @@
-// pages/_app.tsx
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import "@/styles/globals.css";
@@ -8,6 +7,7 @@ import cookie from "cookie";
 import Header from "@/components/Homepage/Header";
 import Footer from "@/components/Homepage/Footer";
 import { useHandleOAuthRedirect } from "@/hooks/useHandleOAuthRedirect";
+import { CartProvider } from "@/components/ShoppingCart/CartContext"; // ✅ import your CartProvider
 
 export default function App({ Component, pageProps }: AppProps) {
   const router = useRouter();
@@ -42,16 +42,18 @@ export default function App({ Component, pageProps }: AppProps) {
   }, []);
 
   return (
-    <div className="flex flex-col min-h-screen">
-      {!excludeHeaderPages.includes(router.pathname) && <Header user={user} />}
-      <div
-        className={`flex-grow ${
-          excludeHeaderPages.includes(router.pathname) ? "" : "mt-[100px]"
-        }`}
-      >
-        <Component {...pageProps} user={user} />
+    <CartProvider> {/* ✅ wrap everything inside CartProvider */}
+      <div className="flex flex-col min-h-screen">
+        {!excludeHeaderPages.includes(router.pathname) && <Header user={user} />}
+        <div
+          className={`flex-grow ${
+            excludeHeaderPages.includes(router.pathname) ? "" : "mt-[100px]"
+          }`}
+        >
+          <Component {...pageProps} user={user} />
+        </div>
+        {!excludeFooterPages.includes(router.pathname) && <Footer />}
       </div>
-      {!excludeFooterPages.includes(router.pathname) && <Footer />}
-    </div>
+    </CartProvider>
   );
 }

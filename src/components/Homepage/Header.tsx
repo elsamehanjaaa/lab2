@@ -9,6 +9,7 @@ import ResetPasswordModal from "../Login/ResetPasswordModal";
 import Search from "../Search/Search";
 import * as authUtils from "@/utils/auth";
 import { useModalStore } from "@/stores/modalStore";
+import CartIcon from "../ShoppingCart/CartIcon";
 
 type HeaderProps = {
   user: { username: string; isTeacher: boolean; email: string } | undefined;
@@ -155,7 +156,7 @@ const Header = ({ user }: HeaderProps) => {
               href="/cartpage"
               className=" text-3xl"
             >
-             <ShoppingBag size={20} />
+             <CartIcon />
             </Link>
 
             {/* If logged in, show profile dropdown */}
