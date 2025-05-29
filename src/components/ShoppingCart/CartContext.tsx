@@ -1,7 +1,14 @@
-import React, { createContext, useState, useContext, useEffect, ReactNode } from 'react';
+import React, {
+  createContext,
+  useState,
+  useContext,
+  useEffect,
+  ReactNode,
+} from "react";
 
 export interface CartItem {
-  id: number;
+  id: string;
+  courseId: string;
   title: string;
   price: number;
   quantity: number;
@@ -22,23 +29,31 @@ interface CartContextType {
   updateShippingCost: (cost: number) => void;
   setCouponCode: (code: string) => void;
   applyCoupon: () => void;
-  handleQuantityChange: (id: number, quantity: number) => void;
-  handleRemoveItem: (id: number) => void;
+  handleQuantityChange: (id: string, quantity: number) => void;
+  handleRemoveItem: (id: string) => void;
   clearCart: () => void;
+  addToCart: (item: {
+    id: string;
+    courseId: string;
+    title: string;
+    price: number;
+    quantity: number;
+    thumbnail: string;
+  }) => void;
 }
 
 // Kuponat valide
 const validCoupons: Record<string, number> = {
-  'WELCOME10': 10,
-  'SAVE20': 20,
-  'STUDENT15': 15,
+  WELCOME10: 10,
+  SAVE20: 20,
+  STUDENT15: 15,
 };
 
 // Krijo context me vlerat fillestare
 const CartContext = createContext<CartContextType>({
   cartItems: [],
   shippingCost: 0,
-  couponCode: '',
+  couponCode: "",
   couponDiscount: 0,
   couponApplied: false,
   couponError: null,
@@ -52,6 +67,7 @@ const CartContext = createContext<CartContextType>({
   handleQuantityChange: () => {},
   handleRemoveItem: () => {},
   clearCart: () => {},
+  addToCart: () => {},
 });
 
 interface CartProviderProps {
@@ -61,47 +77,50 @@ interface CartProviderProps {
 export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [shippingCost, setShippingCost] = useState<number>(0);
-  const [couponCode, setCouponCodeState] = useState<string>('');
+  const [couponCode, setCouponCodeState] = useState<string>("");
   const [couponDiscount, setCouponDiscount] = useState<number>(0);
   const [couponApplied, setCouponApplied] = useState<boolean>(false);
   const [couponError, setCouponError] = useState<string | null>(null);
 
   // Llogaritjet
-  const subtotal = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
+  const subtotal = cartItems.reduce(
+    (acc, item) => acc + item.price * item.quantity,
+    0
+  );
   const discountAmount = (subtotal * couponDiscount) / 100;
   const total = subtotal - discountAmount + shippingCost;
 
   // Ngarko të dhënat nga localStorage në fillim
   useEffect(() => {
     try {
-      const savedCart = localStorage.getItem('cart');
+      const savedCart = localStorage.getItem("cart");
       if (savedCart) {
         setCartItems(JSON.parse(savedCart));
-      };
+      }
 
-      const savedShippingCost = localStorage.getItem('shippingCost');
+      const savedShippingCost = localStorage.getItem("shippingCost");
       if (savedShippingCost) setShippingCost(Number(savedShippingCost));
 
-      const savedCouponCode = localStorage.getItem('couponCode');
+      const savedCouponCode = localStorage.getItem("couponCode");
       if (savedCouponCode) setCouponCodeState(savedCouponCode);
 
-      const savedCouponDiscount = localStorage.getItem('couponDiscount');
+      const savedCouponDiscount = localStorage.getItem("couponDiscount");
       if (savedCouponDiscount) setCouponDiscount(Number(savedCouponDiscount));
 
-      const savedCouponApplied = localStorage.getItem('couponApplied');
-      if (savedCouponApplied) setCouponApplied(savedCouponApplied === 'true');
+      const savedCouponApplied = localStorage.getItem("couponApplied");
+      if (savedCouponApplied) setCouponApplied(savedCouponApplied === "true");
     } catch (error) {
-      console.error('Gabim gjatë ngarkimit nga localStorage:', error);
+      console.error("Gabim gjatë ngarkimit nga localStorage:", error);
     }
   }, []);
 
   // Ruaj të dhënat në localStorage kur ndryshojnë
   useEffect(() => {
-    localStorage.setItem('cart', JSON.stringify(cartItems));
-    localStorage.setItem('shippingCost', shippingCost.toString());
-    localStorage.setItem('couponCode', couponCode);
-    localStorage.setItem('couponDiscount', couponDiscount.toString());
-    localStorage.setItem('couponApplied', couponApplied.toString());
+    localStorage.setItem("cart", JSON.stringify(cartItems));
+    localStorage.setItem("shippingCost", shippingCost.toString());
+    localStorage.setItem("couponCode", couponCode);
+    localStorage.setItem("couponDiscount", couponDiscount.toString());
+    localStorage.setItem("couponApplied", couponApplied.toString());
   }, [cartItems, shippingCost, couponCode, couponDiscount, couponApplied]);
 
   const updateCart = (items: CartItem[]) => {
@@ -125,24 +144,42 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
       setCouponDiscount(validCoupons[couponCode]);
       setCouponApplied(true);
     } else {
-      setCouponError('Kodi i kuponit nuk është valid.');
+      setCouponError("Kodi i kuponit nuk është valid.");
     }
   };
 
-  const handleQuantityChange = (id: number, quantity: number) => {
-    setCartItems(prevItems =>
-      prevItems.map(item =>
-        item.id === id ? { ...item, quantity } : item
-      )
+  const handleQuantityChange = (id: string, quantity: number) => {
+    setCartItems((prevItems) =>
+      prevItems.map((item) => (item.id === id ? { ...item, quantity } : item))
     );
   };
 
-  const handleRemoveItem = (id: number) => {
-    setCartItems(prevItems => prevItems.filter(item => item.id !== id));
+  const handleRemoveItem = (id: string) => {
+    setCartItems((prevItems) => prevItems.filter((item) => item.id !== id));
   };
 
   const clearCart = () => {
     setCartItems([]);
+  };
+
+  const addToCart = (item: {
+    id: string;
+    courseId: string;
+    title: string;
+    price: number;
+    quantity: number;
+    thumbnail: string;
+  }) => {
+    setCartItems((prevItems) => {
+      const existingItem = prevItems.find((i) => i.id === item.id);
+      if (existingItem) {
+        return prevItems.map((i) =>
+          i.id === item.id ? { ...i, quantity: i.quantity + item.quantity } : i
+        );
+      } else {
+        return [...prevItems, item];
+      }
+    });
   };
 
   return (
@@ -164,6 +201,7 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
         handleQuantityChange,
         handleRemoveItem,
         clearCart,
+        addToCart,
       }}
     >
       {children}

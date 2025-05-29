@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Mail, Loader2, BookOpen, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import Loading from "../Loading";
 
 export default function ResetPasswordModal({
   onClose,
@@ -30,7 +31,7 @@ export default function ResetPasswordModal({
     setIsLoading(true);
     try {
       const res = await fetch(
-        "http://localhost:5000/auth/send-reset-password",
+        `${process.env.NEXT_PUBLIC_API_URL}/auth/send-reset-password`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

@@ -33,18 +33,19 @@ const ManageCourses = ({ cookies }: { cookies: string }) => {
           return;
         }
 
-    const response = await courseUtils.getById(userId);
-    console.log("Fetched courses response:", response);
+        const response = await courseUtils.getById(userId);
+        console.log("Fetched courses response:", response);
 
-    // adjust this based on your actual console output
-    setCourses(response); // or [response]
-  } catch (err) {
-    console.error("Error fetching courses", err);
-  } finally {
-    setLoading(false);
-  }
-};
-
+        // adjust this based on your actual console output
+        setCourses(
+          response ? (Array.isArray(response) ? response : [response]) : []
+        );
+      } catch (err) {
+        console.error("Error fetching courses", err);
+      } finally {
+        setLoading(false);
+      }
+    };
 
     fetchCourses();
   }, []);

@@ -26,7 +26,7 @@ export const getBySection = async (
     }
     const user_id = user.id;
     const res = await fetch(
-      `http://localhost:5000/lessons/getLessonsBySection`,
+      `${process.env.NEXT_PUBLIC_API_URL}/lessons/getLessonsBySection`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -54,7 +54,7 @@ export const getTitlesBySection = async (
 ): Promise<{ lessons: Lesson[] }> => {
   try {
     const res = await fetch(
-      `http://localhost:5000/lessons/getLessonsBySection`,
+      `${process.env.NEXT_PUBLIC_API_URL}/lessons/getLessonsBySection`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },

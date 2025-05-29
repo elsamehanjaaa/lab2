@@ -23,7 +23,7 @@ export const createTeacherProfile = async (
     throw new Error("User not authenticated");
   }
 
-  const response = await fetch("http://localhost:5000/teachers", {
+  const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/teachers`, {
     method: "POST",
     body: JSON.stringify({ userId: user.id, ...teacher }),
     credentials: "include",
@@ -44,14 +44,17 @@ export const createTeacherProfile = async (
 export const checkInstructorRole = async (
   access_token: string
 ): Promise<boolean> => {
-  const res = await fetch("http://localhost:5000/teachers/checkUser", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${access_token}`,
-    },
-    credentials: "include",
-  });
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/teachers/checkUser`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${access_token}`,
+      },
+      credentials: "include",
+    }
+  );
 
   const data = await res.json();
 

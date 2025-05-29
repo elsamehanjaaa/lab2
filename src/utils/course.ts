@@ -31,7 +31,7 @@ interface GetCoursesResponse {
 }
 
 export const create = async (courseData: FormData, token: string) => {
-  const response = await fetch("http://localhost:5000/courses", {
+  const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/courses`, {
     method: "POST",
     headers: {
       Authorization: `Bearer ${token}`, // Authorization token
@@ -50,14 +50,17 @@ export const create = async (courseData: FormData, token: string) => {
 };
 
 export const edit = async (id: string, courseData: FormData, token: string) => {
-  const response = await fetch(`http://localhost:5000/courses/${id}`, {
-    method: "PATCH",
-    headers: {
-      Authorization: `Bearer ${token}`, // Authorization token
-    },
-    body: courseData, // Directly send the FormData (no need to set Content-Type)
-    credentials: "include", // Include credentials (if needed)
-  });
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/courses/${id}`,
+    {
+      method: "PATCH",
+      headers: {
+        Authorization: `Bearer ${token}`, // Authorization token
+      },
+      body: courseData, // Directly send the FormData (no need to set Content-Type)
+      credentials: "include", // Include credentials (if needed)
+    }
+  );
 
   const data = await response.json();
   if (!response.ok) {
@@ -71,11 +74,14 @@ export const getById = async (
   cookies?: any
 ): Promise<Course | null> => {
   try {
-    const res = await fetch(`http://localhost:5000/courses/${course_id}`, {
-      method: "GET",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
-    });
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/courses/${course_id}`,
+      {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+      }
+    );
 
     if (!res.ok) {
       throw new Error(`HTTP Error! Status: ${res.status}`);
@@ -103,7 +109,7 @@ export const getById = async (
 
 export const getAll = async (): Promise<GetCoursesResponse> => {
   try {
-    const res = await fetch("http://localhost:5000/courses", {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/courses`, {
       method: "GET",
       headers: { "Content-Type": "application/json" },
       credentials: "include",
@@ -127,7 +133,7 @@ export const getAll = async (): Promise<GetCoursesResponse> => {
 export const getByInstructor = async (user_id: string): Promise<Course[]> => {
   try {
     const res = await fetch(
-      "http://localhost:5000/courses/getCoursesByInstructor",
+      `${process.env.NEXT_PUBLIC_API_URL}/courses/getCoursesByInstructor`,
       {
         method: "POST",
         headers: {
@@ -151,7 +157,7 @@ export const getByInstructor = async (user_id: string): Promise<Course[]> => {
 export const getByCategory = async (category_id: string): Promise<Course[]> => {
   try {
     const res = await fetch(
-      "http://localhost:5000/courses/getCoursesByCategory",
+      `${process.env.NEXT_PUBLIC_API_URL}/courses/getCoursesByCategory`,
       {
         // SHËNIM: ndrysho URL-në në endpointin e saktë
         method: "POST",
@@ -172,12 +178,15 @@ export const getByCategory = async (category_id: string): Promise<Course[]> => {
 
 export const remove = async (id: string): Promise<boolean> => {
   try {
-    const res = await fetch(`http://localhost:5000/courses/${id}`, {
-      // SHËNIM: ndrysho URL-në në endpointin e saktë
-      method: "DELETE",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
-    });
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/courses/${id}`,
+      {
+        // SHËNIM: ndrysho URL-në në endpointin e saktë
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+      }
+    );
 
     if (!res.ok) throw new Error(`HTTP Error! Status: ${res.status}`);
     return true;

@@ -30,7 +30,7 @@ const Section: React.FC<SectionProps> = ({
   const [showLessons, setShowLessons] = useState(false); // 👈 Toggle state
 
   return (
-    <div className="mt-6 p-4 bg-gray-300 rounded-lg">
+    <div className=" p-4 bg-gray-300 rounded-lg">
       <div className="flex justify-between items-center">
         <label className=" text-xl pr-2">Title:</label>
         <input

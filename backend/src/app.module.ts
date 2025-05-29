@@ -17,11 +17,17 @@ import { UploadService } from './upload/upload.service';
 import { CourseDetailsModule } from './course_details/course_details.module';
 import { ProgressModule } from './progress/progress.module';
 import { TeachersModule } from './teachers/teachers.module';
+import { PaymentsModule } from './payments/payments.module';
+import { OrderItemsModule } from './order_items/order_items.module';
 import * as dotenv from 'dotenv';
 dotenv.config();
 
 @Module({
   imports: [
+    ConfigModule.forRoot({
+      isGlobal: true, // This makes ConfigService available in all modules
+      envFilePath: '.env', // Optional: specify your .env file path
+    }),
     ConfigModule.forRoot(),
     AuthModule,
     MongooseModule.forRoot(process.env.MONGODB_URI as string),
@@ -33,6 +39,8 @@ dotenv.config();
     CourseDetailsModule,
     ProgressModule,
     TeachersModule,
+    PaymentsModule,
+    OrderItemsModule,
   ],
   controllers: [AppController],
   providers: [

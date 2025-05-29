@@ -19,7 +19,7 @@ export const recoverSession = async (): Promise<
     if (!refresh_token) {
       return undefined;
     }
-    const res = await fetch("http://localhost:5000/auth/refresh", {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/refresh`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -47,12 +47,15 @@ export const recoverSession = async (): Promise<
 };
 
 export const checkUsername = async (username: string): Promise<boolean> => {
-  const res = await fetch("http://localhost:5000/auth/checkUsername", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ username }),
-    credentials: "include",
-  });
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/auth/checkUsername`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ username }),
+      credentials: "include",
+    }
+  );
 
   if (!res.ok) {
     throw new Error("Failed to check username");
@@ -62,10 +65,13 @@ export const checkUsername = async (username: string): Promise<boolean> => {
   return result; // Assuming result is a boolean
 };
 export const handleGoogleLogin = async () => {
-  const res = await fetch("http://localhost:5000/auth/login-with-google", {
-    method: "POST",
-    credentials: "include", // optional: in case cookies involved
-  });
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/auth/login-with-google`,
+    {
+      method: "POST",
+      credentials: "include", // optional: in case cookies involved
+    }
+  );
   if (!res.ok) {
     throw new Error("Failed to fetch users");
   }
@@ -74,10 +80,13 @@ export const handleGoogleLogin = async () => {
   window.location.href = data.url; // Redirect user to Google login page
 };
 export const logout = async () => {
-  const response = await fetch("http://localhost:5000/auth/logout", {
-    method: "post",
-    credentials: "include",
-  });
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/auth/logout`,
+    {
+      method: "post",
+      credentials: "include",
+    }
+  );
 
   if (!response.ok) {
     throw new Error("Failed to fetch users");
@@ -87,7 +96,7 @@ export const logout = async () => {
 };
 
 export const signup = async (data: SignupData): Promise<any> => {
-  const res = await fetch("http://localhost:5000/auth/signup", {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/signup`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
@@ -104,7 +113,7 @@ export const signup = async (data: SignupData): Promise<any> => {
 };
 
 export const login = async (data: LoginData) => {
-  const res = await fetch("http://localhost:5000/auth/login", {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/login`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
@@ -121,14 +130,17 @@ export const login = async (data: LoginData) => {
 };
 export const resetPassword = async (password: string): Promise<void> => {
   try {
-    const res = await fetch("http://localhost:5000/auth/reset-password", {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ newPassword: password }),
-      credentials: "include", // Ensure cookies are included
-    });
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/auth/reset-password`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ newPassword: password }),
+        credentials: "include", // Ensure cookies are included
+      }
+    );
 
     if (!res.ok) {
       // Handle server-side errors, e.g., invalid password or expired token
@@ -156,14 +168,17 @@ export const setSession = async ({
     if (!refresh_token || !access_token) {
       return undefined;
     }
-    const res = await fetch("http://localhost:5000/auth/set-session", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ refresh_token, access_token }),
-      credentials: "include", // Ensure cookies are included
-    });
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/auth/set-session`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ refresh_token, access_token }),
+        credentials: "include", // Ensure cookies are included
+      }
+    );
 
     if (!res.ok) {
       // Handle server-side errors, e.g., invalid password or expired token

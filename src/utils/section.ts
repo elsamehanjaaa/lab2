@@ -31,7 +31,7 @@ export const getByCourse = async (
 ): Promise<SectionsWithLessons[]> => {
   try {
     const res = await fetch(
-      `http://localhost:5000/section/getSectionsByCourseId`,
+      `${process.env.NEXT_PUBLIC_API_URL}/section/getSectionsByCourseId`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -69,7 +69,7 @@ export const getTitlesByCourse = async (
 ): Promise<SectionsTitleWithLessons[]> => {
   try {
     const res = await fetch(
-      `http://localhost:5000/section/getSectionsByCourseId`,
+      `${process.env.NEXT_PUBLIC_API_URL}/section/getSectionsByCourseId`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },

@@ -10,14 +10,17 @@ export const checkAccess = async (
   if (!course_id) {
     return false;
   }
-  const res = await fetch("http://localhost:5000/enrollments/check-access", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${access_token}`,
-    },
-    body: JSON.stringify({ course_id }), // no user_id
-  });
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/enrollments/check-access`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${access_token}`,
+      },
+      body: JSON.stringify({ course_id }), // no user_id
+    }
+  );
 
   if (!res.ok) {
     return false;
@@ -43,15 +46,18 @@ export const enroll = async (courseId: string): Promise<any> => {
   }
 
   // Proceed with the enrollment process
-  const enrollRes = await fetch("http://localhost:5000/enrollments", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    credentials: "include",
-    body: JSON.stringify({
-      user_id: user.id,
-      course_id: courseId,
-    } as EnrollmentData),
-  });
+  const enrollRes = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/enrollments`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify({
+        user_id: user.id,
+        course_id: courseId,
+      } as EnrollmentData),
+    }
+  );
 
   if (!enrollRes.ok) {
     throw new Error(`Enrollment failed! Status: ${enrollRes.status}`);
@@ -64,7 +70,7 @@ export const enroll = async (courseId: string): Promise<any> => {
 export const getByUser = async (user_id: string): Promise<{}> => {
   try {
     const res = await fetch(
-      "http://localhost:5000/enrollments/getEnrollmentsByUser",
+      `${process.env.NEXT_PUBLIC_API_URL}/enrollments/getEnrollmentsByUser`,
       {
         method: "POST",
         headers: {

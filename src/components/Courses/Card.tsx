@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import Link from "next/link";
 import React from "react";
@@ -26,7 +26,8 @@ const Card = ({ course }: { course: Course }) => {
     e.preventDefault();
 
     addToCart({
-      id: parseInt(course._id),
+      id: course._id,
+      courseId: course._id,
       title: course.title,
       price: course.price,
       quantity: 1,
@@ -43,7 +44,9 @@ const Card = ({ course }: { course: Course }) => {
     return (
       <div className="flex">
         {[...Array(safeFullStars)].map((_, i) => (
-          <span key={i} className="text-yellow-400">★</span>
+          <span key={i} className="text-yellow-400">
+            ★
+          </span>
         ))}
       </div>
     );
@@ -63,8 +66,12 @@ const Card = ({ course }: { course: Course }) => {
           />
         </div>
 
-        <h2 className="text-lg sm:text-xl font-bold mb-2 line-clamp-2">{course.title}</h2>
-        <p className="text-gray-600 text-sm sm:text-base mb-3 line-clamp-2">{course.description}</p>
+        <h2 className="text-lg sm:text-xl font-bold mb-2 line-clamp-2">
+          {course.title}
+        </h2>
+        <p className="text-gray-600 text-sm sm:text-base mb-3 line-clamp-2">
+          {course.description}
+        </p>
 
         <div className="flex justify-between items-center mb-2">
           <p className="text-indigo-600 font-bold text-lg">
@@ -73,7 +80,11 @@ const Card = ({ course }: { course: Course }) => {
           <div className="flex items-center text-xs sm:text-sm">
             {renderStars(course.rating)}
             <span className="text-gray-500 ml-1">
-              ({!isNaN(Number(course.rating)) ? Number(course.rating).toFixed(1) : "0.0"})
+              (
+              {!isNaN(Number(course.rating))
+                ? Number(course.rating).toFixed(1)
+                : "0.0"}
+              )
             </span>
           </div>
         </div>

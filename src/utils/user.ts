@@ -1,5 +1,5 @@
 export const get = async (access_token?: string) => {
-  const response = await fetch("http://localhost:5000/auth/me", {
+  const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/me`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",

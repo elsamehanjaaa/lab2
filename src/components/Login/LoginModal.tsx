@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { Mail, Lock, Loader2, BookOpen, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import * as authUtils from "@/utils/auth";
-import Loading from "../loading";
+import Loading from "../Loading";
 
 export default function LoginModal({
   onClose,

@@ -5,7 +5,7 @@ import { SupabaseService } from 'src/supabase/supabase.service';
 import { InjectModel } from '@nestjs/mongoose';
 import { MongooseService } from 'src/mongoose/mongoose.service';
 import { Model } from 'mongoose';
-import { Enrollments } from 'src/schemas/enrollments.schema';
+import { Enrollments, EnrollmentsSchema } from 'src/schemas/enrollments.schema';
 import { Courses } from 'src/schemas/courses.schema';
 import { ProgressService } from 'src/progress/progress.service';
 import { LessonsService } from 'src/lessons/lessons.service';
@@ -75,7 +75,15 @@ export class EnrollmentsService {
 
     return coursesWithProgress;
   }
-
+  async findOneByUserIdAndCourseId(
+    userId: string,
+    courseId: string,
+  ): Promise<Enrollments | null> {
+    return this.EnrollmentsModel.findOne({
+      user_id: userId,
+      course_id: courseId,
+    }).exec();
+  }
   async checkAccess(id: string, course_id: string) {
     const access = await this.EnrollmentsModel.findOne({
       user_id: id,

@@ -1,6 +1,6 @@
 export const checkCategoryName = async (slug: string): Promise<any> => {
   const res = await fetch(
-    "http://localhost:5000/categories/checkCategoryName",
+    `${process.env.NEXT_PUBLIC_API_URL}/categories/checkCategoryName`,
     {
       method: "POST",
       headers: { "Content-Type": "application/json" },

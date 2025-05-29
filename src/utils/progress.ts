@@ -18,7 +18,7 @@ export const update = async (
     return false;
   }
 
-  const res = await fetch("http://localhost:5000/progress", {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/progress`, {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ status, lesson_id, user_id, course_id }),

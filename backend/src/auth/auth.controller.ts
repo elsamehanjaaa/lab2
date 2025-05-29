@@ -33,36 +33,46 @@ export class AuthController {
     @Body() body: { email: string; password: string; rememberMe?: boolean },
     @Res() res: Response,
   ) {
-    const { session } = await this.authService.login(body.email, body.password);
-    const user = session.user;
-    const access_token = session.access_token;
-    const refresh_token = session.refresh_token;
+    try {
+      const { session } = await this.authService.login(
+        body.email,
+        body.password,
+      );
 
-    // Set cookies
-    const accessTokenMaxAge = 15 * 60 * 1000 * 100; // 15 minutes
-    const refreshTokenMaxAge = body.rememberMe
-      ? 30 * 24 * 60 * 60 * 1000
-      : 1 * 24 * 60 * 60 * 1000; // 30 days or 1 day
+      const user = session.user;
+      const access_token = session.access_token;
+      const refresh_token = session.refresh_token;
 
-    res.cookie('access_token', access_token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
-      maxAge: accessTokenMaxAge,
-    });
+      // Set cookies
+      const accessTokenMaxAge = 15 * 60 * 1000 * 100; // 15 minutes
+      const refreshTokenMaxAge = body.rememberMe
+        ? 30 * 24 * 60 * 60 * 1000
+        : 1 * 24 * 60 * 60 * 1000; // 30 days or 1 day
 
-    res.cookie('refresh_token', refresh_token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
-      maxAge: refreshTokenMaxAge,
-    });
+      res.cookie('access_token', access_token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict',
+        maxAge: accessTokenMaxAge,
+      });
 
-    return res.status(HttpStatus.OK).json({
-      user,
-      access_token,
-      refresh_token,
-    });
+      res.cookie('refresh_token', refresh_token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict',
+        maxAge: refreshTokenMaxAge,
+      });
+
+      return res.status(HttpStatus.OK).json({
+        user,
+        access_token,
+        refresh_token,
+      });
+    } catch (error) {
+      return res.status(HttpStatus.UNAUTHORIZED).json({
+        message: 'Invalid email or password',
+      });
+    }
   }
 
   @Post('signup')
