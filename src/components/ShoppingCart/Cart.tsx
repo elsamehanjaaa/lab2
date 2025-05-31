@@ -38,7 +38,6 @@ const CartPage: React.FC = () => {
     total,
   } = useCart();
 
-  console.log(cartItems);
 
   const [isLoading, setIsLoading] = useState(false); // For loading state on the button
   const [paymentError, setPaymentError] = useState<string | null>(null); // To display errors

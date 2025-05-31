@@ -4,9 +4,9 @@ import TopSection from "@/components/TopSection";
 import CourseFilters from "@/components/Search/Filterbar";
 import CardHorizontal from "@/components/Search/CardHorizontal";
 import SortAndFilter from "@/components/Search/SortAndFilter";
-
+import * as coursesUtils from "@/utils/course"; // Adjust the import path as necessary
 const SearchPage = () => {
-  const [courses, setCourses] = useState([]);
+  const [courses, setCourses] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedRating, setSelectedRating] = useState<number | null>(null);
@@ -30,18 +30,7 @@ const SearchPage = () => {
         endPrice: selectedPriceRange ? selectedPriceRange[1] : undefined,
       };
 
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/courses/getFilteredCourses`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          credentials: "include",
-          body: JSON.stringify(filters),
-        }
-      );
-
-      if (!res.ok) throw new Error("Failed to fetch filtered courses");
-      const data = await res.json();
+      const data = await coursesUtils.getFilteredCourses(filters);
       setCourses(data);
     } catch (error) {
       console.error("Error fetching filtered courses:", error);

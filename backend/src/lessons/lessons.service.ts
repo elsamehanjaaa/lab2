@@ -176,7 +176,6 @@ export class LessonsService {
         (process.env.Cloudflare_Lessons_Public_Url as string) + '/',
         '',
       ) as string;
-      console.log(key);
 
       await this.uploadService.handleDeleteFile('lessons', key);
 

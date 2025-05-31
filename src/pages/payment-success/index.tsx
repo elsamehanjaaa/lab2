@@ -13,11 +13,6 @@ export default function PaymentSuccessPage() {
     if (router.isReady) {
       // Ensure router.query is populated
       if (session_id) {
-        // Optional: You might make an API call here to your backend to:
-        // 1. Verify the session_id.
-        // 2. Fetch order details.
-        // 3. Confirm fulfillment status (though webhook is primary for fulfillment).
-        // For now, we just display a success message.
         setMessage(`Payment Successful! Thank you for your purchase`);
         setIsLoading(false);
         // Example: clearCart(); // If you have a clearCart function from CartContext

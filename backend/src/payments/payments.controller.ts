@@ -357,7 +357,6 @@ export class PaymentsController {
   }
   @Post('verify-session')
   async verifyCheckoutSession(@Body() body: any): Promise<VerificationResult> {
-    console.log(body);
     const sessionId = body.session_id; // Extract sessionId from the request body
 
     if (!sessionId) {

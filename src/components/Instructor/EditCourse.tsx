@@ -164,7 +164,6 @@ const EditCourseForm: React.FC<EditCourseFormProps> = ({
 
       // Call the update endpoint here
       const data = await courseUtils.edit(id, formData, access_token);
-      console.log(data);
       if (data) onClose();
     } catch (error) {
       console.error("Error updating course:", error);

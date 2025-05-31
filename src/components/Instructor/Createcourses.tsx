@@ -311,12 +311,10 @@ const CreateCourseForm = ({
     });
 
     try {
-      console.log("Submitting with cookies:", cookies);
       const parsedCookies = parse(cookies || "");
       const token = parsedCookies.access_token || "";
 
       const data = await courseUtils.create(formData, token);
-      console.log("Course created successfully:", data);
       setLoading(false);
       onCourseCreated();
     } catch (error) {

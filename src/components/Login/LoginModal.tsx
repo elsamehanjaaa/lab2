@@ -38,7 +38,6 @@ export default function LoginModal({
 
     try {
       const result = await authUtils.login(data); // data should include email and password
-      console.log("Login successful:", result);
       router.refresh();
       onClose(); // Close modal
     } catch (error) {

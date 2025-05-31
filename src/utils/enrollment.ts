@@ -26,7 +26,6 @@ export const checkAccess = async (
     return false;
   }
   const access = await res.json();
-  console.log(access);
 
   return access; // Assuming result is a boolean
 };

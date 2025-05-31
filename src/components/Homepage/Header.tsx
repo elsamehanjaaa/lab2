@@ -9,16 +9,14 @@ import ResetPasswordModal from "../Login/ResetPasswordModal";
 import Search from "../Search/Search";
 import * as authUtils from "@/utils/auth";
 import { useModalStore } from "@/stores/modalStore";
-import CartIcon from "../ShoppingCart/CartIcon";
 
+import { useCart } from "@/components/ShoppingCart/CartContext";
 type HeaderProps = {
   user: { username: string; isTeacher: boolean; email: string } | undefined;
 };
-// Replace all useState modal hooks with Zustand
-
-// Inside the Header component:
 
 const Header = ({ user }: HeaderProps) => {
+  const { cartItems, clearCart } = useCart();
   const {
     showLogin,
     showSignup,
@@ -85,6 +83,7 @@ const Header = ({ user }: HeaderProps) => {
       setUsername(undefined);
       setIsTeacher(undefined);
       setEmail(undefined);
+      clearCart();
       router.reload();
     }
   };
@@ -152,11 +151,40 @@ const Header = ({ user }: HeaderProps) => {
             >
               Contact Us
             </Link>
-             <Link
-              href="/cartpage"
-              className=" text-3xl"
-            >
-             <CartIcon />
+            <Link href="/cartpage" className="text-3xl">
+              {" "}
+              {/* Assuming text-3xl is for the link itself, not the icon directly */}
+              <div className="relative inline-block">
+                {" "}
+                {/* Parent container for positioning */}
+                <ShoppingBag size={20} /> {/* Your icon component */}
+                {cartItems.length > 0 && (
+                  <span
+                    className="
+          absolute
+          top-0
+          right-0
+          -translate-y-1/2      {/* Nudge up for better top-right cornering */}
+          translate-x-1/2       {/* Nudge right for better top-right cornering */}
+          inline-flex
+          items-center
+          justify-center
+          px-2                  {/* Horizontal padding */}
+          py-1                  {/* Vertical padding */}
+          text-xs               {/* Extra small text size */}
+          font-bold
+          leading-none
+          text-white
+          bg-red-500
+          rounded-full
+          min-w-[1.25rem]       {/* Minimum width (20px) to ensure circle */}
+          h-5                   {/* Fixed height (20px) */}
+        "
+                  >
+                    {cartItems.length}
+                  </span>
+                )}
+              </div>
             </Link>
 
             {/* If logged in, show profile dropdown */}
@@ -298,12 +326,9 @@ const Header = ({ user }: HeaderProps) => {
               >
                 Contact Us
               </Link>
-               <Link
-              href="/cartpage"
-              className=" text-2xl"
-            >
-              <ShoppingBag size={20} />
-            </Link>
+              <Link href="/cartpage" className=" text-2xl">
+                <ShoppingBag size={20} />
+              </Link>
 
               {isLoggedIn && username ? (
                 <>

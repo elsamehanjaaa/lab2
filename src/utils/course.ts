@@ -175,6 +175,26 @@ export const getByCategory = async (category_id: string): Promise<Course[]> => {
     return [];
   }
 };
+export const getFilteredCourses = async (filters: any[]): Promise<any[]> => {
+  try {
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/courses/getFilteredCourses`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify(filters),
+      }
+    );
+
+    if (!res.ok) throw new Error(`HTTP Error! Status: ${res.status}`);
+    const courses = await res.json();
+    return courses;
+  } catch (error) {
+    console.error("Fetch error:", error);
+    return [];
+  }
+};
 
 export const remove = async (id: string): Promise<boolean> => {
   try {

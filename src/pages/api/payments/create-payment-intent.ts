@@ -23,10 +23,8 @@ export default async function handler(
           body: JSON.stringify(req.body),
         }
       );
-      console.log(backendResponse);
 
       const data = await backendResponse.json();
-      console.log(data);
 
       if (!backendResponse.ok) {
         return res.status(backendResponse.status).json(data);

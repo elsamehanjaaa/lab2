@@ -1,6 +1,5 @@
 export const verifySession = async (session_id: string): Promise<any> => {
   try {
-    console.log(JSON.stringify({ session_id }));
     const backendResponse = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/payments/verify-session`,
       {

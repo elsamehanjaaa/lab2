@@ -29,7 +29,6 @@ export const getServerSideProps: GetServerSideProps<
 
   try {
     const verificationResult = await paymentUtils.verifySession(session_id);
-    console.log("verificationResult: ", verificationResult);
 
     if (!verificationResult || !verificationResult.isValid) {
       console.warn(
@@ -65,9 +64,6 @@ export const getServerSideProps: GetServerSideProps<
         },
       };
     }
-
-    // Ensure the order object has an 'id' property
-    console.log("order: ", order);
 
     return {
       props: { order },

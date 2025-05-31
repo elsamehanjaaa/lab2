@@ -119,7 +119,6 @@ export class PaymentsService {
         stripeSession.id,
         'eur',
       );
-      console.log(createdOrderInDb);
 
       return {
         url: stripeSession.url,
@@ -160,7 +159,6 @@ export class PaymentsService {
     };
 
     const createdOrder = await this.ordersService.create(orderData);
-    console.log(`Order created in DB: ${createdOrder.id}`);
 
     this.logger.log(`Order record created/updated in DB: ${createdOrder.id}`);
 
@@ -183,8 +181,6 @@ export class PaymentsService {
   async verifyCheckoutSession(
     stripeSessionId: string,
   ): Promise<VerificationResult> {
-    console.log(!stripeSessionId || typeof stripeSessionId !== 'string');
-
     if (!stripeSessionId || typeof stripeSessionId !== 'string') {
       this.logger.warn(
         'Verification attempt with invalid or missing session ID.',

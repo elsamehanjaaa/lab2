@@ -34,7 +34,6 @@ const ManageCourses = ({ cookies }: { cookies: string }) => {
         }
 
         const response = await courseUtils.getById(userId);
-        console.log("Fetched courses response:", response);
 
         // adjust this based on your actual console output
         setCourses(

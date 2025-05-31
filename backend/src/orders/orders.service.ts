@@ -24,7 +24,6 @@ export class OrdersService {
       'orders',
       createOrderDto,
     );
-    console.log('Supabase data:', data);
 
     if (error) {
       console.error('Supabase error:', error);
@@ -35,7 +34,6 @@ export class OrdersService {
       ...createOrderDto,
       _id: data[0].id,
     });
-    console.log('mongo data:', mongo);
 
     if (!mongo) {
       throw new Error('Error inserting data into MongoDB');

@@ -4,7 +4,7 @@ import { UpdateCourseDto } from './dto/update-course.dto';
 import { SupabaseService } from 'src/supabase/supabase.service';
 import { MongooseService } from 'src/mongoose/mongoose.service';
 import { SectionService } from 'src/section/section.service';
-import { Model } from 'mongoose';
+import { Model, ObjectId } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { Courses } from '../schemas/courses.schema';
 import { Categories } from '../schemas/categories.schema'; // Import the Categories model
@@ -14,6 +14,8 @@ import { LessonsService } from 'src/lessons/lessons.service';
 import { ProgressService } from 'src/progress/progress.service';
 import { CourseDetailsService } from 'src/course_details/course_details.service';
 import { CategoriesService } from 'src/categories/categories.service';
+import { CourseDetails } from 'src/schemas/course_details.schema';
+import { Lessons } from 'src/schemas/lessons.schema';
 
 @Injectable()
 export class CoursesService {
@@ -30,8 +32,12 @@ export class CoursesService {
     private readonly CategoriesModel: Model<Categories>,
     @InjectModel(Enrollments.name)
     private readonly EnrollmetsModel: Model<Enrollments>, // Inject Categories model
+    @InjectModel(CourseDetails.name)
+    private readonly CourseDetailsModel: Model<CourseDetails>, // Inject Categories model
     @InjectModel(Section.name)
-    private readonly SectionsModel: Model<Section>, // Inject Categories model
+    private readonly SectionModel: Model<Section>, // Inject Categories model
+    @InjectModel(Lessons.name)
+    private readonly LessonsModel: Model<Lessons>, // Inject Categories model
   ) {}
 
   // Create a new course
@@ -151,15 +157,95 @@ export class CoursesService {
     }
   }
 
-  // Get courses by search query
   async getCoursesByQuery(query: string): Promise<Courses[]> {
     try {
-      const courses = await this.CoursesModel.find({
-        title: { $regex: query, $options: 'i' }, // 'i' makes the search case-insensitive
+      const courseIds = new Set<string>();
+      const [
+        directCourseMatches,
+        categoryMatches,
+        courseDetailMatches,
+        lessonMatches,
+        sectionMatches,
+      ] = await Promise.all([
+        this.CoursesModel.find(
+          {
+            $or: [
+              { title: { $regex: query, $options: 'i' } },
+              { description: { $regex: query, $options: 'i' } },
+            ],
+          },
+          '_id',
+        ).exec(),
+        this.CategoriesModel.find({
+          name: { $regex: query, $options: 'i' },
+        }).exec(),
+        this.CourseDetailsModel.find(
+          {
+            $or: [
+              { description: { $regex: query, $options: 'i' } },
+              { learn: { $regex: query, $options: 'i' } },
+              { requirements: { $regex: query, $options: 'i' } },
+            ],
+          },
+          '_id',
+        ).exec(),
+        this.LessonsModel.find(
+          { title: { $regex: query, $options: 'i' } },
+          'section_id',
+        ).exec(),
+        this.SectionModel.find(
+          { title: { $regex: query, $options: 'i' } },
+          'course_id',
+        ).exec(),
+      ]);
+
+      directCourseMatches.forEach((course) =>
+        courseIds.add(course._id.toString()),
+      );
+      if (categoryMatches.length > 0) {
+        const matchedCategoryIds = categoryMatches.map((cat) => cat._id);
+
+        const coursesInMatchedCategories = await this.CoursesModel.find(
+          {
+            categories: { $in: matchedCategoryIds },
+          },
+          '_id',
+        ).exec();
+
+        coursesInMatchedCategories.forEach((course) =>
+          courseIds.add(course._id.toString()),
+        );
+      }
+
+      courseDetailMatches.forEach((detail) => {
+        if (detail._id) courseIds.add(detail._id.toString());
+      });
+
+      lessonMatches.forEach(async (lesson) => {
+        const section = await this.SectionModel.findOne({
+          _id: lesson.section_id,
+        });
+        if (section) {
+          courseIds.add(section.course_id.toString());
+        }
+      });
+
+      sectionMatches.forEach((section) => {
+        if (section.course_id) courseIds.add(section.course_id.toString());
+      });
+
+      if (courseIds.size === 0) {
+        return [];
+      }
+
+      const finalCourses = await this.CoursesModel.find({
+        _id: { $in: Array.from(courseIds) },
       }).exec();
-      return courses;
+
+      return finalCourses;
     } catch (error) {
-      throw new Error('Error fetching courses: ' + error.message);
+      console.error('Error in getCoursesByQuery (complex):', error);
+      throw new Error('Error fetching courses by comprehensive query.');
     }
   }
 
@@ -219,16 +305,28 @@ export class CoursesService {
     try {
       const searchQuery = typeof query === 'string' ? query : '';
 
-      let coursesQuery = this.CoursesModel.find({
-        title: { $regex: searchQuery, $options: 'i' },
-      });
+      // Build a Mongoose query object
+      const filter: any = {};
+
+      // If query is provided, get matching course IDs from getCoursesByQuery
+      let courseIds: string[] | undefined = undefined;
+      if (searchQuery) {
+        const matchedCourses = await this.getCoursesByQuery(searchQuery);
+        courseIds = matchedCourses.map((course) => course._id.toString());
+        if (courseIds.length > 0) {
+          filter._id = { $in: courseIds };
+        } else {
+          // If no courses match the query, return empty array early
+          return [];
+        }
+      }
 
       if (rating) {
-        coursesQuery = coursesQuery.where('rating').equals(rating);
+        filter.rating = rating;
       }
 
       if (categoryId) {
-        coursesQuery = coursesQuery.where('categories').in([categoryId]);
+        filter.categories = { $in: [categoryId] };
       }
 
       if (
@@ -237,13 +335,10 @@ export class CoursesService {
         typeof startPrice === 'number' &&
         typeof endPrice === 'number'
       ) {
-        coursesQuery = coursesQuery
-          .where('price')
-          .gte(startPrice)
-          .lte(endPrice);
+        filter.price = { $gte: startPrice, $lte: endPrice };
       }
 
-      const courses = await coursesQuery.lean().exec(); // returns plain objects
+      const courses = await this.CoursesModel.find(filter).lean().exec(); // returns plain objects
 
       const coursesWithCounts = await Promise.all(
         courses.map(async (course) => {
@@ -328,9 +423,6 @@ export class CoursesService {
     if (coursedata.title) {
       coursedata.slug = generateSlug(coursedata.title);
     }
-
-    // Update in Supabase
-    console.log(coursedata);
 
     const { data, error } = await this.supabaseService.updateData(
       'courses',

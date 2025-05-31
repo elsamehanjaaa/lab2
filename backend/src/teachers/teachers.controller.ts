@@ -27,7 +27,6 @@ export class TeachersController {
   @Post('checkUser')
   async checkUser(@Req() req: Request) {
     const user = req.user as any;
-    console.log(user);
 
     return await this.teachersService.checkUser(user.id);
   }

@@ -50,7 +50,6 @@ export class CoursesController {
       const thumbnail = file.fieldname.match('thumbnail');
       if (thumbnail) {
         try {
-          console.log('uploading thumbnail');
           const { url } = await this.uploadService.handleThumbnailUpload(
             file,
             courseData.title,

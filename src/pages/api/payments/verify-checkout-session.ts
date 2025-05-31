@@ -8,26 +8,17 @@ export default async function handler(
 ) {
   if (req.method === "POST") {
     try {
-      const cookies = parse(req.headers.cookie || "");
-      const accessToken = cookies.access_token; // Forward token if your backend needs it
 
       const backendResponse = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/payments/create-checkout-session`,
+        `${process.env.NEXT_PUBLIC_API_URL}/payments/verify-session`,
         {
           // Your NestJS backend URL
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            ...(accessToken && { Authorization: `Bearer ${accessToken}` }),
-          },
           body: JSON.stringify(req.body),
         }
       );
-      console.log(backendResponse);
 
       const data = await backendResponse.json();
-      console.log(data);
-
       if (!backendResponse.ok) {
         return res.status(backendResponse.status).json(data);
       }
