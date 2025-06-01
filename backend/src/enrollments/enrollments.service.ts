@@ -9,6 +9,7 @@ import { Enrollments, EnrollmentsSchema } from 'src/schemas/enrollments.schema';
 import { Courses } from 'src/schemas/courses.schema';
 import { ProgressService } from 'src/progress/progress.service';
 import { LessonsService } from 'src/lessons/lessons.service';
+import { Categories } from 'src/schemas/categories.schema';
 interface EnrollmentRecord {
   _id: string; // The ID of the enrollment document itself
   course_id: string;
@@ -38,6 +39,8 @@ export class EnrollmentsService {
     @InjectModel(Enrollments.name)
     private readonly EnrollmentsModel: Model<Enrollments>,
     @InjectModel(Courses.name) private readonly CoursesModel: Model<Courses>,
+    @InjectModel(Categories.name)
+    private readonly CategoriesModel: Model<Categories>,
   ) {}
   async create(createEnrollmentDto: CreateEnrollmentDto) {
     const { data, error } = await this.supabaseService.insertData(
@@ -74,22 +77,59 @@ export class EnrollmentsService {
     return await this.mongooseService.getDataById(this.EnrollmentsModel, id);
   }
   async getEnrollmentsByUser(id: string) {
+    // Fetch initial data
     const enrollments = await this.EnrollmentsModel.find({ user_id: id });
     const courseIds = enrollments.map((e) => e.course_id);
     const courses = await this.CoursesModel.find({ _id: { $in: courseIds } });
 
-    // Attach progress to each course
-    const coursesWithProgress = courses.map((course) => {
-      const enrollment = enrollments.find(
-        (e) => e.course_id.toString() === course._id.toString(),
-      );
-      return {
-        ...course.toObject(),
-        progress: enrollment?.progress ?? 0,
-      };
+    // --- NEW: Step 1: Collect all unique category IDs from all courses ---
+    const allCategoryIds = courses.flatMap((course) => course.categories);
+    const uniqueCategoryIds = [
+      ...new Set(allCategoryIds.map((id) => id.toString())),
+    ];
+
+    // --- NEW: Step 2: Fetch all referenced categories in a single query ---
+    const allCategories = await this.CategoriesModel.find({
+      _id: { $in: uniqueCategoryIds },
     });
 
-    return coursesWithProgress;
+    // --- NEW: Step 3: Create a lookup map for efficient access ---
+    // This prevents having to search the allCategories array for every single category
+    const categoryMap = new Map(
+      allCategories.map((category) => [category._id.toString(), category.name]),
+    );
+
+    // --- MODIFIED: Step 4: Attach progress AND populate category names ---
+    // Use Promise.all to wait for every async operation inside the map to complete
+    const coursesWithProgressAndCategories = await Promise.all(
+      courses.map(async (course) => {
+        // Find the corresponding enrollment to get the progress
+        const enrollment = enrollments.find(
+          (e) => e.course_id.toString() === course._id.toString(),
+        );
+
+        // Map category IDs to full category names using the lookup map
+        const populatedCategories = course.categories
+          .map((categoryId) => categoryMap.get(categoryId.toString()))
+          .filter(Boolean); // .filter(Boolean) removes any null/undefined if a category wasn't found
+
+        // This is the async operation that map doesn't wait for
+        const instructor = await this.supabaseService.getDataById(
+          'profiles',
+          course.instructor_id,
+        );
+
+        return {
+          ...course.toObject(),
+          progress: enrollment?.progress ?? 0,
+          categories: populatedCategories,
+          // Ensure instructor data exists before accessing properties
+          instructor: instructor?.[0]?.username ?? 'Unknown Instructor',
+        };
+      }),
+    );
+
+    return coursesWithProgressAndCategories;
   }
   async getEnrollmentsByCourse(id: string): Promise<EnrollmentRecord[]> {
     // Fetch enrollments for the given course ID (these are raw from DB, without populated user)

@@ -373,11 +373,9 @@ export default function ManageStudentsPage() {
     setIsLoading(true);
     setError(null);
     try {
-      console.log(`Fetching students for instructor ID: ${instructorId}`); // DEBUG
       const backendData = await studentUtils.getStudentsFromIntructor(
         instructorId
       );
-      console.log("Raw backend data:", JSON.stringify(backendData, null, 2)); // DEBUG: Log raw data
 
       if (!Array.isArray(backendData)) {
         console.error("API did not return an array. Data:", backendData);
@@ -413,10 +411,6 @@ export default function ManageStudentsPage() {
         })
         .filter((student) => student !== null) as Student[]; // Filter out any nulls from invalid items
 
-      console.log(
-        "Formatted students for state:",
-        JSON.stringify(formattedStudents, null, 2)
-      ); // DEBUG: Log formatted data
       setStudents(formattedStudents);
 
       const courseTitles = new Set<string>();
@@ -445,27 +439,17 @@ export default function ManageStudentsPage() {
     studentId: string,
     newStatus: StudentStatus
   ) => {
-    console.log(
-      `Attempting to update overall status for ${studentId} to ${newStatus}`
-    );
     alert(
       `Overall status update for student ${studentId} to ${newStatus} is a placeholder.`
     );
   };
 
   const handleAddStudent = async (newStudentData: NewStudentData) => {
-    console.log("Adding new student (placeholder):", newStudentData);
     alert("Add student functionality is a placeholder.");
     setIsAddStudentModalOpen(false);
   };
 
   const filteredStudents = useMemo(() => {
-    console.log(
-      "Recalculating filteredStudents. Current students count:",
-      students.length,
-      "Filters:",
-      { searchTerm, statusFilter, courseFilter }
-    ); // DEBUG
     return students
       .filter((student) => {
         const lowerSearchTerm = searchTerm.toLowerCase();

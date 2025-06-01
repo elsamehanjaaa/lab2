@@ -23,8 +23,10 @@ import { useCart } from "@/components/ShoppingCart/CartContext";
 
 import { useAuth } from "@/contexts/AuthContext";
 import ProfileModal from "../Profile/ProfileModal";
+import { useRouter } from "next/router";
 
 const Header = () => {
+  const router = useRouter();
   const { user, isLoggedIn, logout: authLogout, initialLoading } = useAuth();
   const { cartItems, clearCart } = useCart();
   const {
@@ -80,6 +82,7 @@ const Header = () => {
       clearCart();
       setIsDropdownOpen(false);
       setIsMenuOpen(false);
+      router.reload();
     } catch (error) {
       console.error("Logout failed:", error);
     }

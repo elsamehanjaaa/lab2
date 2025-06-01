@@ -82,13 +82,17 @@ export const getByUser = async (user_id: string): Promise<{}> => {
     }
 
     const courses = await res.json();
+    console.log(courses);
 
     const data = courses.map(
       (course: {
         _id: any;
         title: any;
         slug: any;
+        description: string;
         progress: number;
+        categories: string[];
+        instructor: string;
         thumbnail_url: string;
       }) => {
         return {
@@ -96,11 +100,14 @@ export const getByUser = async (user_id: string): Promise<{}> => {
           title: course.title,
           slug: course.slug,
           progress: course.progress,
+          description: course.description,
+          categories: course.categories,
+          instructor: course.instructor,
           thumbnail_url: course.thumbnail_url,
         };
       }
     );
-    return data;
+    return courses;
   } catch (error) {
     console.error("Fetch error:", error);
     return {};

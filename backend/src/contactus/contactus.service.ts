@@ -16,7 +16,6 @@ export class ContactusService {
     private readonly ContactUsModel: Model<ContactUs>,
   ) {}
   async create(createContactusDto: CreateContactUsDto) {
-    console.log(createContactusDto);
     const { data, error } = await this.supabaseService.insertData(
       'contact_us',
       createContactusDto,
@@ -26,7 +25,6 @@ export class ContactusService {
       console.error('Supabase error:', error);
       throw error;
     }
-    console.log(data);
 
     const mongo = await this.mongooseService.insertData(this.ContactUsModel, {
       ...createContactusDto,

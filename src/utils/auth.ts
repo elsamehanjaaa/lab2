@@ -134,8 +134,12 @@ export const login = async (data: LoginData) => {
 
   return result.user;
 };
-export const me = async () => {
+export const me = async (cookie?: string) => {
   const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/me`, {
+    headers: {
+      // 3. Set the 'cookie' header on the outgoing request
+      cookie: cookie || "", // Pass the cookie string, or an empty string if it's undefined
+    },
     credentials: "include",
   });
 

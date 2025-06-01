@@ -12,6 +12,7 @@ import { LessonsService } from 'src/lessons/lessons.service';
 import { ProgressModule } from 'src/progress/progress.module'; // Import ProgressModule
 import { SectionModule } from 'src/section/section.module';
 import { LessonsModule } from 'src/lessons/lessons.module';
+import { CategoriesModule } from 'src/categories/categories.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { LessonsModule } from 'src/lessons/lessons.module';
       { name: Enrollments.name, schema: EnrollmentsSchema },
     ]),
     forwardRef(() => CoursesModule),
+    forwardRef(() => CategoriesModule),
     forwardRef(() => ProgressModule), // ← this must be present
     forwardRef(() => LessonsModule),
     forwardRef(() => SectionModule),

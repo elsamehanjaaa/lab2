@@ -1,162 +1,285 @@
 // Inside pages/my-courses.tsx or similar
-import * as enrollmentUtils from "@/utils/enrollment"; // Assuming this utility exists and works
-import * as authUtils from "@/utils/auth"; // Assuming this utility exists and works
-// import { parse } from "cookie"; // Not used in the component directly if fetch handles cookies via 'credentials: "include"'
+import * as enrollmentUtils from "@/utils/enrollment";
+import * as authUtils from "@/utils/auth";
 import { GetServerSideProps } from "next";
 import Link from "next/link";
-import React, { useEffect, useState } from "react";
-import Image from "next/image"; // Using next/image for optimized images
-import { getUserFromRequest } from "@/utils/auth"; // Import your server-side auth helper
+import React, { useMemo, useState } from "react";
+import Image from "next/image";
 
+// CORRECTED: 'categories' is now an array of strings
 interface Course {
   id: string | number;
   slug: string;
   thumbnail_url: string;
   title: string;
+  description: string;
   progress: number;
-}
-
-interface User {
-  id: string;
-  // Add other user properties if needed, e.g., name, email
-}
-
-interface ApiMeResponse {
-  user?: User; // Make user optional in case API returns empty or error structure
-  // Potentially other fields from your API response
+  categories: string[]; // <-- This is the key change in the interface
+  instructor: string;
 }
 
 interface PageProps {
-  userId?: string; // Prop for your page component
-  error?: string; // Optional error message
+  courses: Course[];
+  error?: string;
 }
 
 export const getServerSideProps: GetServerSideProps<PageProps> = async (
   context
 ) => {
   try {
-    const user = await authUtils.me();
+    const { req } = context;
+    const cookie = req.headers.cookie;
+    const user = await authUtils.me(cookie);
+
+    if (!user) {
+      return {
+        redirect: {
+          destination: "/?showLogin=true&error=not_authenticated",
+          permanent: false,
+        },
+      };
+    }
+
+    const enrollmentsData = await enrollmentUtils.getByUser(String(user.id));
+    const courses = Array.isArray(enrollmentsData) ? enrollmentsData : [];
+
     return {
       props: {
-        userId: user.id,
+        courses,
       },
     };
   } catch (error) {
-    console.error("Exception during fetch in getServerSideProps:", error);
+    console.error("Exception in getServerSideProps:", error);
     return {
       redirect: {
-        destination: "/?showLogin=true&error=fetch_failed", // Redirect to login, maybe with an error query
+        destination: "/?showLogin=true&error=fetch_failed",
         permanent: false,
       },
     };
   }
 };
 
-const MyCoursesPage = ({ userId }: { userId: string | number }) => {
-  const [courses, setCourses] = useState<Course[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+const MyCoursesPage = ({ courses }: PageProps) => {
+  // --- STATE FOR FILTERS AND SORTING (variable names cleaned up) ---
+  const [filterCategory, setFilterCategory] = useState("All");
+  const [filterProgress, setFilterProgress] = useState("All");
+  const [filterInstructor, setFilterInstructor] = useState("All");
+  const [sortOrder, setSortOrder] = useState("title-asc");
 
-  useEffect(() => {
-    const fetchEnrollments = async () => {
-      setIsLoading(true);
-      setError(null);
-      try {
-        const enrollmentsData = await enrollmentUtils.getByUser(String(userId));
+  // --- DYNAMICALLY GET FILTER OPTIONS FROM COURSES ---
 
-        setCourses(Array.isArray(enrollmentsData) ? enrollmentsData : []);
-      } catch (err) {
-        setError(
-          err instanceof Error ? err.message : "Failed to fetch enrollments."
-        );
-        console.error(err);
-      } finally {
-        setIsLoading(false);
-      }
-    };
+  // CORRECTED: Use flatMap to get a single array of all category names
+  const categories = useMemo(
+    () => ["All", ...Array.from(new Set(courses.flatMap((c) => c.categories)))],
+    [courses]
+  );
 
-    if (userId) {
-      fetchEnrollments();
+  const instructors = useMemo(
+    () => ["All", ...Array.from(new Set(courses.map((c) => c.instructor)))],
+    [courses]
+  );
+
+  // --- FILTERING AND SORTING LOGIC ---
+  const filteredAndSortedCourses = useMemo(() => {
+    let result = [...courses];
+
+    // CORRECTED: Filter by checking if the category is INCLUDED in the array
+    console.log(result);
+    if (filterCategory !== "All") {
+      result = result.filter((course) =>
+        course.categories.includes(filterCategory)
+      );
     }
-  }, [userId]); // Re-run if userId changes (though it shouldn't for a page like this post-SSR)
 
-  if (isLoading) {
-    return (
-      <div className="p-4 max-w-6xl mx-auto text-center">
-        <p>Loading your courses...</p>
-        {/* You could add a spinner here */}
-      </div>
-    );
-  }
+    // 2. Filter by Progress
+    if (filterProgress === "not-started") {
+      result = result.filter((course) => course.progress === 0);
+    } else if (filterProgress === "in-progress") {
+      result = result.filter(
+        (course) => course.progress > 0 && course.progress < 100
+      );
+    } else if (filterProgress === "completed") {
+      result = result.filter((course) => course.progress === 100);
+    }
 
-  if (error) {
-    return (
-      <div className="p-4 max-w-6xl mx-auto text-center text-red-600">
-        <p>Error: {error}</p>
-      </div>
-    );
-  }
+    // 3. Filter by Instructor
+    if (filterInstructor !== "All") {
+      result = result.filter(
+        (course) => course.instructor === filterInstructor
+      );
+    }
+
+    // 4. Apply Sorting
+    switch (sortOrder) {
+      case "progress-desc":
+        result.sort((a, b) => b.progress - a.progress);
+        break;
+      case "progress-asc":
+        result.sort((a, b) => a.progress - b.progress);
+        break;
+      case "title-desc":
+        result.sort((a, b) => b.title.localeCompare(a.title));
+        break;
+      case "title-asc":
+      default:
+        result.sort((a, b) => a.title.localeCompare(b.title));
+        break;
+    }
+
+    return result;
+  }, [courses, filterCategory, filterProgress, filterInstructor, sortOrder]);
 
   return (
     <div className="p-4 md:p-8 max-w-7xl mx-auto">
-      {" "}
-      {/* Increased max-width and padding */}
-      <h1 className="text-3xl font-bold mb-8 text-gray-800">My Courses</h1>{" "}
-      {/* Updated heading style */}
-      {courses.length > 0 ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-          {" "}
-          {/* Responsive Grid */}
-          {courses.map((course) => (
-            <div
-              key={course.id} // Key on the outermost element in the map
-              className="bg-white rounded-xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-2xl group"
-            >
-              <Link href={`/learn/${course.slug}/${course.id}`} legacyBehavior>
-                <a className="block">
-                  {" "}
-                  {/* Added <a> tag for legacyBehavior or direct styling */}
-                  <div className="relative w-full h-48">
-                    {" "}
-                    {/* Fixed height for image container */}
-                    <Image
-                      src={course.thumbnail_url || "/placeholder-image.jpg"} // Fallback image
-                      alt={course.title}
-                      layout="fill"
-                      objectFit="cover" // Ensures image covers the area
-                      className="transition-transform duration-300 group-hover:scale-105"
-                    />
-                  </div>
-                  <div className="p-5">
-                    <h2 className="text-xl font-semibold text-gray-800 mb-2 truncate group-hover:text-indigo-600 transition-colors">
-                      {course.title}
-                    </h2>
-                    {/* Optional: Add a short description if available */}
-                    {/* <p className="text-gray-600 text-sm mb-3 line-clamp-2">
-                      {course.description || 'No description available.'}
-                    </p> */}
+      <h1 className="text-3xl font-bold mb-8 text-gray-800">My Courses</h1>
 
-                    <div className="mb-2">
-                      <div className="flex justify-between text-sm text-gray-600 mb-1">
-                        <span>Progress</span>
-                        <span>{course.progress}%</span>
-                      </div>
-                      <div className="h-2.5 w-full bg-gray-200 rounded-full overflow-hidden">
-                        <div
-                          className="h-full bg-indigo-600 rounded-full transition-all duration-500" // Changed color, added transition
-                          style={{ width: `${course.progress}%` }}
-                        />
+      {courses.length > 0 ? (
+        <>
+          {/* --- FILTER AND SORT CONTROLS --- */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8 bg-gray-50 p-4 rounded-lg">
+            {/* Filter by Category */}
+            <div>
+              <label
+                htmlFor="category-filter"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
+                Category
+              </label>
+              <select
+                id="category-filter"
+                value={filterCategory}
+                onChange={(e) => setFilterCategory(e.target.value)}
+                className="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+              >
+                {categories.map((cat) => (
+                  <option key={cat} value={cat}>
+                    {cat}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Filter by Progress */}
+            <div>
+              <label
+                htmlFor="progress-filter"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
+                Progress
+              </label>
+              <select
+                id="progress-filter"
+                value={filterProgress}
+                onChange={(e) => setFilterProgress(e.target.value)}
+                className="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+              >
+                <option value="all">All</option>
+                <option value="not-started">Not Started</option>
+                <option value="in-progress">In Progress</option>
+                <option value="completed">Completed</option>
+              </select>
+            </div>
+
+            {/* Filter by Instructor */}
+            <div>
+              <label
+                htmlFor="instructor-filter"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
+                Instructor
+              </label>
+              <select
+                id="instructor-filter"
+                value={filterInstructor}
+                onChange={(e) => setFilterInstructor(e.target.value)}
+                className="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+              >
+                {instructors.map((inst) => (
+                  <option key={inst} value={inst}>
+                    {inst}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Sort Order */}
+            <div>
+              <label
+                htmlFor="sort-order"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
+                Sort By
+              </label>
+              <select
+                id="sort-order"
+                value={sortOrder}
+                onChange={(e) => setSortOrder(e.target.value)}
+                className="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+              >
+                <option value="title-asc">Title (A-Z)</option>
+                <option value="title-desc">Title (Z-A)</option>
+                <option value="progress-desc">Progress (High-Low)</option>
+                <option value="progress-asc">Progress (Low-High)</option>
+              </select>
+            </div>
+          </div>
+
+          {/* --- COURSE GRID --- */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+            {filteredAndSortedCourses.map((course) => (
+              <div
+                key={course.id}
+                className="bg-white rounded-xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-2xl group hover:scale-105"
+              >
+                <Link
+                  href={`/learn/${course.slug}/${course.id}`}
+                  legacyBehavior
+                >
+                  <a className="block">
+                    <div className="relative w-full h-48">
+                      <Image
+                        src={course.thumbnail_url || "/placeholder-image.jpg"}
+                        alt={course.title}
+                        layout="fill"
+                        objectFit="cover"
+                        className="transition-transform duration-300 group-hover:scale-110"
+                      />
+                    </div>
+                    <div className="p-5">
+                      <h2 className="text-xl font-semibold text-gray-800 mb-2 truncate group-hover:text-indigo-600 transition-colors">
+                        {course.title}
+                      </h2>
+                      <p className="text-gray-600 text-sm mb-3 line-clamp-2">
+                        {course.description || "No description available."}
+                      </p>
+
+                      <div className="mb-2">
+                        <div className="flex justify-between text-sm text-gray-600 mb-1">
+                          <span>Progress</span>
+                          <span>{course.progress}%</span>
+                        </div>
+                        <div className="h-2.5 w-full bg-gray-200 rounded-full overflow-hidden">
+                          <div
+                            className="h-full bg-indigo-600 rounded-full "
+                            style={{ width: `${course.progress}%` }}
+                          />
+                        </div>
                       </div>
                     </div>
-                    {/* <div className="text-xs text-gray-500 mt-1">
-                      {course.progress}% completed
-                    </div> */}
-                  </div>
-                </a>
-              </Link>
-            </div>
-          ))}
-        </div>
+                  </a>
+                </Link>
+              </div>
+            ))}
+            {/* --- Handle No Results After Filtering --- */}
+            {filteredAndSortedCourses.length === 0 && (
+              <div className="col-span-1 sm:col-span-2 lg:col-span-3 text-center py-10">
+                <p className="text-lg text-gray-700">
+                  No courses match your current filters.
+                </p>
+              </div>
+            )}
+          </div>
+        </>
       ) : (
         <div className="text-center py-10">
           <svg
@@ -187,4 +310,4 @@ const MyCoursesPage = ({ userId }: { userId: string | number }) => {
   );
 };
 
-export default MyCoursesPage; // Changed component name to PascalCase
+export default MyCoursesPage;
