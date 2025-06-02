@@ -6,7 +6,7 @@ import Categories from "./Categories";
 import * as categoriesUtils from "@/utils/categories";
 import * as courseUtils from "@/utils/course";
 import { parse } from "cookie";
-import Loading from "../loading";
+import Loading from "../Loading";
 interface EditCourseFormProps {
   id: string;
   cookies: string;

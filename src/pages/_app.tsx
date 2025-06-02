@@ -1,13 +1,16 @@
-import { useEffect, useState } from "react";
+// src/pages/_app.tsx (or wherever your _app.tsx is)
+import { useEffect } from "react"; // useState might not be needed here anymore
 import { useRouter } from "next/router";
 import "@/styles/globals.css";
 import type { AppProps } from "next/app";
-import cookie from "cookie";
+// import cookie from "cookie"; // Likely not needed directly in _app.tsx anymore
 
 import Header from "@/components/Homepage/Header";
 import Footer from "@/components/Homepage/Footer";
 import { useHandleOAuthRedirect } from "@/hooks/useHandleOAuthRedirect";
-import { CartProvider } from "@/components/ShoppingCart/CartContext"; // ✅ import your CartProvider
+
+import { AuthProvider } from "@/contexts/AuthContext"; // Adjust path as needed
+import { CartProvider } from "@/components/ShoppingCart/CartContext";
 
 export default function App({ Component, pageProps }: AppProps) {
   const router = useRouter();
@@ -25,35 +28,23 @@ export default function App({ Component, pageProps }: AppProps) {
     "/join/instructor",
   ];
 
-  const [user, setUser] = useState<
-    { username: string; isTeacher: boolean; email: string } | undefined
-  >(undefined);
-
   useHandleOAuthRedirect();
-  useEffect(() => {
-    const fetchUserFromToken = async () => {
-      const res = await fetch("http://localhost:3000/api/me");
-      const data = await res.json();
-
-      setUser(data.user);
-    };
-
-    fetchUserFromToken();
-  }, []);
 
   return (
-    <CartProvider> {/* ✅ wrap everything inside CartProvider */}
-      <div className="flex flex-col min-h-screen">
-        {!excludeHeaderPages.includes(router.pathname) && <Header user={user} />}
-        <div
-          className={`flex-grow ${
-            excludeHeaderPages.includes(router.pathname) ? "" : "mt-[100px]"
-          }`}
-        >
-          <Component {...pageProps} user={user} />
+    <AuthProvider>
+      <CartProvider>
+        <div className="flex flex-col min-h-screen">
+          {!excludeHeaderPages.includes(router.pathname) && <Header />}
+          <div
+            className={`flex-grow ${
+              excludeHeaderPages.includes(router.pathname) ? "" : "mt-[100px]"
+            }`}
+          >
+            <Component {...pageProps} />
+          </div>
+          {!excludeFooterPages.includes(router.pathname) && <Footer />}
         </div>
-        {!excludeFooterPages.includes(router.pathname) && <Footer />}
-      </div>
-    </CartProvider>
+      </CartProvider>
+    </AuthProvider>
   );
 }
