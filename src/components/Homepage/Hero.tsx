@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
-import { BookOpen, User, Clock, Star, GraduationCap } from "lucide-react";
+import { BookOpen, User, Clock, Star } from "lucide-react";
 import Link from "next/link";
 
 // Data

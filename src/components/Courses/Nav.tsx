@@ -16,7 +16,6 @@ interface NavProps {
 }
 
 const Nav: React.FC<NavProps> = ({ course, alreadyEnrolled }) => {
-  const router = useRouter();
   const [showNav, setShowNav] = useState(false);
 
   useEffect(() => {

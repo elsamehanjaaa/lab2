@@ -12,14 +12,7 @@ import {
 import Link from "next/link";
 import Image from "next/image";
 import { useCart } from "@/components/ShoppingCart/CartContext";
-// import { useRouter } from 'next/router'; // No longer needed for this button if redirecting to Stripe
-import { loadStripe, Stripe } from "@stripe/stripe-js"; // Import loadStripe
 
-// Initialize Stripe.js with your publishable key outside of the component
-// Make sure your publishable key is in your environment variables
-const stripePromise = loadStripe(
-  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!
-);
 
 const CartPage: React.FC = () => {
   const {
@@ -111,22 +104,11 @@ const CartPage: React.FC = () => {
         throw new Error("Session ID not received from server.");
       }
 
-      const stripe = await stripePromise;
-      if (!stripe) {
-        throw new Error("Stripe.js failed to load.");
-      }
+  
 
       // Redirect to Stripe Checkout
-      const { error } = await stripe.redirectToCheckout({
-        sessionId: data.sessionId,
-      });
-
-      if (error) {
-        console.error("Stripe redirection error:", error);
-        setPaymentError(
-          error.message || "An unexpected error occurred during redirection."
-        );
-      }
+    
+      
     } catch (err) {
       console.error("Error in handleProceedToStripeCheckout:", err);
       setPaymentError(

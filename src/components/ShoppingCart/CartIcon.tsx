@@ -2,7 +2,6 @@
 
 import React from "react";
 import { ShoppingCart } from "lucide-react";
-import Link from "next/link";
 import { useCart } from "./CartContext";
 
 const CartIcon: React.FC = () => {

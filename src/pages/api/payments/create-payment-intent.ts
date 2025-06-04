@@ -1,6 +1,5 @@
-// src/pages/api/payments/create-payment-intent.ts
 import type { NextApiRequest, NextApiResponse } from "next";
-import { parse } from "cookie"; // To forward cookies if needed for auth
+import { parse } from "cookie";
 
 export default async function handler(
   req: NextApiRequest,
@@ -9,12 +8,13 @@ export default async function handler(
   if (req.method === "POST") {
     try {
       const cookies = parse(req.headers.cookie || "");
-      const accessToken = cookies.access_token; // Forward token if your backend needs it
+      const accessToken = cookies.access_token;
+
+      console.log("Request body:", req.body);
 
       const backendResponse = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/payments/create-checkout-session`,
         {
-          // Your NestJS backend URL
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -24,13 +24,20 @@ export default async function handler(
         }
       );
 
-      const data = await backendResponse.json();
+      let data;
+      try {
+        data = await backendResponse.json();
+      } catch (jsonError) {
+        return res.status(500).json({ message: "Invalid JSON from backend" });
+      }
 
       if (!backendResponse.ok) {
         return res.status(backendResponse.status).json(data);
       }
+
       return res.status(200).json(data);
     } catch (error) {
+      console.error("Error in create-payment-intent:", error);
       const errorMessage =
         error instanceof Error ? error.message : String(error);
       return res
@@ -39,6 +46,6 @@ export default async function handler(
     }
   } else {
     res.setHeader("Allow", "POST");
-    res.status(405).end("Method Not Allowed ");
+    res.status(405).end("Method Not Allowed");
   }
 }

@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import TopSection from "@/components/TopSection";
 import CourseFilters from "@/components/Search/Filterbar";
 import CardHorizontal from "@/components/Search/CardHorizontal";
 import SortAndFilter from "@/components/Search/SortAndFilter";

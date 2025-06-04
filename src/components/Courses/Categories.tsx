@@ -1,4 +1,4 @@
-import * as categoryUtils from "@/utils/categories";
+ import * as categoryUtils from "@/utils/categories";
 import React, { useEffect, useState, useRef } from "react";
 
 // Define the type for each category

@@ -1,4 +1,3 @@
-import React, { useState } from "react";
 import { ArrowLeft, ArrowRight, LoaderCircle } from "lucide-react"; // assuming you're using Feather Icons
 
 type StepButtonProps = {
