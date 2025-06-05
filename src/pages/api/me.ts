@@ -29,6 +29,7 @@ export default async function handler(
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
+      credentials: "include"
     });
     return response;
   };
@@ -45,6 +46,7 @@ export default async function handler(
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ refresh_token: refreshToken }),
+      credentials: "include"
     });
 
     if (!refreshRes.ok) return res.status(401).json({ user: null });
@@ -77,6 +79,7 @@ export default async function handler(
     headers: {
       Authorization: `Bearer ${token}`,
     },
+    credentials: "include"
   });
 
   user.isTeacher = await fetchTeacherResponse.json();
