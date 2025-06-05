@@ -10,8 +10,6 @@ export default async function handler(
       const cookies = parse(req.headers.cookie || "");
       const accessToken = cookies.access_token;
 
-      console.log("Request body:", req.body);
-
       const backendResponse = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/payments/create-checkout-session`,
         {

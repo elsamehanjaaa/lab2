@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react"; // Added useState
+import React, { useEffect, useState } from "react";
 import {
   ShoppingBag,
   Trash2Icon,
@@ -12,7 +12,8 @@ import {
 import Link from "next/link";
 import Image from "next/image";
 import { useCart } from "@/components/ShoppingCart/CartContext";
-
+import { useAuth } from "@/contexts/AuthContext";
+import { useModalStore } from "@/stores/modalStore";
 
 const CartPage: React.FC = () => {
   const {
@@ -23,7 +24,7 @@ const CartPage: React.FC = () => {
     couponCode,
     setCouponCode,
     applyCoupon,
-    couponDiscount, // You'll need to decide how to pass this to Stripe (e.g., as a Stripe coupon ID)
+    couponDiscount,
     couponApplied,
     couponError,
     subtotal,
@@ -31,76 +32,48 @@ const CartPage: React.FC = () => {
     total,
   } = useCart();
 
-  const [isLoading, setIsLoading] = useState(false); // For loading state on the button
-  const [paymentError, setPaymentError] = useState<string | null>(null); // To display errors
-  const { user } = useAuth();
-  const handleProceedToStripeCheckout = async () => {
+  const [isLoading, setIsLoading] = useState(false);
+  const [paymentError, setPaymentError] = useState<string | null>(null);
+  const { user, isLoggedIn } = useAuth();
+  const { setShowLogin } = useModalStore();
+
+  const handleCheckout = async () => {
+    if (!isLoggedIn()) {
+      setShowLogin(true);
+      return;
+    }
+
     setIsLoading(true);
     setPaymentError(null);
 
-    if (cartItems.length === 0) {
-      setPaymentError("Your cart is empty.");
-      setIsLoading(false);
-      return;
-    }
-    if (!user || !user.id) {
-      // Check if user is logged in and has an ID
-      setPaymentError("You must be logged in to proceed to checkout.");
-      setIsLoading(false);
-      return;
-    }
     try {
-      // Define success and cancel URLs
-      // These should be absolute URLs
-      const successUrl = `${window.location.origin}/payment-success?session_id={CHECKOUT_SESSION_ID}`;
-      const cancelUrl = `${window.location.origin}/cart`; // Or a specific cancellation page
-
       const response = await fetch("/api/payments/create-payment-intent", {
-        // This calls your Next.js API route
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          cartItems: cartItems.map((item) => ({
-            // Send simplified cart items
-            id: item.id,
-            courseId: item.courseId,
-            title: item.title,
-            price: item.price,
-            quantity: item.quantity,
-            thumbnail: item.thumbnail,
-            // Add any other details your NestJS backend needs to construct line_items
-          })),
-          shippingCost,
-          discountAmount, // Send discount amount
-          // couponCode, // You might need to map this to a Stripe coupon ID on the backend
-          successUrl,
-          cancelUrl,
-          userId: user.id,
-          // You can also send currency, locale, etc. if your backend needs it
+          cartItems,
+          userId: user?.id,
+          couponCode: couponApplied ? couponCode : null,
         }),
       });
 
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.message || "Failed to create checkout session.");
+        throw new Error(data.message || "Failed to create checkout session");
       }
 
-      if (!data.sessionId) {
-        throw new Error("Session ID not received from server.");
+      if (data.url) {
+        window.location.href = data.url;
+      } else {
+        throw new Error("No checkout URL received");
       }
-
-  
-
-      // Redirect to Stripe Checkout
-    
-      
-    } catch (err) {
-      console.error("Error in handleProceedToStripeCheckout:", err);
+    } catch (error) {
+      console.error("Checkout error:", error);
       setPaymentError(
-        err instanceof Error ? err.message : "An unexpected error occurred."
+        error instanceof Error ? error.message : "An unexpected error occurred"
       );
     } finally {
       setIsLoading(false);
@@ -124,7 +97,6 @@ const CartPage: React.FC = () => {
 
         {cartItems.length === 0 ? (
           <div className="text-center py-20 bg-white rounded-xl shadow-sm">
-            {/* ... (empty cart JSX remains the same) ... */}
             <ShoppingCartIcon
               size={48}
               className="mx-auto text-gray-400 mb-4"
@@ -146,7 +118,6 @@ const CartPage: React.FC = () => {
                   key={item.id}
                   className="flex items-center bg-white p-4 rounded-xl shadow-sm transition-all hover:shadow-md"
                 >
-                  {/* ... (item display JSX remains the same) ... */}
                   <div className="relative w-20 h-20 flex-shrink-0">
                     <Image
                       src={item.thumbnail}
@@ -198,10 +169,8 @@ const CartPage: React.FC = () => {
               ))}
             </div>
 
-            {/* Coupon & Summary */}
             <div className="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-6">
               <div className="bg-white p-6 rounded-xl shadow-sm">
-                {/* ... (coupon JSX remains the same) ... */}
                 <h3 className="font-semibold text-lg mb-3">Apply Coupon</h3>
                 <div className="flex gap-2">
                   <input
@@ -229,7 +198,6 @@ const CartPage: React.FC = () => {
               </div>
 
               <div className="bg-white p-6 rounded-xl shadow-sm">
-                {/* ... (order summary JSX remains the same) ... */}
                 <h3 className="font-semibold text-lg mb-3">Order Summary</h3>
                 <div className="space-y-3">
                   <div className="flex justify-between">
@@ -257,13 +225,12 @@ const CartPage: React.FC = () => {
                   </div>
 
                   <button
-                    onClick={handleProceedToStripeCheckout} // UPDATED: Call the new handler
-                    disabled={isLoading || cartItems.length === 0} // Disable if loading or cart empty
+                    onClick={handleCheckout}
+                    disabled={isLoading || cartItems.length === 0}
                     className="w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-lg mt-4 transition-all transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     <ShoppingBag className="inline mr-2" size={18} />
-                    {isLoading ? "Processing..." : "Proceed to Payment"}{" "}
-                    {/* UPDATED: Button text */}
+                    {isLoading ? "Processing..." : "Proceed to Checkout"}
                   </button>
                 </div>
               </div>
