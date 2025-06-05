@@ -1,5 +1,9 @@
 import { parse } from "cookie";
-
+import { IncomingMessage } from "http";
+interface AuthData {
+  user: { id: string; [key: string]: any } | null; // Adjust user type as needed
+  isLoggedIn: boolean;
+}
 interface LoginData {
   email: string;
   password: string;
@@ -197,3 +201,31 @@ export const setSession = async ({
     return undefined;
   }
 };
+
+export async function getUserFromRequest(
+  req: IncomingMessage
+): Promise<AuthData> {
+  try {
+    const res = await fetch("http://localhost:3000/api/me", {
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+    });
+
+    if (!res.ok) {
+      console.error("Failed to fetch user:", res.status, res.statusText);
+
+      return { user: null, isLoggedIn: false };
+    }
+
+    const data = await res.json();
+    if (data && data.user) {
+      return { user: data.user, isLoggedIn: true };
+    }
+    return { user: null, isLoggedIn: false };
+  } catch (error) {
+    console.error("Server-side auth error:", error);
+    return { user: null, isLoggedIn: false };
+  }
+}

@@ -21,7 +21,7 @@ export const getServerSideProps: GetServerSideProps = async ({ req }) => {
   if (!access_token) {
     return {
       redirect: {
-        destination: "/",
+        destination: "/?showLogin=true",
         permanent: false,
       },
     };

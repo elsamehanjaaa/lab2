@@ -7,7 +7,7 @@ import { Mail, Lock, Loader2, BookOpen, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import * as authUtils from "@/utils/auth";
 import Loading from "../Loading";
-
+import { useAuth } from "@/contexts/AuthContext"; // Adjust path if needed
 export default function LoginModal({
   onClose,
   onResetPassword,
@@ -15,6 +15,7 @@ export default function LoginModal({
   onClose: () => void;
   onResetPassword: () => void;
 }) {
+  const { login, loading: authLoading } = useAuth(); // Rename loading to avoid conflict if LoginModal has its own
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [data, setData] = useState({
@@ -34,17 +35,27 @@ export default function LoginModal({
 
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault();
-    setIsLoading(true);
+    // If using authLoading from context, you might not need LoginModal's own setIsLoading
+    // setIsLoading(true); // Or rely on authLoading
 
     try {
-      const result = await authUtils.login(data); // data should include email and password
-      router.refresh();
-      onClose(); // Close modal
+      // 'data' from your modal's state should match the Credentials interface
+      await login(data); // This now calls the context's login
+      // The context's login function will handle setting the user
+      // and its useEffect will reflect this.
+
+      router.refresh(); // Keep this if you have server components that need to update
+      onClose(); // Close modal on successful login
     } catch (error) {
       console.error("Login error:", error);
-      alert(error instanceof Error ? error.message : "Login failed");
+      // The error thrown by context's login will be caught here
+      alert(
+        error instanceof Error
+          ? error.message
+          : "Login failed. Please try again."
+      );
     } finally {
-      setIsLoading(false);
+      // setIsLoading(false); // Or rely on authLoading
     }
   }
   return (
@@ -115,11 +126,15 @@ export default function LoginModal({
 
             <button
               type="submit"
-              disabled={isLoading}
+              disabled={authLoading} // Use loading state from context
               className="w-full bg-blue-900 text-white py-3 rounded-xl hover:bg-blue-700 flex items-center justify-center disabled:opacity-50"
             >
-              {isLoading && <Loading show={isLoading} />}
-              {isLoading ? "Signing in..." : "Sign in"}
+              {
+                authLoading && (
+                  <Loading show={authLoading} />
+                ) /* Or your Loader2 icon */
+              }
+              {authLoading ? "Signing in..." : "Sign in"}
             </button>
             <div className="text-center mt-4">
               <button

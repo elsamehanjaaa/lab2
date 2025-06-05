@@ -160,12 +160,13 @@ export class CoursesService {
   async getCoursesByQuery(query: string): Promise<Courses[]> {
     try {
       const courseIds = new Set<string>();
+
       const [
         directCourseMatches,
         categoryMatches,
-        courseDetailMatches,
+        courseDetailResults,
         lessonMatches,
-        sectionMatches,
+        sectionTitleMatches,
       ] = await Promise.all([
         this.CoursesModel.find(
           {
@@ -187,7 +188,7 @@ export class CoursesService {
               { requirements: { $regex: query, $options: 'i' } },
             ],
           },
-          '_id',
+          'course_id',
         ).exec(),
         this.LessonsModel.find(
           { title: { $regex: query, $options: 'i' } },
@@ -202,37 +203,39 @@ export class CoursesService {
       directCourseMatches.forEach((course) =>
         courseIds.add(course._id.toString()),
       );
+
       if (categoryMatches.length > 0) {
         const matchedCategoryIds = categoryMatches.map((cat) => cat._id);
-
         const coursesInMatchedCategories = await this.CoursesModel.find(
-          {
-            categories: { $in: matchedCategoryIds },
-          },
+          { categories: { $in: matchedCategoryIds } },
           '_id',
         ).exec();
-
         coursesInMatchedCategories.forEach((course) =>
           courseIds.add(course._id.toString()),
         );
       }
 
-      courseDetailMatches.forEach((detail) => {
+      courseDetailResults.forEach((detail) => {
         if (detail._id) courseIds.add(detail._id.toString());
       });
 
-      lessonMatches.forEach(async (lesson) => {
-        const section = await this.SectionModel.findOne({
-          _id: lesson.section_id,
-        });
-        if (section) {
+      sectionTitleMatches.forEach((section) => {
+        if (section.course_id) courseIds.add(section.course_id.toString());
+      });
+
+      const lessonProcessingPromises = lessonMatches.map(async (lesson) => {
+        if (!lesson.section_id) return;
+
+        const section = await this.SectionModel.findOne(
+          { _id: lesson.section_id },
+          'course_id',
+        ).exec();
+
+        if (section && section.course_id) {
           courseIds.add(section.course_id.toString());
         }
       });
-
-      sectionMatches.forEach((section) => {
-        if (section.course_id) courseIds.add(section.course_id.toString());
-      });
+      await Promise.all(lessonProcessingPromises);
 
       if (courseIds.size === 0) {
         return [];
@@ -244,8 +247,11 @@ export class CoursesService {
 
       return finalCourses;
     } catch (error) {
-      console.error('Error in getCoursesByQuery (complex):', error);
-      throw new Error('Error fetching courses by comprehensive query.');
+      console.error('Error in getCoursesByQuery:', error);
+      throw new Error(
+        'Error fetching courses by comprehensive query. ' +
+          (error instanceof Error ? error.message : String(error)),
+      );
     }
   }
 

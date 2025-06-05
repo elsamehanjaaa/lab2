@@ -31,21 +31,9 @@ const CartPage: React.FC = () => {
     total,
   } = useCart();
 
-
   const [isLoading, setIsLoading] = useState(false); // For loading state on the button
   const [paymentError, setPaymentError] = useState<string | null>(null); // To display errors
-  const [user, setUser] = useState<{ id: string } | undefined>(undefined);
-
-  // const router = useRouter(); // Not used for the Stripe button
-  useEffect(() => {
-    async function fetchUser() {
-      const res = await fetch("http://localhost:3000/api/me");
-      const data = await res.json();
-
-      setUser(data.user);
-    }
-    fetchUser();
-  }, []);
+  const { user } = useAuth();
   const handleProceedToStripeCheckout = async () => {
     setIsLoading(true);
     setPaymentError(null);

@@ -5,6 +5,7 @@ import { GetServerSideProps } from "next";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import Image from "next/image"; // Using next/image for optimized images
+import { getUserFromRequest } from "@/utils/auth"; // Import your server-side auth helper
 
 // Define a type for your course objects for better type safety
 interface Course {
@@ -17,64 +18,33 @@ interface Course {
 }
 
 export const getServerSideProps: GetServerSideProps = async ({ req }) => {
-  // Fetch user data server-side to protect the route
-  const res = await fetch("http://localhost:3000/api/me", {
-    // Ensure this URL is correct, consider using env var for domain
-    headers: {
-      cookie: req.headers.cookie || "",
-    },
-  });
+  const authData = await getUserFromRequest(req);
 
-  // It's good practice to check if the response was ok before parsing JSON
-  if (!res.ok) {
-    // If /api/me returns 401 or similar for unauthenticated, redirect
+  if (!authData.isLoggedIn || !authData.user) {
     return {
       redirect: {
-        destination: "/login", // Redirect to login or home
+        destination: "/?showLogin=true",
         permanent: false,
       },
     };
   }
 
-  const data = await res.json();
-  const user = data.user;
-
-  if (!user) {
-    return {
-      redirect: {
-        destination: "/", // Or your login page
-        permanent: false,
-      },
-    };
-  }
-
-  // You could pass the user ID as a prop if enrollments are fetched client-side based on it
-  // Or even fetch enrollments here if they don't change often and pass them as props.
-  // For this example, we'll keep client-side fetching for enrollments as in original.
-  return { props: { userId: user.id } }; // Pass userId to simplify client-side fetch
+  return { props: { userId: authData.user.id } }; // Pass the userId obtained from server-side auth
 };
 
+// ... rest of your MyCoursesPage component
 const MyCoursesPage = ({ userId }: { userId: string | number }) => {
   const [courses, setCourses] = useState<Course[]>([]);
-  const [isLoading, setIsLoading] = useState(true); // Loading state
-  const [error, setError] = useState<string | null>(null); // Error state
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchEnrollments = async () => {
       setIsLoading(true);
       setError(null);
       try {
-        // No need to fetch /api/me again if userId is passed as a prop
-        // const res = await fetch("http://localhost:3000/api/me", {
-        //   credentials: "include",
-        // });
-        // if (!res.ok) throw new Error('Failed to fetch user data');
-        // const { user } = await res.json();
+        const enrollmentsData = await enrollmentUtils.getByUser(String(userId));
 
-        const enrollmentsData = await enrollmentUtils.getByUser(String(userId)); // Ensure userId is a string
-
-        // Ensure enrollmentsData is what you expect (e.g., an array of Course-like objects)
-        // You might need to transform enrollmentsData if its structure doesn't match 'Course[]'
         setCourses(Array.isArray(enrollmentsData) ? enrollmentsData : []);
       } catch (err) {
         setError(

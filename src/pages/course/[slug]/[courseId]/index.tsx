@@ -26,6 +26,7 @@ interface Course {
   instructorBio?: string;
   categories?: Categories[];
   updatedAt?: string;
+  status: boolean;
   languages?: string[];
   sections: Sections[];
 }
@@ -94,7 +95,7 @@ const Index = ({
     if (courseContentRef.current) {
       const navHeight = document.querySelector("div.fixed")?.clientHeight || 0;
       window.scrollTo({
-        top: courseContentRef.current.offsetTop - navHeight,
+        top: courseContentRef.current.offsetTop - 184,
         behavior: "smooth",
       });
     }

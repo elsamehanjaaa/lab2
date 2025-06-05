@@ -4,7 +4,10 @@ import Link from "next/link";
 import React from "react";
 import Image from "next/image";
 import { useCart } from "@/components/ShoppingCart/CartContext";
+import { useModalStore } from "@/stores/modalStore";
 import { ShoppingCartIcon } from "lucide-react";
+
+import { useAuth } from "@/contexts/AuthContext";
 
 interface Course {
   title: string;
@@ -19,12 +22,18 @@ interface Course {
 }
 
 const Card = ({ course }: { course: Course }) => {
+  const { isLoggedIn } = useAuth();
   const { addToCart } = useCart();
+  const { setShowLogin } = useModalStore();
 
   const handleAddToCart = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
     e.preventDefault();
 
+    if (!isLoggedIn()) {
+      setShowLogin(true);
+      return;
+    }
     addToCart({
       id: course._id,
       courseId: course._id,
