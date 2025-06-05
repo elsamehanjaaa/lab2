@@ -132,7 +132,7 @@ export default function LoginModal({
               {
                 authLoading && (
                   <Loading show={authLoading} />
-                ) /* Or your Loader2 icon */
+                ) 
               }
               {authLoading ? "Signing in..." : "Sign in"}
             </button>

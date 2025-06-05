@@ -50,14 +50,24 @@ export default function SignUpModal({ onClose }: { onClose: () => void }) {
   };
 
   async function handleUsernameInput(e: React.ChangeEvent<HTMLInputElement>) {
-    const value = e.target.value;
-    setData({ ...data, username: value });
+    const rawValue = e.target.value;
+    // Remove spaces from the username input
+    const valueWithoutSpaces = rawValue.replace(/\s/g, "");
+    setData({ ...data, username: valueWithoutSpaces });
 
-    try {
-      const exists = await authUtils.checkUsername(value);
-      setUsernameExist(exists);
-    } catch (err) {
-      console.error("Username check failed:", err);
+    // Only check username existence if it's not empty after removing spaces
+    if (valueWithoutSpaces.length > 0) {
+      try {
+        const exists = await authUtils.checkUsername(valueWithoutSpaces);
+        setUsernameExist(exists);
+      } catch (err) {
+        console.error("Username check failed:", err);
+        // Optionally, set usernameExist to true or handle error state
+        // setUsernameExist(true); // Example: assume exists on error to prevent submission
+      }
+    } else {
+      // If username is empty after removing spaces, it cannot exist
+      setUsernameExist(false);
     }
   }
   async function handleSignUp(e: React.FormEvent) {
@@ -80,7 +90,14 @@ export default function SignUpModal({ onClose }: { onClose: () => void }) {
       router.refresh();
       onClose();
     } catch (error) {
-      alert(error instanceof Error ? error.message : "Sign up failed");
+      // It's better to use a more user-friendly notification system than alert()
+      // For example, a toast notification or an error message within the modal
+      console.error("Sign up error:", error);
+      alert(
+        error instanceof Error
+          ? error.message
+          : "Sign up failed. Please try again."
+      );
     } finally {
       setIsLoading(false);
     }
@@ -131,7 +148,7 @@ export default function SignUpModal({ onClose }: { onClose: () => void }) {
                 <input
                   id="username"
                   type="text"
-                  placeholder="johndoe"
+                  placeholder="johndoe (no spaces)" // Updated placeholder
                   className={`w-full pl-10 pr-10 py-2 border rounded-md focus:outline-none focus:ring-2 focus:border-transparent ${
                     usernameExist
                       ? "focus:ring-red-500 border-red-500"
@@ -156,6 +173,18 @@ export default function SignUpModal({ onClose }: { onClose: () => void }) {
                   )
                 )}
               </div>
+              {usernameExist && (
+                <p className="text-xs text-red-500 mt-1">
+                  Username already taken.
+                </p>
+              )}
+              {data.username.length > 0 &&
+                data.username.length <= 3 &&
+                !usernameExist && (
+                  <p className="text-xs text-red-500 mt-1">
+                    Username must be longer than 3 characters.
+                  </p>
+                )}
             </div>
 
             {/* Email */}
@@ -172,7 +201,7 @@ export default function SignUpModal({ onClose }: { onClose: () => void }) {
                   id="email"
                   type="email"
                   placeholder="name@example.com"
-                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" // Added pr-10 for consistency with icon
                   value={data.email}
                   onChange={(e) => {
                     const email = e.target.value;
@@ -194,6 +223,11 @@ export default function SignUpModal({ onClose }: { onClose: () => void }) {
                     />
                   ))}
               </div>
+              {data.email && !emailValid && (
+                <p className="text-xs text-red-500 mt-1">
+                  Please enter a valid email address.
+                </p>
+              )}
             </div>
 
             {/* Password */}
@@ -220,17 +254,59 @@ export default function SignUpModal({ onClose }: { onClose: () => void }) {
                 />
               </div>
               <div className="text-xs space-y-1 text-gray-500">
-                <p className={passwordValid.length ? "text-green-600" : ""}>
-                  • At least 8 characters
+                <p
+                  className={
+                    passwordValid.length ? "text-green-600" : "text-gray-500"
+                  }
+                >
+                  {" "}
+                  {/* Ensure default color if not valid */}
+                  <Check
+                    className={`inline-block mr-1 h-3 w-3 ${
+                      passwordValid.length ? "text-green-600" : "text-gray-400"
+                    }`}
+                  />{" "}
+                  At least 8 characters
                 </p>
-                <p className={passwordValid.uppercase ? "text-green-600" : ""}>
-                  • One uppercase letter
+                <p
+                  className={
+                    passwordValid.uppercase ? "text-green-600" : "text-gray-500"
+                  }
+                >
+                  <Check
+                    className={`inline-block mr-1 h-3 w-3 ${
+                      passwordValid.uppercase
+                        ? "text-green-600"
+                        : "text-gray-400"
+                    }`}
+                  />{" "}
+                  One uppercase letter
                 </p>
-                <p className={passwordValid.lowercase ? "text-green-600" : ""}>
-                  • One lowercase letter
+                <p
+                  className={
+                    passwordValid.lowercase ? "text-green-600" : "text-gray-500"
+                  }
+                >
+                  <Check
+                    className={`inline-block mr-1 h-3 w-3 ${
+                      passwordValid.lowercase
+                        ? "text-green-600"
+                        : "text-gray-400"
+                    }`}
+                  />{" "}
+                  One lowercase letter
                 </p>
-                <p className={passwordValid.number ? "text-green-600" : ""}>
-                  • One number
+                <p
+                  className={
+                    passwordValid.number ? "text-green-600" : "text-gray-500"
+                  }
+                >
+                  <Check
+                    className={`inline-block mr-1 h-3 w-3 ${
+                      passwordValid.number ? "text-green-600" : "text-gray-400"
+                    }`}
+                  />{" "}
+                  One number
                 </p>
               </div>
             </div>
@@ -238,7 +314,7 @@ export default function SignUpModal({ onClose }: { onClose: () => void }) {
             {/* Submit */}
             <button
               type="submit"
-              className="w-full bg-blue-950 text-white py-2 px-4 rounded-md hover:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+              className="w-full bg-blue-950 text-white py-2.5 px-4 rounded-md hover:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center transition-colors duration-150" // Added py-2.5 and transition
               disabled={
                 isLoading ||
                 !Object.values(passwordValid).every(Boolean) ||
@@ -247,7 +323,8 @@ export default function SignUpModal({ onClose }: { onClose: () => void }) {
                 !emailValid
               }
             >
-              {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              {isLoading && <Loader2 className="mr-2 h-5 w-5 animate-spin" />}{" "}
+              {/* Increased icon size */}
               {isLoading ? "Creating account..." : "Create account"}
             </button>
           </form>

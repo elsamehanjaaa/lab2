@@ -85,6 +85,8 @@ export class SupabaseService {
     try {
       // List all users
       const { data, error } = await this.supabase.auth.admin.listUsers();
+      console.log(data.users[0]);
+      console.log(data.users[0].user_metadata?.full_name);
 
       if (error) throw error;
 

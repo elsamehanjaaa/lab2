@@ -7,6 +7,7 @@ import * as categoriesUtils from "@/utils/categories";
 import * as courseUtils from "@/utils/course";
 import { parse } from "cookie";
 import Loading from "../Loading";
+import { useRouter } from "next/router";
 interface EditCourseFormProps {
   id: string;
   cookies: string;
@@ -18,6 +19,7 @@ const EditCourseForm: React.FC<EditCourseFormProps> = ({
   cookies,
   onClose,
 }) => {
+  const router = useRouter();
   const [initialCourseData, setInitialCourseData] = useState<any | null>(null);
   const [loading, setLoading] = useState(false);
   const [step, setStep] = useState(1);
@@ -164,7 +166,7 @@ const EditCourseForm: React.FC<EditCourseFormProps> = ({
 
       // Call the update endpoint here
       const data = await courseUtils.edit(id, formData, access_token);
-      if (data) onClose();
+      if (data) router.reload();
     } catch (error) {
       console.error("Error updating course:", error);
       setLoading(false);

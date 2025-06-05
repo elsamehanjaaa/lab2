@@ -63,7 +63,7 @@ export class PaymentsController {
       const frontendUrl =
         this.configService.get<string>('FRONTEND_URL') ||
         'http://localhost:3000';
-      const successUrl = `${frontendUrl}/placeorder?session_id={CHECKOUT_SESSION_ID}`;
+      const successUrl = `${frontendUrl}/placedorder?session_id={CHECKOUT_SESSION_ID}`;
       const cancelUrl = `${frontendUrl}/payment-cancel`;
 
       this.logger.debug(

@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import Dashboard from "@/components/Instructor/Dashboard";
+import ManageStudents from "@/components/Instructor/ManageStudents";
 export const getServerSideProps: GetServerSideProps = async ({ req }) => {
   const parsedCookies = parse(req.headers.cookie || "");
   const access_token = parsedCookies["access_token"];
@@ -55,7 +56,7 @@ export default function TeacherDashboard({ cookies }: { cookies: string }) {
           />
         );
       case "account-settings":
-        return <div >Account Settings Section</div>;
+        return <div>Account Settings Section</div>;
       case "manage-courses":
         return (
           <ManageCourses
@@ -64,7 +65,7 @@ export default function TeacherDashboard({ cookies }: { cookies: string }) {
           />
         );
       case "manage-students":
-        return <div>Manage Students Section</div>;
+        return <ManageStudents />;
       case "Overview":
         return <Dashboard />;
       default:
@@ -75,7 +76,7 @@ export default function TeacherDashboard({ cookies }: { cookies: string }) {
   };
   return (
     <div className="flex max-h-screen bg-gray-100 overflow-hidden">
-      <aside className="w-70 bg-gray-900 text-white shadow-lg p-6 rounded-r-2xl h-screen max-h-screen flex flex-col">
+      <aside className="w-70 bg-gray-900 text-white shadow-lg p-6  h-screen max-h-screen flex flex-col">
         <h2 className="text-2xl font-bold mb-8 tracking-wide">
           Teacher Dashboard
         </h2>
@@ -144,7 +145,9 @@ export default function TeacherDashboard({ cookies }: { cookies: string }) {
         </nav>
       </aside>
 
-      <main className="flex-1 overflow-y-scroll">{renderContent()}</main>
+      <main className="flex-1 overflow-y-scroll dark:bg-gray-900">
+        {renderContent()}
+      </main>
     </div>
   );
 }

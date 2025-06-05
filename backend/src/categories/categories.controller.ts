@@ -10,7 +10,6 @@ import {
 import { CategoriesService } from './categories.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
-import { CheckCategoryDto } from './dto/check-category.dto';
 
 @Controller('categories')
 export class CategoriesController {
@@ -31,8 +30,8 @@ export class CategoriesController {
     return this.categoriesService.findOne(id);
   }
 
-  @Post('checkCategoryName')
-  async getByName(@Body() body: CheckCategoryDto) {
+  @Post('getBySlug')
+  async getByName(@Body() body: { slug: string }) {
     return this.categoriesService.findByName(body.slug);
   }
 

@@ -25,6 +25,8 @@ interface NavProps {
 const Nav: React.FC<NavProps> = ({ course, alreadyEnrolled }) => {
   const [showNav, setShowNav] = useState(false);
   const { addToCart } = useCart();
+  const { isLoggedIn } = useAuth();
+  const { setShowLogin } = useModalStore();
 
   const handleAddToCart = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();

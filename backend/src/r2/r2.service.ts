@@ -69,6 +69,5 @@ export class R2Service {
     });
 
     const res = await this.s3Client.send(command);
-    console.log(res);
   }
 }

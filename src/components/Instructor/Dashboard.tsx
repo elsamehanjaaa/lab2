@@ -52,7 +52,7 @@ const Dashboard = () => {
     return () => clearTimeout(timeout);
   }, []);
   return (
-    <div className="min-h-screen p-8 bg-gray-300 flex flex-col justify-between">
+    <div className="min-h-screen p-8 bg-gray-900 flex flex-col justify-between">
       <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-7xl mx-auto">
         {/* Stats Cards */}
         <Card className="">

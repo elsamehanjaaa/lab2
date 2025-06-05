@@ -9,7 +9,22 @@ import { Enrollments, EnrollmentsSchema } from 'src/schemas/enrollments.schema';
 import { Courses } from 'src/schemas/courses.schema';
 import { ProgressService } from 'src/progress/progress.service';
 import { LessonsService } from 'src/lessons/lessons.service';
-
+interface EnrollmentRecord {
+  _id: string; // The ID of the enrollment document itself
+  course_id: string;
+  user_id: string;
+  progress: number; // e.g., percentage completion
+  status: string; // e.g., 'Active', 'Completed', 'Pending'
+  enrolled_at: Date | string; // Date of enrollment
+  user: User; // Populated user detail
+  // any other enrollment-specific fields you might have
+}
+interface User {
+  id: string; // or _id if that's your primary user identifier
+  name: string;
+  email: string;
+  // other user properties
+}
 @Injectable()
 export class EnrollmentsService {
   constructor(
@@ -37,6 +52,7 @@ export class EnrollmentsService {
     const mongo = await this.mongooseService.insertData(this.EnrollmentsModel, {
       ...createEnrollmentDto,
       _id: data[0].id,
+      enrolled_at: data[0].enrolled_at,
     });
 
     if (!mongo) {
@@ -74,6 +90,80 @@ export class EnrollmentsService {
     });
 
     return coursesWithProgress;
+  }
+  async getEnrollmentsByCourse(id: string): Promise<EnrollmentRecord[]> {
+    // Fetch enrollments for the given course ID (these are raw from DB, without populated user)
+    const rawEnrollments = await this.EnrollmentsModel.find({ course_id: id });
+
+    if (!rawEnrollments || rawEnrollments.length === 0) {
+      return [];
+    }
+
+    // Extract user IDs from the enrollments
+    const userIds = rawEnrollments.map((e: any) => e.user_id);
+    if (userIds.length === 0) {
+      return [];
+    }
+
+    try {
+      const supabaseAuthAdmin = (await this.supabaseService.auth()).admin;
+      const userPromises = userIds.map(async (userId: string) => {
+        const { data: userData, error: userError } =
+          await supabaseAuthAdmin.getUserById(userId);
+        if (userError) {
+          console.error(`Error fetching user ${userId}:`, userError.message);
+          return null;
+        }
+        // Map Supabase user to local User interface, providing a fallback for 'name'
+        return {
+          id: userData.user.id,
+          name:
+            userData.user.user_metadata?.name ||
+            userData.user.email ||
+            'Unknown',
+          email: userData.user.email,
+          // add other properties as needed
+        } as User;
+      });
+
+      const fetchedUsersArray = await Promise.all(userPromises);
+
+      // Combine fetched user data with their original enrollment data
+      const enrollmentRecords: EnrollmentRecord[] = [];
+      for (let i = 0; i < rawEnrollments.length; i++) {
+        const rawEnrollment = rawEnrollments[i];
+        const userDetail = fetchedUsersArray.find(
+          (u) =>
+            u &&
+            (u.id === rawEnrollment.user_id ||
+              (u as any)._id === rawEnrollment.user_id),
+        );
+
+        if (userDetail) {
+          enrollmentRecords.push({
+            _id: rawEnrollment._id?.toString() ?? '', // Enrollment doc ID
+            course_id: rawEnrollment.course_id ?? '',
+            user_id: rawEnrollment.user_id ?? '',
+            user: userDetail, // Populated user detail
+            progress: rawEnrollment.progress ?? 0,
+            status: rawEnrollment.status ?? 'Unknown',
+            enrolled_at: rawEnrollment.enrolled_at ?? new Date(0), // Default to epoch if missing
+            // ... other fields from rawEnrollment if necessary
+          });
+        } else {
+          console.warn(
+            `User details not found for user_id ${rawEnrollment.user_id} in course ${id}`,
+          );
+        }
+      }
+      return enrollmentRecords;
+    } catch (error: any) {
+      console.error(
+        `Error fetching user details for enrollments in course ${id}:`,
+        error.message,
+      );
+      return [];
+    }
   }
   async findOneByUserIdAndCourseId(
     userId: string,

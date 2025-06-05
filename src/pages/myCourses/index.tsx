@@ -7,32 +7,106 @@ import React, { useEffect, useState } from "react";
 import Image from "next/image"; // Using next/image for optimized images
 import { getUserFromRequest } from "@/utils/auth"; // Import your server-side auth helper
 
-// Define a type for your course objects for better type safety
 interface Course {
-  id: string | number; // Use the actual type of your course ID
+  id: string | number;
   slug: string;
   thumbnail_url: string;
   title: string;
   progress: number;
-  // Add any other properties your course object might have
 }
 
-export const getServerSideProps: GetServerSideProps = async ({ req }) => {
-  const authData = await getUserFromRequest(req);
+interface User {
+  id: string;
+  // Add other user properties if needed, e.g., name, email
+}
 
-  if (!authData.isLoggedIn || !authData.user) {
+interface ApiMeResponse {
+  user?: User; // Make user optional in case API returns empty or error structure
+  // Potentially other fields from your API response
+}
+
+interface PageProps {
+  userId?: string; // Prop for your page component
+  error?: string; // Optional error message
+}
+
+export const getServerSideProps: GetServerSideProps<PageProps> = async (
+  context
+) => {
+  const { req } = context; // Get the incoming request object from context
+
+  // 1. Extract cookies from the incoming request to the page
+  const requestCookies = req ? req.headers.cookie : undefined;
+
+  // 2. Prepare headers for the API request
+  const apiHeaders: HeadersInit = {
+    "Content-Type": "application/json",
+    Accept: "application/json",
+  };
+
+  // 3. If cookies were sent by the browser to this page, forward them to the /api/me request
+  if (requestCookies) {
+    apiHeaders["Cookie"] = requestCookies;
+  }
+
+  try {
+    const res = await fetch("http://localhost:3000/api/me", {
+      // Ensure this URL is correct for your environment
+      method: "GET", // Good practice to be explicit
+      headers: apiHeaders,
+      // 'credentials: "include"' is less relevant here as we are manually setting the Cookie header.
+      // It's primarily for client-side fetch or if the server itself was managing cookies
+      // for 'localhost:3000' in a different way.
+    });
+
+    if (!res.ok) {
+      console.error(
+        "Failed to fetch user from /api/me:",
+        res.status,
+        res.statusText
+      );
+      // Consider logging res.text() or res.json() if API returns error details in the body
+      // const errorBody = await res.text();
+      // console.error("API error body:", errorBody);
+      return {
+        redirect: {
+          destination: "/?showLogin=true&error=fetch_failed", // Redirect to login, maybe with an error query
+          permanent: false,
+        },
+      };
+    }
+
+    const data: ApiMeResponse = await res.json();
+
+    if (data && data.user && data.user.id) {
+      return {
+        props: {
+          userId: data.user.id,
+        },
+      };
+    } else {
+      // This case means the API call was successful (res.ok), but the expected user data was not found.
+      console.warn(
+        "User data not found in /api/me response, or user.id is missing."
+      );
+      return {
+        redirect: {
+          destination: "/?showLogin=true&error=no_user_data", // Redirect to login
+          permanent: false,
+        },
+      };
+    }
+  } catch (error) {
+    console.error("Exception during fetch in getServerSideProps:", error);
     return {
       redirect: {
-        destination: "/?showLogin=true",
+        destination: "/?showLogin=true&error=server_exception", // Redirect on exception
         permanent: false,
       },
     };
   }
-
-  return { props: { userId: authData.user.id } }; // Pass the userId obtained from server-side auth
 };
 
-// ... rest of your MyCoursesPage component
 const MyCoursesPage = ({ userId }: { userId: string | number }) => {
   const [courses, setCourses] = useState<Course[]>([]);
   const [isLoading, setIsLoading] = useState(true);

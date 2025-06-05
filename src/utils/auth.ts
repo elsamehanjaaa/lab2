@@ -202,9 +202,7 @@ export const setSession = async ({
   }
 };
 
-export async function getUserFromRequest(
-  req: IncomingMessage
-): Promise<AuthData> {
+export async function getUserFromRequest(): Promise<AuthData> {
   try {
     const res = await fetch("http://localhost:3000/api/me", {
       headers: {
@@ -212,6 +210,7 @@ export async function getUserFromRequest(
         Accept: "application/json",
       },
     });
+    console.log(res);
 
     if (!res.ok) {
       console.error("Failed to fetch user:", res.status, res.statusText);

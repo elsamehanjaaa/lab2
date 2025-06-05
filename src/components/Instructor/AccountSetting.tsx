@@ -24,7 +24,6 @@ const AccountSettings = () => {
       return;
     }
 
-    console.log("Saving settings:", formData);
     setSuccess(true);
     setTimeout(() => setSuccess(false), 3000);
   };

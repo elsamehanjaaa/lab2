@@ -65,9 +65,7 @@ const PlaceOrders: React.FC<PlaceOrdersProps> = ({ order }) => {
               </div>
               <div>
                 <p className="text-sm text-gray-500">Status</p>
-                <p className="font-medium capitalize">
-                  {order.status.replace(/_/g, " ").toLowerCase() || "N/A"}
-                </p>
+                <p className="font-medium capitalize">Successful</p>
               </div>
               <div>
                 <p className="text-sm text-gray-500">Total</p>

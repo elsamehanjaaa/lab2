@@ -29,7 +29,7 @@ export class CoursesController {
   constructor(
     private readonly coursesService: CoursesService,
     private readonly uploadService: UploadService,
-  ) { }
+  ) {}
 
   // Create a new course
   @UseGuards(JwtAuthGuard)
