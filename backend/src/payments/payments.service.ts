@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 /* 
-stripe command -> stripe listen --forward-to localhost:5000/payments/webhook
+stripe command -> stripe listen --forward-to localhost:5000/api/payments/webhook
 */
 // import { InjectModel } from '@nestjs/mongoose'; // Only if PaymentsModel is used in this file
 // import { Payments } from 'src/schemas/payments.schema'; // Only if PaymentsModel is used

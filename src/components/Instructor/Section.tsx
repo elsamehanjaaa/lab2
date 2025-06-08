@@ -30,7 +30,7 @@ const Section: React.FC<SectionProps> = ({
   const [showLessons, setShowLessons] = useState(false); // 👈 Toggle state
 
   return (
-    <div className=" p-4 bg-gray-700 rounded-lg text-white">
+    <div className=" p-4 bg-gray-300 rounded-lg">
       <div className="flex justify-between items-center">
         <label className=" text-xl pr-2">Title:</label>
         <input
@@ -38,7 +38,7 @@ const Section: React.FC<SectionProps> = ({
           value={section.title}
           onChange={(e) => onSectionChange(section.id, e.target.value)}
           placeholder="Section Title"
-          className="w-full border bg-gray-700 border-gray-800 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-800 mr-2"
+          className="w-full border bg-gray-200 border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 mr-2"
         />
         <button
           type="button"

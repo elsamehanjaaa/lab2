@@ -8,7 +8,6 @@ import * as courseUtils from "@/utils/course";
 import { parse } from "cookie";
 import Loading from "../Loading";
 import { useRouter } from "next/router";
-
 interface EditCourseFormProps {
   id: string;
   cookies: string;
@@ -68,10 +67,10 @@ const EditCourseForm: React.FC<EditCourseFormProps> = ({
         setSelectedCategories(IdsCategories);
         const cleanedSections = courseData.sections.map((section: any) => ({
           ...section,
-          id: section.index,
+          id: section.index, // Use section.id if it exists, otherwise use index
           lessons: section.lessons?.map((lesson: any) => ({
             ...lesson,
-            id: lesson.index,
+            id: lesson.index, // Same logic for lessons
           })),
         }));
         setSections(cleanedSections);
@@ -90,11 +89,11 @@ const EditCourseForm: React.FC<EditCourseFormProps> = ({
       }
     };
     fetchData();
-  }, [id, cookies]);
+  }, [id]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
+    // setLoading(true);
 
     type CourseDataType = {
       title: string;
@@ -127,7 +126,7 @@ const EditCourseForm: React.FC<EditCourseFormProps> = ({
     const changedFields: Partial<CourseDataType> = {};
     (Object.keys(courseData) as (keyof CourseDataType)[]).forEach((key) => {
       if (hasChanged(key, courseData[key], initialCourseData?.[key])) {
-        changedFields[key] = courseData[key] as any;
+        changedFields[key] = courseData[key] as any; // Use 'as any' to silence type issue
       }
     });
 
@@ -150,6 +149,7 @@ const EditCourseForm: React.FC<EditCourseFormProps> = ({
 
     formData.append("courseData", JSON.stringify(changedFields));
 
+    // Append videos only for updated sections
     sections.forEach((section) => {
       section.lessons.forEach((lesson: any) => {
         if (lesson.video) {
@@ -164,18 +164,18 @@ const EditCourseForm: React.FC<EditCourseFormProps> = ({
       const access_token = parsedCookies["access_token"];
       if (!access_token) throw new Error("No access token found");
 
+      // Call the update endpoint here
       const data = await courseUtils.edit(id, formData, access_token);
       if (data) router.reload();
     } catch (error) {
       console.error("Error updating course:", error);
-    } finally {
       setLoading(false);
     }
   };
 
   const handleAddSection = () => {
     const newSection = {
-      id: sections.length > 0 ? Math.max(...sections.map((s) => s.id)) + 1 : 1,
+      id: sections.length + 1,
       title: "",
       lessons: [],
       course_id: id,
@@ -184,21 +184,21 @@ const EditCourseForm: React.FC<EditCourseFormProps> = ({
   };
 
   const handleAddLesson = (sectionId: number) => {
-    const section = sections.find((s) => s.id === sectionId);
-    if (!section) return;
+    const section = sections.find((section) => section.id == sectionId);
+
     const newLesson = {
-      id:
-        section.lessons.length > 0
-          ? Math.max(...section.lessons.map((l: any) => l.id)) + 1
-          : 1,
+      id: section.lessons.length + 1,
       title: "",
       content: "",
       type: "text",
       video: null,
     };
+
     setSections((prevSections) =>
-      prevSections.map((s) =>
-        s.id === sectionId ? { ...s, lessons: [...s.lessons, newLesson] } : s
+      prevSections.map((section) =>
+        section.id === sectionId
+          ? { ...section, lessons: [...section.lessons, newLesson] }
+          : section
       )
     );
   };
@@ -226,7 +226,12 @@ const EditCourseForm: React.FC<EditCourseFormProps> = ({
   const handleSectionChange = (sectionId: number, value?: any) => {
     setSections((prevSections) =>
       prevSections.map((section: { id: number }) =>
-        section.id === sectionId ? { ...section, title: value } : section
+        section.id === sectionId
+          ? {
+              ...section,
+              title: value,
+            }
+          : section
       )
     );
   };
@@ -251,7 +256,6 @@ const EditCourseForm: React.FC<EditCourseFormProps> = ({
       prevSections.filter((section) => section.id !== sectionId)
     );
   };
-
   const handleLearningChange = (index: number, value: string) => {
     const updated = [...learnings];
     updated[index] = value;
@@ -266,39 +270,32 @@ const EditCourseForm: React.FC<EditCourseFormProps> = ({
 
   const addLearning = () => setLearnings([...learnings, ""]);
   const addRequirement = () => setRequirements([...requirements, ""]);
-
   return (
-    <div className="max-w-5xl mx-auto p-8 lg:p-12 bg-gray-900 text-white shadow-xl rounded-3xl mt-6 flex flex-col h-[85vh]">
-      <div className="flex-shrink-0">
-        <div className="flex justify-between items-center mb-4 pb-4 border-b border-gray-700">
-          <h1 className="text-3xl font-bold text-white">✏️ Editing Course</h1>
-          <button
-            onClick={onClose}
-            className="px-4 py-2 bg-red-800 hover:bg-red-700 text-white rounded-lg transition-colors"
-          >
-            Cancel
-          </button>
-        </div>
+    <div className="max-w-3xl mx-auto p-8 bg-white shadow-xl rounded-2xl min-h-[800px] flex flex-col justify-between">
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-3xl font-bold text-gray-800">✏️ Editing Course</h1>
+
+        <button onClick={onClose} className=" px-4 py-2 bg-red-200 rounded">
+          Cancel
+        </button>
       </div>
 
       <form
         onSubmit={handleSubmit}
-        className="flex-grow flex flex-col justify-between overflow-hidden"
+        className="flex-grow flex flex-col justify-between"
       >
-        <div className="flex-grow overflow-y-auto pr-4">
-          {!course ? (
-            <Loading show={true} />
-          ) : (
-            <>
+        {id && (
+          <>
+            <div className="space-y-6">
               {step === 1 && (
-                <div className="animate-fade-in space-y-6">
+                <>
                   <Thumbnail
                     onThumbnailChange={setThumbnail}
                     initialUrl={thumbnailUrl}
                   />
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                      <label className="block text-sm font-medium text-gray-300 mb-1">
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
                         Title
                       </label>
                       <input
@@ -306,11 +303,11 @@ const EditCourseForm: React.FC<EditCourseFormProps> = ({
                         value={title}
                         onChange={(e) => setTitle(e.target.value)}
                         required
-                        className="w-full bg-gray-700 text-white border-gray-800 hover:bg-gray-800 border rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+                        className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-300 mb-1">
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
                         Price ($)
                       </label>
                       <input
@@ -318,20 +315,20 @@ const EditCourseForm: React.FC<EditCourseFormProps> = ({
                         value={price}
                         onChange={(e) => setPrice(e.target.value)}
                         required
-                        className="w-full bg-gray-700 text-white border-gray-800 hover:bg-gray-800 border rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+                        className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                       />
                     </div>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-1">
-                      Short Description
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Description
                     </label>
                     <textarea
                       value={description}
                       onChange={(e) => setDescription(e.target.value)}
                       rows={4}
                       required
-                      className="w-full bg-gray-700 text-white border-gray-800 hover:bg-gray-800 border rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+                      className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                   </div>
                   <Categories
@@ -342,47 +339,47 @@ const EditCourseForm: React.FC<EditCourseFormProps> = ({
                     setDropdownOpen={setDropdownOpen}
                     dropdownRef={dropdownRef}
                   />
-                </div>
+                </>
               )}
 
               {step === 2 && (
-                <div className="animate-fade-in">
-                  <h2 className="text-2xl font-bold text-blue-400 mb-6">
+                <>
+                  <h1 className="text-3xl font-bold mb-6 text-gray-800">
                     Edit Sections
-                  </h2>
+                  </h1>
                   {sections.map((section) => (
-                    <div
+                    <Section
                       key={section.id}
-                      className="bg-gray-800 p-1 mb-3 rounded-xl"
-                    >
-                      <Section
-                        section={section}
-                        onAddLesson={handleAddLesson}
-                        onRemoveSection={handleRemoveSection}
-                        onLessonChange={handleLessonChange}
-                        onSectionChange={handleSectionChange}
-                        onRemoveLesson={handleRemoveLesson}
-                      />
-                    </div>
+                      section={section}
+                      onAddLesson={handleAddLesson}
+                      onRemoveSection={handleRemoveSection}
+                      onLessonChange={handleLessonChange}
+                      onSectionChange={handleSectionChange}
+                      onRemoveLesson={handleRemoveLesson}
+                    />
                   ))}
+
                   <button
                     type="button"
                     onClick={handleAddSection}
-                    className="mt-6 w-full bg-blue-900 hover:bg-blue-800 text-white font-medium py-3 px-6 rounded-xl transition shadow-md hover:shadow-lg flex items-center justify-center"
+                    className="w-full md:w-auto bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-6 rounded-lg transition"
                   >
                     Add Section
                   </button>
-                </div>
+                </>
               )}
-
               {step === 3 && (
-                <div className="animate-fade-in space-y-6">
-                  <h2 className="text-2xl font-bold text-blue-400 mb-6">
+                <div className="bg-white p-8 rounded-2xl shadow-lg border border-blue-100 animate-fade-in">
+                  <h2 className="text-2xl font-bold text-blue-900 mb-6 flex items-center">
+                    <div className="text-blue-800 w-8 h-8 rounded-full flex items-center justify-center mr-2">
+                      3
+                    </div>
                     Course Details
                   </h2>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">
-                      What students will learn
+
+                  <div className="mt-8 space-y-2">
+                    <label className="block text-sm font-medium text-gray-700">
+                      What you will learn
                     </label>
                     {learnings.map((item, index) => (
                       <input
@@ -392,35 +389,38 @@ const EditCourseForm: React.FC<EditCourseFormProps> = ({
                         onChange={(e) =>
                           handleLearningChange(index, e.target.value)
                         }
-                        placeholder={`Learning outcome ${index + 1}`}
+                        placeholder={`e.g., Learn concept ${index + 1}`}
                         required
-                        className="w-full mb-2 bg-gray-700 text-white border-gray-800 hover:bg-gray-800 border rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+                        className="w-full mb-2 border border-gray-300 rounded-xl px-4 py-3 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all"
                       />
                     ))}
                     <button
                       type="button"
                       onClick={addLearning}
-                      className="text-sm text-blue-500 hover:underline"
+                      className="text-sm text-blue-600 hover:underline"
                     >
                       + Add more
                     </button>
                   </div>
 
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-1">
-                      Full Course Description
+                  {/* Course Description */}
+                  <div className="mt-8 space-y-2">
+                    <label className="block text-sm font-medium text-gray-700">
+                      Course Description
                     </label>
                     <textarea
                       value={fullDescription}
                       onChange={(e) => setFullDescription(e.target.value)}
-                      rows={6}
+                      rows={4}
                       required
-                      className="w-full bg-gray-700 text-white border-gray-800 hover:bg-gray-800 border rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+                      placeholder="Provide a compelling description of your course..."
+                      className="w-full border border-gray-300 rounded-xl px-4 py-3 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all"
                     />
                   </div>
 
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">
+                  {/* Requirements */}
+                  <div className="mt-8 space-y-2">
+                    <label className="block text-sm font-medium text-gray-700">
                       Requirements
                     </label>
                     {requirements.map((item, index) => (
@@ -431,36 +431,36 @@ const EditCourseForm: React.FC<EditCourseFormProps> = ({
                         onChange={(e) =>
                           handleRequirementChange(index, e.target.value)
                         }
-                        placeholder={`Requirement ${index + 1}`}
+                        placeholder={`e.g., Have basic knowledge of HTML (${
+                          index + 1
+                        })`}
                         required
-                        className="w-full mb-2 bg-gray-700 text-white border-gray-800 hover:bg-gray-800 border rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+                        className="w-full mb-2 border border-gray-300 rounded-xl px-4 py-3 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all"
                       />
                     ))}
                     <button
                       type="button"
                       onClick={addRequirement}
-                      className="text-sm text-blue-500 hover:underline"
+                      className="text-sm text-blue-600 hover:underline"
                     >
                       + Add more
                     </button>
                   </div>
                 </div>
               )}
-            </>
-          )}
-        </div>
-
-        <div className="flex-shrink-0 pt-5">
-          <StepButton
-            step={step}
-            setStep={setStep}
-            totalSteps={3}
-            submit={(e) => handleSubmit(e)}
-            finalStepTitle="Save Changes"
-            loading={loading}
-          />
-        </div>
+            </div>
+            <StepButton
+              step={step}
+              setStep={setStep}
+              totalSteps={3}
+              submit={(e) => handleSubmit(e)}
+              finalStepTitle="Edit course"
+              loading={loading}
+            />
+          </>
+        )}
       </form>
+      <Loading show={course === null} />
     </div>
   );
 };

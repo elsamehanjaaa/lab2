@@ -30,7 +30,7 @@ const Categories: React.FC<CategoriesProps> = ({
       <button
         type="button"
         onClick={() => setDropdownOpen((prev) => !prev)}
-        className="w-full bg-gray-700 text-white border-gray-800 hover:bg-gray-800 border rounded-lg px-4 py-2 text-left"
+        className="w-full border border-gray-300 bg-white rounded-lg px-4 py-2 text-left"
       >
         {selectedCategories.length === 0 ? (
           <span className="text-gray-500">Select Categories</span>
@@ -44,7 +44,7 @@ const Categories: React.FC<CategoriesProps> = ({
               category && (
                 <span
                   key={category._id}
-                  className="inline-block bg-gray-700 text-white border-gray-800 hover:bg-gray-800 border px-2 py-1 rounded-full text-sm mr-2"
+                  className="inline-block bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-sm mr-2"
                 >
                   {category.name}
                 </span>
@@ -54,7 +54,7 @@ const Categories: React.FC<CategoriesProps> = ({
         )}
       </button>
       {dropdownOpen && (
-        <div className="absolute z-30 mt-1 w-full  bg-gray-700 text-white border-gray-800  border rounded-lg shadow-lg max-h-60 overflow-y-auto">
+        <div className="absolute z-20 mt-1 w-full bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto">
           {categories.map((category) => {
             const categoryId = Number(category._id);
             const isSelected = selectedCategories.includes(categoryId);
@@ -72,8 +72,8 @@ const Categories: React.FC<CategoriesProps> = ({
                 key={category._id}
                 className={`flex items-center px-4 py-2 cursor-pointer transition rounded ${
                   isSelected
-                    ? "bg-gray-700 text-blue-800 font-medium"
-                    : "hover:bg-gray-800"
+                    ? "bg-blue-100 text-blue-800 font-medium"
+                    : "hover:bg-gray-100"
                 }`}
               >
                 <input

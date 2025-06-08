@@ -15,7 +15,6 @@ import {
 import Link from "next/link";
 import Dashboard from "@/components/Instructor/Dashboard";
 import ManageStudents from "@/components/Instructor/ManageStudents";
-import AccountSettings from "@/components/Instructor/AccountSetting";
 export const getServerSideProps: GetServerSideProps = async ({ req }) => {
   const parsedCookies = parse(req.headers.cookie || "");
   const access_token = parsedCookies["access_token"];
@@ -57,7 +56,7 @@ export default function TeacherDashboard({ cookies }: { cookies: string }) {
           />
         );
       case "account-settings":
-        return <AccountSettings />;
+        return <div>Account Settings Section</div>;
       case "manage-courses":
         return (
           <ManageCourses

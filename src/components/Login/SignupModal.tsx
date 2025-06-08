@@ -148,7 +148,7 @@ export default function SignUpModal({ onClose }: { onClose: () => void }) {
                 <input
                   id="username"
                   type="text"
-                  placeholder="johndoe (no spaces)" // Updated placeholder
+                  placeholder="johndoe"
                   className={`w-full pl-10 pr-10 py-2 border rounded-md focus:outline-none focus:ring-2 focus:border-transparent ${
                     usernameExist
                       ? "focus:ring-red-500 border-red-500"

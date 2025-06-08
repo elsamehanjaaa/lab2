@@ -37,7 +37,7 @@ const Lesson: React.FC<LessonProps> = ({
           onChange(sectionId, lesson.id, "title", e.target.value)
         }
         placeholder="Lesson Title"
-        className="w-full border bg-gray-700 border-gray-800 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 mb-2"
+        className="w-full border bg-gray-200 border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 mb-2"
       />
 
       <div className="flex items-center mb-4">
@@ -54,7 +54,7 @@ const Lesson: React.FC<LessonProps> = ({
                 lesson.type === "text" ? "video" : "text"
               )
             }
-            className="toggle-checkbox bg-gray-700"
+            className="toggle-checkbox"
           />
           <span className="slider"></span>
         </label>
@@ -69,7 +69,7 @@ const Lesson: React.FC<LessonProps> = ({
           }
           placeholder="Lesson Content"
           rows={4}
-          className="w-full border bg-gray-700 border-gray-800 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 mb-2"
+          className="w-full border bg-gray-200 border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 mb-2"
         />
       ) : (
         <div className="flex">
@@ -87,8 +87,8 @@ const Lesson: React.FC<LessonProps> = ({
             }
             className="w-32
                         text-transparent text-sm mb-2  file:mr-4 file:py-2 file:px-4
-              file:rounded-lg  file:font-semibold file:cursor-pointer
-              file:bg-gray-70 file:text-gray-900 file:border-gray-900 file:border hover:file:bg-gray-900 hover:file:text-gray-700"
+              file:rounded-lg file:border-0 file:font-semibold
+              file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
           />
           {lesson.video ? (
             <p className="text-m mt-1">Selected: {lesson.video.name}</p>
@@ -104,7 +104,7 @@ const Lesson: React.FC<LessonProps> = ({
         value={lesson.url}
         onChange={(e) => onChange(sectionId, lesson.id, "url", e.target.value)}
         placeholder="Url For Students"
-        className="w-full border bg-gray-700 border-gray-800 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-900 mb-2"
+        className="w-full border bg-gray-200 border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 mb-2"
       />
       <button
         type="button"

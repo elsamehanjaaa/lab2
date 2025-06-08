@@ -1,5 +1,6 @@
 type StudentStatus = "Active" | "Suspended";
 interface Student {
+  student: any;
   id: string;
   name: string;
   email: string;
