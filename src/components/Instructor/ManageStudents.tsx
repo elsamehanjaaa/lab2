@@ -357,8 +357,6 @@ export default function ManageStudentsPage() {
 
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState<boolean>(false);
-  const [isAddStudentModalOpen, setIsAddStudentModalOpen] =
-    useState<boolean>(false);
 
   const [allCourseTitles, setAllCourseTitles] = useState<string[]>([]); // For course filter dropdown
 
@@ -451,12 +449,6 @@ export default function ManageStudentsPage() {
     alert(
       `Overall status update for student ${studentId} to ${newStatus} is a placeholder.`
     );
-  };
-
-  const handleAddStudent = async (newStudentData: NewStudentData) => {
-    console.log("Adding new student (placeholder):", newStudentData);
-    alert("Add student functionality is a placeholder.");
-    setIsAddStudentModalOpen(false);
   };
 
   const filteredStudents = useMemo(() => {
@@ -653,12 +645,6 @@ export default function ManageStudentsPage() {
               />{" "}
               Manage Students
             </h1>
-            <button
-              onClick={() => setIsAddStudentModalOpen(true)}
-              className="mt-4 sm:mt-0 px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-400 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-500 flex items-center shadow-md transition-transform hover:scale-105"
-            >
-              <UserPlus size={20} className="mr-2" /> Add New Student
-            </button>
           </div>
           <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
             Instructor ID: {instructorId}
@@ -954,71 +940,6 @@ export default function ManageStudentsPage() {
           onUpdateStudentStatus={handleUpdateOverallStudentStatus}
         />
       )}
-
-      <Modal
-        isOpen={isAddStudentModalOpen}
-        onClose={() => setIsAddStudentModalOpen(false)}
-        title="Add New Student (Placeholder)"
-      >
-        <form
-          onSubmit={(e: FormEvent<HTMLFormElement>) => {
-            e.preventDefault();
-            const formData = new FormData(e.currentTarget);
-            handleAddStudent({
-              name: String(formData.get("name") || ""),
-              email: String(formData.get("email") || ""),
-            });
-          }}
-        >
-          <div className="space-y-4">
-            <div>
-              <label
-                htmlFor="new-student-name"
-                className="block text-sm font-medium text-gray-700 dark:text-gray-300"
-              >
-                Name
-              </label>
-              <input
-                type="text"
-                name="name"
-                id="new-student-name"
-                required
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-              />
-            </div>
-            <div>
-              <label
-                htmlFor="new-student-email"
-                className="block text-sm font-medium text-gray-700 dark:text-gray-300"
-              >
-                Email
-              </label>
-              <input
-                type="email"
-                name="email"
-                id="new-student-email"
-                required
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-              />
-            </div>
-            <div className="flex justify-end pt-2">
-              <button
-                type="button"
-                onClick={() => setIsAddStudentModalOpen(false)}
-                className="mr-2 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                className="px-4 py-2 text-sm font-medium text-white bg-green-600 hover:bg-green-700 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
-              >
-                Add Student
-              </button>
-            </div>
-          </div>
-        </form>
-      </Modal>
     </>
   );
 }
