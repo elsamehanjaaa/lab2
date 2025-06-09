@@ -3,7 +3,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Mail, Lock, Loader2, BookOpen, X } from "lucide-react";
+import { Mail, Lock, BookOpen, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import * as authUtils from "@/utils/auth";
 import Loading from "../Loading";
@@ -17,7 +17,6 @@ export default function LoginModal({
 }) {
   const { login, loading: authLoading } = useAuth(); // Rename loading to avoid conflict if LoginModal has its own
   const router = useRouter();
-  const [isLoading, setIsLoading] = useState(false);
   const [data, setData] = useState({
     email: "",
     password: "",

@@ -1,8 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { Mail, Loader2, BookOpen, X } from "lucide-react";
+import { Mail, BookOpen, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import Loading from "../Loading";
 
@@ -13,7 +12,6 @@ export default function ResetPasswordModal({
   onClose: () => void;
   onLogin: () => void;
 }) {
-  const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [data, setData] = useState({ email: "" });
 

@@ -82,8 +82,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const login = async (credentials: Credentials) => {
     setLoading(true);
     try {
-      const response = await authUtils.login(credentials);
-
       await fetchUser();
     } catch (error) {
       setUser(null); // Ensure user is cleared on login failure

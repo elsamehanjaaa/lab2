@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -35,7 +35,6 @@ const Header = () => {
     setShowResetPassword,
     closeAllModals,
   } = useModalStore();
-  const router = useRouter();
   const [isScrolled, setIsScrolled] = useState(false);
 
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);

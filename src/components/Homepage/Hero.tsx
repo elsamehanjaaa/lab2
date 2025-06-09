@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
-import { BookOpen, User, Clock, Star, GraduationCap } from "lucide-react";
+import { BookOpen, User, Clock, Star } from "lucide-react";
 import Link from "next/link";
 import * as categoriesUtils from "@/utils/categories";
 import * as courseUtils from "@/utils/course";
-import { useRouter } from "next/router";
 // Data
 
 const categories = await categoriesUtils.getAll();
@@ -87,7 +86,6 @@ const Block: React.FC<{
 );
 
 const Hero = () => {
-  const router = useRouter();
   const [current, setCurrent] = useState(0);
   const [showStory, setShowStory] = useState(false);
 

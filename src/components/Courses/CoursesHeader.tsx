@@ -34,8 +34,7 @@ const CourseHeader: React.FC<CourseHeaderProps> = ({
   setHoverThumbnail,
   handleThumbnailClick,
 }) => {
-  const router = useRouter();
-
+ 
   return (
     <div className="w-full bg-[#201c24] text-white px-6 py-10">
       <div className="max-w-7xl mx-auto flex justify-between items-center gap-10 flex-wrap">

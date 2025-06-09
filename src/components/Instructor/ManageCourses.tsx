@@ -5,13 +5,11 @@ import React, {
   useEffect,
   useCallback,
   useMemo,
-  FormEvent,
   ChangeEvent,
 } from "react";
 import Head from "next/head"; // Assuming this might be part of a larger page structure
 import {
   Search,
-  Filter,
   Edit,
   Trash2,
   ChevronLeft,
@@ -20,9 +18,6 @@ import {
   PlusCircle,
   AlertCircle,
   ArrowUpDown,
-  Eye,
-  DollarSign,
-  CheckCircle,
   XCircle as IconXCircle,
 } from "lucide-react"; // Renamed XCircle to avoid conflict
 

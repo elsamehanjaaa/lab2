@@ -1,6 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import dbConnect from "../../../backend/lib/dbConnect";
-import ContactUs from "../../../backend/models/contactus";
+import dbConnect from '../../../backend/dist/lib/dbConnect';
+import  ContactUs from '../../../backend/dist/models/contactus';
+
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   await dbConnect();

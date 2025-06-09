@@ -19,6 +19,7 @@ import { ProgressModule } from './progress/progress.module';
 import { TeachersModule } from './teachers/teachers.module';
 import { PaymentsModule } from './payments/payments.module';
 import { OrderItemsModule } from './order_items/order_items.module';
+import { ContactusModule } from './contactus/contactus.module';
 import * as dotenv from 'dotenv';
 dotenv.config();
 
@@ -41,6 +42,7 @@ dotenv.config();
     TeachersModule,
     PaymentsModule,
     OrderItemsModule,
+    ContactusModule,
   ],
   controllers: [AppController],
   providers: [
