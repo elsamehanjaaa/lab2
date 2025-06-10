@@ -31,6 +31,7 @@ interface AuthContextType {
   logout: () => Promise<void>;
   isLoggedIn: () => boolean;
   fetchUser: () => Promise<void>;
+  updateProfile: (data: any) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -82,7 +83,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const login = async (credentials: Credentials) => {
     setLoading(true);
     try {
-      await fetchUser();
+      await authUtils.login(credentials);
     } catch (error) {
       setUser(null); // Ensure user is cleared on login failure
       console.error("Login process failed:", error);
@@ -105,6 +106,17 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   };
 
   const isLoggedIn = (): boolean => !!user;
+  const updateProfile = async (data: any) => {
+    setLoading(true);
+    try {
+      await authUtils.updateProfile(data);
+    } catch (error) {
+      console.error("Logout process failed:", error);
+    } finally {
+      setUser(null);
+      setLoading(false);
+    }
+  };
 
   const contextValue: AuthContextType = {
     user,
@@ -115,6 +127,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     logout,
     isLoggedIn,
     fetchUser,
+    updateProfile,
   };
 
   return (

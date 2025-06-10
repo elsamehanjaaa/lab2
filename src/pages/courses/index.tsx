@@ -58,7 +58,7 @@ const Index = () => {
       {loading && <p className="text-center text-xl">Loading courses...</p>}
       {error && <p className="text-center text-xl text-red-500">{error}</p>}
 
-      <div className="grid mt-4 grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-6">
+      <div className="grid mt-4 grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-6 mb-8">
         {courses.length > 0 ? (
           courses.map((course) => <Card key={course._id} course={course} />)
         ) : (

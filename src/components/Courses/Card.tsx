@@ -5,8 +5,7 @@ import React from "react";
 import Image from "next/image";
 import { useCart } from "@/components/ShoppingCart/CartContext";
 import { useModalStore } from "@/stores/modalStore";
-import { ShoppingCartIcon } from "lucide-react";
-
+import { ShoppingCartIcon, Star } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 
 interface Course {
@@ -51,72 +50,84 @@ const Card = ({ course }: { course: Course }) => {
     const safeFullStars = Math.min(fullStars, 5);
 
     return (
-      <div className="flex">
+      <div className="flex items-center">
         {[...Array(safeFullStars)].map((_, i) => (
-          <span key={i} className="text-yellow-400">
-            ★
-          </span>
+          <Star key={i} className="text-yellow-400 fill-current" size={16} />
         ))}
       </div>
     );
   };
 
   return (
-    <div className="bg-white rounded-2xl shadow-md p-4 sm:p-6 hover:shadow-lg transition duration-300 ease-in-out w-full max-w-sm cursor-pointer">
-      <Link href={`/course/${course.slug}/${course._id}`} className="block">
-        <div className="relative w-full h-48 sm:h-52 md:h-60 mb-4 group rounded-xl overflow-hidden">
+    // Added 'border' and 'border-slate-200' for a visible outline
+    <div className="group flex h-full flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-md transition-all duration-300 ease-in-out hover:shadow-xl hover:scale-102">
+      <Link
+        href={`/course/${course.slug}/${course._id}`}
+        className="flex flex-grow flex-col p-4"
+      >
+        <div className="relative mb-4 h-48 w-full overflow-hidden rounded-lg">
           <Image
             src={course.thumbnail_url || "/images/no-thumbnail.png"}
             alt={course.title}
             fill
             sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, 33vw"
-            className="object-cover transition-transform duration-300 group-hover:scale-[1.03]"
+            className="object-cover transition-transform duration-500 ease-in-out group-hover:scale-105"
             priority
           />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent"></div>
         </div>
 
-        <h2 className="text-lg sm:text-xl font-bold mb-2 line-clamp-2">
-          {course.title}
-        </h2>
-        <p className="text-gray-600 text-sm sm:text-base mb-3 line-clamp-2">
-          {course.description}
-        </p>
+        <div className="flex flex-grow flex-col">
+          <h2 className="text-lg font-bold text-gray-800 line-clamp-2">
+            {course.title}
+          </h2>
 
-        <div className="flex justify-between items-center mb-2">
-          <p className="text-indigo-600 font-bold text-lg">
-            €{course.price.toFixed(2)}
+          <p className="mt-2 text-sm text-gray-600 line-clamp-3">
+            {course.description}
           </p>
-          <div className="flex items-center text-xs sm:text-sm">
-            {renderStars(course.rating)}
-            <span className="text-gray-500 ml-1">
-              (
-              {!isNaN(Number(course.rating))
-                ? Number(course.rating).toFixed(1)
-                : "0.0"}
-              )
-            </span>
-          </div>
-        </div>
 
-        <div className="flex justify-between text-xs sm:text-sm text-gray-500 mb-4">
-          <span className={course.status ? "text-green-600" : "text-red-600"}>
-            {course.status ? "Available" : "Unavailable"}
-          </span>
-          <span className="text-gray-400">
-            {new Date(course.created_at).toLocaleDateString()}
-          </span>
+          <div className="mt-auto pt-4">
+            <div className="flex items-center justify-between">
+              <p className="text-xl font-semibold text-indigo-600">
+                €{course.price.toFixed(2)}
+              </p>
+              <div className="flex items-center gap-1">
+                {renderStars(course.rating)}
+                <span className="text-xs text-gray-500">
+                  {!isNaN(Number(course.rating))
+                    ? `(${Number(course.rating).toFixed(1)})`
+                    : "(0.0)"}
+                </span>
+              </div>
+            </div>
+
+            <div className="mt-3 flex justify-between text-xs text-gray-500">
+              <span
+                className={`font-medium ${
+                  course.status ? "text-green-600" : "text-red-600"
+                }`}
+              >
+                {course.status ? "Available" : "Unavailable"}
+              </span>
+              <span className="text-gray-400">
+                {new Date(course.created_at).toLocaleDateString()}
+              </span>
+            </div>
+          </div>
         </div>
       </Link>
 
-      <button
-        onClick={handleAddToCart}
-        className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-4 rounded-xl transition duration-200 flex items-center justify-center gap-2 transform hover:scale-[1.02]"
-        disabled={!course.status}
-        type="button"
-      >
-        <ShoppingCartIcon size={18} />
-        Add to Cart
-      </button>
+      <div className="px-4 pb-4 pt-2">
+        <button
+          onClick={handleAddToCart}
+          className="w-full flex items-center justify-center gap-2 rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white transition-all duration-300 ease-in-out hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-50"
+          disabled={!course.status}
+          type="button"
+        >
+          <ShoppingCartIcon size={16} />
+          Add to Cart
+        </button>
+      </div>
     </div>
   );
 };

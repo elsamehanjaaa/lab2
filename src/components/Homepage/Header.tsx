@@ -22,15 +22,18 @@ import { useModalStore } from "@/stores/modalStore";
 import { useCart } from "@/components/ShoppingCart/CartContext";
 
 import { useAuth } from "@/contexts/AuthContext";
+import ProfileModal from "../Profile/ProfileModal";
 
 const Header = () => {
   const { user, isLoggedIn, logout: authLogout, initialLoading } = useAuth();
   const { cartItems, clearCart } = useCart();
   const {
     showLogin,
+    showProfile,
     showSignup,
     showResetPassword,
     setShowLogin,
+    setShowProfile,
     setShowSignup,
     setShowResetPassword,
     closeAllModals,
@@ -44,6 +47,11 @@ const Header = () => {
     closeAllModals();
     setIsMenuOpen(false);
     setShowLogin(true);
+  }
+  function handleShowProfile() {
+    closeAllModals();
+    setIsMenuOpen(false);
+    setShowProfile(true);
   }
   function handleShowSignup() {
     closeAllModals();
@@ -200,14 +208,13 @@ const Header = () => {
                       My Courses
                     </Link>
                     <hr />
-                    <Link
-                      href="/profile"
-                      onClick={() => setIsDropdownOpen(false)}
-                      className=" px-4 py-2 hover:bg-gray-100 transition text-sm flex items-center gap-2"
+                    <button
+                      onClick={handleShowProfile}
+                      className=" px-4 py-2 w-full hover:bg-gray-100  cursor-pointer transition text-sm flex items-center gap-2"
                     >
                       <User size={16} />
                       Profile
-                    </Link>
+                    </button>
                     <Link
                       href="/settings"
                       onClick={() => setIsDropdownOpen(false)}
@@ -353,14 +360,13 @@ const Header = () => {
                     <BookUser size={16} />
                     My Courses
                   </Link>
-                  <Link
-                    href="/profile"
-                    onClick={() => setIsMenuOpen(false)}
-                    className="py-2 hover:text-[#edb4a9] flex items-center gap-2"
+                  <button
+                    onClick={handleShowProfile}
+                    className=" px-4 py-2 w-full hover:bg-gray-100 cursor-pointer transition text-sm flex items-center gap-2"
                   >
                     <User size={16} />
                     Profile
-                  </Link>
+                  </button>
                   <Link
                     href="/settings"
                     onClick={() => setIsMenuOpen(false)}
@@ -406,6 +412,7 @@ const Header = () => {
           onResetPassword={handleShowResetPassword}
         />
       )}
+      {showProfile && <ProfileModal onClose={() => setShowProfile(false)} />}
       {showSignup && <SignupModal onClose={() => setShowSignup(false)} />}
       {showResetPassword && (
         <ResetPasswordModal

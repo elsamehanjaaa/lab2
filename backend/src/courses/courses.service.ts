@@ -532,7 +532,6 @@ export class CoursesService {
   }
   async remove(id: string) {
     try {
-      // Find courses with the exact instructor_id
       await this.sectionService.removeByCourse(id);
 
       await this.courseDetailsService.remove(id);

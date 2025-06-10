@@ -25,10 +25,7 @@ const IndexPage = () => {
         const type = hashParams.get("type");
 
         if (type === "recovery" && access_token /* && refresh_token */) {
-          // refresh_token might be optional depending on your flow
           try {
-            // Assuming recoverSession uses these tokens implicitly or you pass them
-            // e.g., await authUtils.recoverSession({ access_token, refresh_token });
             await authUtils.recoverSession(); // Adjust if it needs tokens passed
             router.push("/set-new-password"); // Or wherever your password form is
           } catch (error) {

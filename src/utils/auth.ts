@@ -228,3 +228,29 @@ export async function getUserFromRequest(): Promise<AuthData> {
     return { user: null, isLoggedIn: false };
   }
 }
+export async function updateProfile(data: any): Promise<AuthData> {
+  try {
+    const res = await fetch("http://localhost:3000/api/me", {
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+    });
+    console.log(res);
+
+    if (!res.ok) {
+      console.error("Failed to fetch user:", res.status, res.statusText);
+
+      return { user: null, isLoggedIn: false };
+    }
+
+    const data = await res.json();
+    if (data && data.user) {
+      return { user: data.user, isLoggedIn: true };
+    }
+    return { user: null, isLoggedIn: false };
+  } catch (error) {
+    console.error("Server-side auth error:", error);
+    return { user: null, isLoggedIn: false };
+  }
+}
