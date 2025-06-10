@@ -19,4 +19,4 @@ import {
   providers: [ContactusService, SupabaseService, MongooseService],
   exports: [ContactusService, MongooseModule],
 })
-export class ContactUsModule {}
+export class ContactusModule {}

@@ -1,7 +1,7 @@
 "use client";
 
 import { Mail, Phone, MapPin } from "lucide-react";
-
+import * as contactUsUtils from "@/utils/contactus";
 export default function ContactUs() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -9,23 +9,13 @@ export default function ContactUs() {
 
     const formData = new FormData(form);
     const values = {
-      name: formData.get("name"),
-      email: formData.get("email"),
-      message: formData.get("message"),
+      name: (formData.get("name") ?? "") as string,
+      email: (formData.get("email") ?? "") as string,
+      content: (formData.get("message") ?? "") as string,
     };
 
     try {
-      const response = await fetch("/api/contact", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(values),
-      });
-
-      const responseData = await response.json();
-
-      if (!response.ok) {
-        throw new Error(responseData.error || "Failed to send message");
-      }
+      const response = await contactUsUtils.create(values);
 
       alert("Message sent successfully!");
       form.reset();
@@ -171,7 +161,7 @@ export default function ContactUs() {
             </div>
           </div>
         </div>
-      </div> 
+      </div>
     </div>
   );
 }

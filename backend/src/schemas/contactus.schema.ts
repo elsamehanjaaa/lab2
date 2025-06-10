@@ -2,8 +2,15 @@
 import { Schema, Prop, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 
-@Schema({ versionKey: false, timestamps: { createdAt: 'created_at', updatedAt: false } })
+@Schema({
+  versionKey: false,
+  timestamps: { createdAt: 'created_at', updatedAt: false },
+})
 export class ContactUs extends Document {
+  @Prop()
+  declare _id: string;
+  @Prop({ required: true })
+  name: string;
   @Prop({ required: true })
   email: string;
 

@@ -1,11 +1,13 @@
 export interface ContactMessage {
   _id: string;
+  name: string;
   email: string;
   content: string;
   created_at: string;
 }
 
 interface CreateContactInput {
+  name: string;
   email: string;
   content: string;
 }
