@@ -12,7 +12,11 @@ import * as authUtils from "@/utils/auth";
 interface User {
   id: string;
   username: string;
+  last_name?: string;
+  first_name?: string;
   email: string;
+  bio?: string;
+  role: string;
   isTeacher?: boolean;
 }
 
@@ -49,22 +53,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     // Renamed from fetchUserFromToken for clarity and potential reuse
     setInitialLoading(true); // Use initialLoading here or a specific loading state if preferred
     try {
-      const res = await fetch("http://localhost:3000/api/me", {
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
-      });
+      const data = await authUtils.me();
 
-      if (!res.ok) {
-        console.error("Failed to fetch user:", res.status, res.statusText);
-        setUser(null);
-        return;
-      }
-
-      const data = await res.json();
-      if (data && data.user) {
-        setUser(data.user);
+      if (data && data) {
+        setUser(data);
       } else {
         setUser(null);
       }
@@ -109,11 +101,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const updateProfile = async (data: any) => {
     setLoading(true);
     try {
-      await authUtils.updateProfile(data);
+      const res = await authUtils.updateProfile(data);
+      setUser(res);
+      isLoggedIn();
+      setLoading(false);
     } catch (error) {
       console.error("Logout process failed:", error);
     } finally {
-      setUser(null);
       setLoading(false);
     }
   };

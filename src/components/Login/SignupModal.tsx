@@ -14,6 +14,8 @@ export default function SignUpModal({ onClose }: { onClose: () => void }) {
     username: "",
     email: "",
     password: "",
+    firstName: "",
+    lastName: "",
   });
   const [passwordValid, setPasswordValid] = useState({
     length: false,
@@ -69,6 +71,13 @@ export default function SignUpModal({ onClose }: { onClose: () => void }) {
       // If username is empty after removing spaces, it cannot exist
       setUsernameExist(false);
     }
+  }
+
+  function handleFirstNameInput(e: React.ChangeEvent<HTMLInputElement>) {
+    setData({ ...data, firstName: e.target.value });
+  }
+  function handleLastNameInput(e: React.ChangeEvent<HTMLInputElement>) {
+    setData({ ...data, lastName: e.target.value });
   }
   async function handleSignUp(e: React.FormEvent) {
     e.preventDefault();
@@ -135,6 +144,42 @@ export default function SignUpModal({ onClose }: { onClose: () => void }) {
           </div>
 
           <form onSubmit={handleSignUp} className="space-y-6">
+            <div className="flex flex-col">
+              <label
+                htmlFor="firstName"
+                className="block text-sm font-medium text-gray-700"
+              >
+                Full Name
+              </label>
+              <div className="flex gap-4">
+                <div className="relative">
+                  <User className="absolute left-3 top-3 h-4 w-4 text-gray-900" />
+                  <input
+                    id="firstName"
+                    type="text"
+                    placeholder="First name"
+                    className={`w-full pl-10 pr-10 py-2 border rounded-md focus:outline-none focus:ring-2 focus:border-transparent `}
+                    value={data.firstName}
+                    onChange={handleFirstNameInput}
+                    required
+                    minLength={3}
+                  />
+                </div>
+                <div className="relative">
+                  <User className="absolute left-3 top-3 h-4 w-4 text-gray-900" />
+                  <input
+                    id="lastName"
+                    type="text"
+                    placeholder="Last name"
+                    className={`w-full pl-10 pr-10 py-2 border rounded-md focus:outline-none focus:ring-2 focus:border-transparent`}
+                    value={data.lastName}
+                    onChange={handleLastNameInput}
+                    required
+                    minLength={3}
+                  />
+                </div>
+              </div>
+            </div>
             {/* Username */}
             <div className="space-y-2">
               <label

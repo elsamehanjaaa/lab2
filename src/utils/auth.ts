@@ -13,6 +13,8 @@ interface SignupData {
   username: string;
   email: string;
   password: string;
+  firstName: string;
+  lastName: string;
 }
 export const recoverSession = async (): Promise<
   { username: any } | undefined
@@ -132,6 +134,19 @@ export const login = async (data: LoginData) => {
 
   return result.user;
 };
+export const me = async () => {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/me`, {
+    credentials: "include",
+  });
+
+  const result = await res.json();
+
+  if (!res.ok) {
+    return null;
+  }
+
+  return result;
+};
 export const resetPassword = async (password: string): Promise<void> => {
   try {
     const res = await fetch(
@@ -204,23 +219,9 @@ export const setSession = async ({
 
 export async function getUserFromRequest(): Promise<AuthData> {
   try {
-    const res = await fetch("http://localhost:3000/api/me", {
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-      },
-    });
-    console.log(res);
-
-    if (!res.ok) {
-      console.error("Failed to fetch user:", res.status, res.statusText);
-
-      return { user: null, isLoggedIn: false };
-    }
-
-    const data = await res.json();
-    if (data && data.user) {
-      return { user: data.user, isLoggedIn: true };
+    const data = await me();
+    if (data) {
+      return { user: data, isLoggedIn: true };
     }
     return { user: null, isLoggedIn: false };
   } catch (error) {
@@ -228,29 +229,27 @@ export async function getUserFromRequest(): Promise<AuthData> {
     return { user: null, isLoggedIn: false };
   }
 }
-export async function updateProfile(data: any): Promise<AuthData> {
+export async function updateProfile(data: any): Promise<any> {
   try {
-    const res = await fetch("http://localhost:3000/api/me", {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/profile`, {
+      method: "PATCH",
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
       },
+      body: JSON.stringify(data),
+      credentials: "include",
     });
-    console.log(res);
 
     if (!res.ok) {
-      console.error("Failed to fetch user:", res.status, res.statusText);
+      console.error("Failed to update user:", res.status, res.statusText);
 
-      return { user: null, isLoggedIn: false };
+      return null;
     }
-
-    const data = await res.json();
-    if (data && data.user) {
-      return { user: data.user, isLoggedIn: true };
-    }
-    return { user: null, isLoggedIn: false };
+    const profile = await res.json();
+    return profile;
   } catch (error) {
     console.error("Server-side auth error:", error);
-    return { user: null, isLoggedIn: false };
+    return null;
   }
 }

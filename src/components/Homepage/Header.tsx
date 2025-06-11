@@ -100,7 +100,6 @@ const Header = () => {
   }
 
   const loggedIn = isLoggedIn();
-  const currentUser = user;
 
   return (
     <>
@@ -159,7 +158,7 @@ const Header = () => {
               )}
             </Link>
 
-            {loggedIn && currentUser ? (
+            {loggedIn && user ? (
               <div className="relative group">
                 <button
                   onClick={handleDropdownToggle}
@@ -173,14 +172,12 @@ const Header = () => {
                       <CircleUserRound size={40} className="text-blue-900" />
                       <div>
                         <h1 className="font-semibold text-sm">
-                          {currentUser.username}
+                          {user.username}
                         </h1>
-                        <h3 className="text-xs text-gray-600">
-                          {currentUser.email}
-                        </h3>
+                        <h3 className="text-xs text-gray-600">{user.email}</h3>
                       </div>
                     </div>
-                    {currentUser.isTeacher ? (
+                    {user.role === "instructor" ? (
                       <Link
                         href="/instructor"
                         onClick={() => setIsDropdownOpen(false)}
@@ -320,20 +317,16 @@ const Header = () => {
               </Link>
               <hr className="border-gray-700" />
 
-              {loggedIn && currentUser ? (
+              {loggedIn && user ? (
                 <>
                   <div className="px-2 py-3 border-b border-gray-700 flex items-center space-x-3">
                     <CircleUserRound size={36} />
                     <div>
-                      <h1 className="font-semibold text-sm">
-                        {currentUser.username}
-                      </h1>
-                      <h3 className="text-xs text-gray-500">
-                        {currentUser.email}
-                      </h3>
+                      <h1 className="font-semibold text-sm">{user.username}</h1>
+                      <h3 className="text-xs text-gray-500">{user.email}</h3>
                     </div>
                   </div>
-                  {currentUser.isTeacher ? (
+                  {user.role === "instructor" ? (
                     <Link
                       href="/instructor"
                       onClick={() => setIsMenuOpen(false)}

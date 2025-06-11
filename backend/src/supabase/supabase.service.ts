@@ -63,17 +63,26 @@ export class SupabaseService {
       throw error;
     }
   }
-  async signup(username: string, email: string, password: string) {
+  async signup(
+    username: string,
+    email: string,
+    password: string,
+    firstName: string,
+    lastName: string,
+  ) {
     try {
       const { data, error } = await this.supabase.auth.signUp({
-        email,
-        password,
+        email: email,
+        password: password,
         options: {
           data: {
-            full_name: username,
+            username: username,
+            first_name: firstName,
+            last_name: lastName,
           },
         },
       });
+      console.log(error);
       if (error) throw error;
 
       return data;
@@ -84,18 +93,18 @@ export class SupabaseService {
   async checkUsername(username: string) {
     try {
       // List all users
-      const { data, error } = await this.supabase.auth.admin.listUsers();
-      console.log(data.users[0]);
-      console.log(data.users[0].user_metadata?.full_name);
 
-      if (error) throw error;
+      const { data, error } = await this.supabase
+        .from('profiles')
+        .select('*')
+        .eq('username', username)
+        .single();
+      if (error) return false;
 
-      const user = data.users.find(
-        (user) => user.user_metadata?.full_name === username,
-      );
-      return user ? true : false;
+      const user = data.username === username ? true : false;
+      return user;
     } catch (error) {
-      throw error;
+      return false;
     }
   }
 

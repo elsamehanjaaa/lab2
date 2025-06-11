@@ -11,9 +11,11 @@ import {
   BadRequestException,
   Get,
   UnauthorizedException,
+  Put,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Response, Request } from 'express';
+import { UpdateProfileDto } from './dto/update-profile';
 
 // Extend the Request interface to include the user property
 declare module 'express' {
@@ -77,13 +79,22 @@ export class AuthController {
 
   @Post('signup')
   async signup(
-    @Body() body: { username: string; email: string; password: string },
+    @Body()
+    body: {
+      username: string;
+      email: string;
+      password: string;
+      lastName: string;
+      firstName: string;
+    },
     @Res() res: Response,
   ) {
     const user = await this.authService.signup(
       body.username,
       body.email,
       body.password,
+      body.lastName,
+      body.firstName,
     );
     const token = await this.authService.validateUser(user.user);
 
@@ -182,7 +193,9 @@ export class AuthController {
   async getProfile(@Req() req: Request, @Res() res: Response) {
     const user = req.user as any;
 
-    return res.status(HttpStatus.OK).json({ ...user });
+    const profile = await this.authService.getProfile(user.id);
+
+    return res.status(HttpStatus.OK).json({ ...profile, ...user });
   }
 
   @Post('send-reset-password')
@@ -213,5 +226,32 @@ export class AuthController {
   ) {
     const data = await this.authService.checkUsername(body.username);
     res.status(HttpStatus.OK).json(data.user);
+  }
+  @Patch('profile')
+  @UseGuards(JwtAuthGuard)
+  async updateProfile(
+    @Req() req: Request, // The request object, which will contain the user
+    @Body() updateProfileDto: any,
+    @Res() res: Response,
+  ) {
+    try {
+      const user = req.user as { id: string; email: string };
+      if (!user) {
+        throw new UnauthorizedException('No user found on request.');
+      }
+
+      const data = await this.authService.updateProfile(
+        user.id,
+        updateProfileDto,
+      );
+      res.status(HttpStatus.OK).json(data);
+    } catch (err) {
+      console.log(err);
+
+      return res.status(HttpStatus.OK).json({
+        statusCode: err.status || 500,
+        message: err.message || 'An internal server error occurred.',
+      });
+    }
   }
 }

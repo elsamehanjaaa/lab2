@@ -1,3 +1,5 @@
+import { me } from "./auth";
+
 interface TeacherProfile {
   teachingType: string;
   experienceYears: string;
@@ -12,33 +14,32 @@ interface TeacherProfile {
 export const createTeacherProfile = async (
   teacher: TeacherProfile
 ): Promise<any> => {
-  const res = await fetch("/api/me", {
-    method: "GET",
-    credentials: "include", // ensure cookies are sent
-  });
+  try {
+    const user = await me();
 
-  const { user } = await res.json();
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/teachers`,
+      {
+        method: "POST",
+        body: JSON.stringify({ userId: user.id, ...teacher }),
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
 
-  if (!user) {
-    throw new Error("User not authenticated");
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.message || "Failed to create teacher profile");
+    }
+
+    return data;
+  } catch (error) {
+    console.log(error);
+    return {};
   }
-
-  const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/teachers`, {
-    method: "POST",
-    body: JSON.stringify({ userId: user.id, ...teacher }),
-    credentials: "include",
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
-
-  const data = await response.json();
-
-  if (!response.ok) {
-    throw new Error(data.message || "Failed to create teacher profile");
-  }
-
-  return data;
 };
 
 export const checkInstructorRole = async (

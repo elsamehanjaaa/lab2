@@ -1,6 +1,7 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { SupabaseService } from '../supabase/supabase.service';
+import { UpdateProfileDto } from './dto/update-profile';
 
 @Injectable()
 export class AuthService {
@@ -22,7 +23,6 @@ export class AuthService {
   async validateUser(user: any) {
     const payload = {
       sub: user.id,
-      username: user.user_metadata?.full_name || '',
       email: user.email,
     };
     return {
@@ -87,11 +87,19 @@ export class AuthService {
     return { message: 'Reset password email sent successfully' };
   }
 
-  async signup(username: string, email: string, password: string) {
+  async signup(
+    username: string,
+    email: string,
+    password: string,
+    firstName: string,
+    lastName: string,
+  ) {
     const { user } = await this.supabaseService.signup(
       username,
       email,
       password,
+      firstName,
+      lastName,
     );
     if (!user) throw new UnauthorizedException('Invalid credentials');
     return { user };
@@ -100,5 +108,18 @@ export class AuthService {
   async checkUsername(username: string) {
     const user = await this.supabaseService.checkUsername(username);
     return { user };
+  }
+  async getProfile(id: string) {
+    const user = await this.supabaseService.getDataById('profiles', id);
+    return user[0];
+  }
+  async updateProfile(id: string, updateProfileDto: UpdateProfileDto) {
+    const { data } = await this.supabaseService.updateData(
+      'profiles',
+      updateProfileDto,
+      id,
+    );
+
+    return data[0];
   }
 }

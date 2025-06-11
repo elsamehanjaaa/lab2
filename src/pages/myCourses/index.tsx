@@ -1,5 +1,6 @@
 // Inside pages/my-courses.tsx or similar
 import * as enrollmentUtils from "@/utils/enrollment"; // Assuming this utility exists and works
+import * as authUtils from "@/utils/auth"; // Assuming this utility exists and works
 // import { parse } from "cookie"; // Not used in the component directly if fetch handles cookies via 'credentials: "include"'
 import { GetServerSideProps } from "next";
 import Link from "next/link";
@@ -33,74 +34,18 @@ interface PageProps {
 export const getServerSideProps: GetServerSideProps<PageProps> = async (
   context
 ) => {
-  const { req } = context; // Get the incoming request object from context
-
-  // 1. Extract cookies from the incoming request to the page
-  const requestCookies = req ? req.headers.cookie : undefined;
-
-  // 2. Prepare headers for the API request
-  const apiHeaders: HeadersInit = {
-    "Content-Type": "application/json",
-    Accept: "application/json",
-  };
-
-  // 3. If cookies were sent by the browser to this page, forward them to the /api/me request
-  if (requestCookies) {
-    apiHeaders["Cookie"] = requestCookies;
-  }
-
   try {
-    const res = await fetch("http://localhost:3000/api/me", {
-      // Ensure this URL is correct for your environment
-      method: "GET", // Good practice to be explicit
-      headers: apiHeaders,
-      // 'credentials: "include"' is less relevant here as we are manually setting the Cookie header.
-      // It's primarily for client-side fetch or if the server itself was managing cookies
-      // for 'localhost:3000' in a different way.
-    });
-
-    if (!res.ok) {
-      console.error(
-        "Failed to fetch user from /api/me:",
-        res.status,
-        res.statusText
-      );
-      // Consider logging res.text() or res.json() if API returns error details in the body
-      // const errorBody = await res.text();
-      // console.error("API error body:", errorBody);
-      return {
-        redirect: {
-          destination: "/?showLogin=true&error=fetch_failed", // Redirect to login, maybe with an error query
-          permanent: false,
-        },
-      };
-    }
-
-    const data: ApiMeResponse = await res.json();
-
-    if (data && data.user && data.user.id) {
-      return {
-        props: {
-          userId: data.user.id,
-        },
-      };
-    } else {
-      // This case means the API call was successful (res.ok), but the expected user data was not found.
-      console.warn(
-        "User data not found in /api/me response, or user.id is missing."
-      );
-      return {
-        redirect: {
-          destination: "/?showLogin=true&error=no_user_data", // Redirect to login
-          permanent: false,
-        },
-      };
-    }
+    const user = await authUtils.me();
+    return {
+      props: {
+        userId: user.id,
+      },
+    };
   } catch (error) {
     console.error("Exception during fetch in getServerSideProps:", error);
     return {
       redirect: {
-        destination: "/?showLogin=true&error=server_exception", // Redirect on exception
+        destination: "/?showLogin=true&error=fetch_failed", // Redirect to login, maybe with an error query
         permanent: false,
       },
     };

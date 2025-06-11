@@ -16,6 +16,11 @@ export class TeachersService {
     private readonly TeachersModel: Model<Teachers>,
   ) {}
   async create(createTeacherDto: CreateTeacherDto) {
+    await this.supabaseService.updateData(
+      'profiles',
+      { role: 'instructor' },
+      createTeacherDto.userId,
+    );
     const { data, error } = await this.supabaseService.insertData(
       'teachers',
       createTeacherDto,

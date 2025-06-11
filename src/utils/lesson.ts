@@ -1,3 +1,5 @@
+import { me } from "./auth";
+
 interface Lesson {
   index: number;
   content: string;
@@ -12,18 +14,7 @@ export const getBySection = async (
   cookies: string
 ): Promise<{ lessons: Lesson[] }> => {
   try {
-    const fetchUser = await fetch("http://localhost:3000/api/me", {
-      method: "GET",
-      headers: {
-        cookie: cookies,
-      },
-    });
-
-    const { user } = await fetchUser.json();
-
-    if (!user) {
-      return { lessons: [] };
-    }
+    const user = await me();
     const user_id = user.id;
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/lessons/getLessonsBySection`,

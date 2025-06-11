@@ -2,32 +2,38 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { User, Mail, FileText, X, Lock, Palette } from "lucide-react";
+import { User, Mail, FileText, X, Lock, Palette, Check } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/contexts/AuthContext"; // Adjust path as needed
 import Loading from "../Loading";
+import * as authUtils from "@/utils/auth";
 
 interface ProfileData {
   username: string;
-  displayName: string;
+  first_name: string;
+  last_name: string;
   email: string;
   bio: string;
   theme: "light" | "dark";
   password?: string;
+  role: string;
   confirmPassword?: string;
 }
 
 export default function ProfileModal({ onClose }: { onClose: () => void }) {
   const { user, updateProfile, loading: authLoading } = useAuth();
   const router = useRouter();
+  const [usernameExist, setUsernameExist] = useState(false);
   const [activeTab, setActiveTab] = useState<
     "profile" | "preferences" | "security"
   >("profile");
   const [data, setData] = useState<ProfileData>({
     username: user?.username || "",
-    displayName: "",
+    first_name: user?.first_name || "",
+    last_name: user?.last_name || "",
     email: user?.email || "",
-    bio: "",
+    bio: user?.bio || "",
+    role: user?.role || "",
     theme: "light",
     password: "",
     confirmPassword: "",
@@ -35,7 +41,6 @@ export default function ProfileModal({ onClose }: { onClose: () => void }) {
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
-  // Lock scroll when modal is open
   useEffect(() => {
     const originalOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
@@ -44,13 +49,10 @@ export default function ProfileModal({ onClose }: { onClose: () => void }) {
     };
   }, []);
 
-  // Validate form inputs based on active tab
   const validateForm = () => {
     const newErrors: { [key: string]: string } = {};
     if (activeTab === "profile") {
-      if (!data.username.trim()) newErrors.username = "Full name is required";
-      if (!data.displayName.trim())
-        newErrors.displayName = "Display name is required";
+      if (!data.username.trim()) newErrors.username = "Username is required";
       if (!data.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email))
         newErrors.email = "Valid email is required";
       if (data.bio.length > 160)
@@ -64,29 +66,57 @@ export default function ProfileModal({ onClose }: { onClose: () => void }) {
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
+  async function handleUsernameInput(e: React.ChangeEvent<HTMLInputElement>) {
+    const rawValue = e.target.value;
+
+    // Remove spaces from the username input
+    const valueWithoutSpaces = rawValue.replace(/\s/g, "");
+    setData({ ...data, username: valueWithoutSpaces });
+
+    if (valueWithoutSpaces === user?.username) {
+      return;
+    }
+
+    if (valueWithoutSpaces.length > 0) {
+      try {
+        const exists = await authUtils.checkUsername(valueWithoutSpaces);
+        setUsernameExist(exists);
+      } catch (err) {
+        console.error("Username check failed:", err);
+      }
+    } else {
+      setUsernameExist(false);
+    }
+  }
 
   async function handleSave(e: React.FormEvent) {
     e.preventDefault();
-    if (!validateForm()) return;
+    if (!validateForm() || !user) return;
+
+    const payload: { [key: string]: any } = {};
 
     try {
-      const formData = new FormData();
       if (activeTab === "profile") {
-        formData.append("username", data.username);
-        formData.append("displayName", data.displayName);
-        formData.append("email", data.email);
-        formData.append("bio", data.bio);
-        if (imageFile) {
-          formData.append("profilePicture", imageFile);
+        if (data.username !== user.username) {
+          payload.username = data.username;
         }
-      } else if (activeTab === "preferences") {
-        formData.append("theme", data.theme);
-      } else if (activeTab === "security" && data.password) {
-        formData.append("password", data.password);
+        if (data.first_name !== user.first_name) {
+          payload.first_name = data.first_name;
+        }
+        if (data.last_name !== user.last_name) {
+          payload.last_name = data.last_name;
+        }
+        if (data.bio !== user.bio) {
+          payload.bio = data.bio;
+        }
       }
 
-      await updateProfile(formData);
-      router.refresh();
+      if (Object.keys(payload).length > 0) {
+        await updateProfile(payload);
+      } else {
+        console.log("No changes detected.");
+      }
+
       onClose();
     } catch (error) {
       console.error("Profile update error:", error);
@@ -168,119 +198,143 @@ export default function ProfileModal({ onClose }: { onClose: () => void }) {
             <form onSubmit={handleSave} className="space-y-6">
               {activeTab === "profile" && (
                 <>
-                  {/* Profile picture upload section */}
-                  {/* <div className="flex justify-center mb-4">
-                    <div className="relative">
-                      <Image
-                        src={previewImage}
-                        alt="Profile Picture"
-                        width={100}
-                        height={100}
-                        className="rounded-full object-cover"
-                      />
-                      <label
-                        htmlFor="profile-picture"
-                        className="absolute bottom-0 right-0 bg-blue-900 text-white p-2 rounded-full cursor-pointer hover:bg-blue-700"
-                      >
-                        <Camera className="h-5 w-5" />
+                  <div className="flex flex-col">
+                    <label
+                      htmlFor="first_name"
+                      className="block text-sm font-medium text-gray-700"
+                    >
+                      Full Name
+                    </label>
+                    <div className="flex gap-4">
+                      <div className="relative">
+                        <User className="absolute left-3 top-3 h-4 w-4 text-gray-900" />
                         <input
-                          id="profile-picture"
-                          type="file"
-                          accept="image/*"
-                          className="hidden"
-                          onChange={handleImageChange}
+                          id="first_name"
+                          type="text"
+                          placeholder="First name"
+                          className={`w-full pl-10 pr-10 py-2 border rounded-md focus:outline-none focus:ring-2 focus:border-transparent `}
+                          value={data.first_name}
+                          onChange={(e) =>
+                            setData({ ...data, first_name: e.target.value })
+                          }
                         />
-                      </label>
+                      </div>
+                      <div className="relative">
+                        <User className="absolute left-3 top-3 h-4 w-4 text-gray-900" />
+                        <input
+                          id="last_name"
+                          type="text"
+                          placeholder="Last name"
+                          className={`w-full pl-10 pr-10 py-2 border rounded-md focus:outline-none focus:ring-2 focus:border-transparent`}
+                          value={data.last_name}
+                          onChange={(e) =>
+                            setData({ ...data, last_name: e.target.value })
+                          }
+                        />
+                      </div>
                     </div>
-                  </div> */}
-                  {errors.profilePicture && (
-                    <p className="text-red-500 text-sm text-center">
-                      {errors.profilePicture}
-                    </p>
-                  )}
-
-                  <div className="relative">
-                    <User className="absolute left-3 top-3 h-5 w-5 text-blue-900" />
-                    <input
-                      type="text"
-                      placeholder="Your Full Name"
-                      className={`w-full pl-12 pr-4 py-3 border rounded-xl focus:ring-blue-500 bg-gray-50 ${
-                        errors.username ? "border-red-500" : ""
-                      }`}
-                      value={data.username}
-                      onChange={(e) =>
-                        setData({ ...data, username: e.target.value })
-                      }
-                      required
-                    />
-                    {errors.username && (
-                      <p className="text-red-500 text-sm mt-1">
-                        {errors.username}
-                      </p>
-                    )}
+                  </div>
+                  <div>
+                    <label
+                      htmlFor="username"
+                      className="block text-sm font-medium text-gray-700"
+                    >
+                      Username
+                    </label>
+                    <div className="relative">
+                      <User className="absolute left-3 top-3 h-5 w-5 text-blue-900" />
+                      <input
+                        id="username"
+                        type="text"
+                        placeholder="Username"
+                        className={`w-full pl-12 pr-4 py-3 border rounded-xl focus:ring-blue-500 bg-gray-50 ${
+                          errors.username ? "border-red-500" : ""
+                        }`}
+                        value={data.username}
+                        onChange={handleUsernameInput}
+                        required
+                      />
+                      {errors.username && (
+                        <p className="text-red-500 text-sm mt-1">
+                          {errors.username}
+                        </p>
+                      )}
+                      {usernameExist ? (
+                        <X
+                          className="absolute right-3 top-1/2 -translate-y-1/2"
+                          color="red"
+                        />
+                      ) : (
+                        data.username.length > 3 &&
+                        data.username !== user?.username && (
+                          <Check
+                            className="absolute right-3 top-1/2 -translate-y-1/2"
+                            color="green"
+                          />
+                        )
+                      )}
+                    </div>
                   </div>
 
-                  <div className="relative">
-                    <User className="absolute left-3 top-3 h-5 w-5 text-blue-900" />
-                    <input
-                      type="text"
-                      placeholder="Your Display Name"
-                      className={`w-full pl-12 pr-4 py-3 border rounded-xl focus:ring-blue-500 bg-gray-50 ${
-                        errors.displayName ? "border-red-500" : ""
-                      }`}
-                      value={data.displayName}
-                      onChange={(e) =>
-                        setData({ ...data, displayName: e.target.value })
-                      }
-                      required
-                    />
-                    {errors.displayName && (
-                      <p className="text-red-500 text-sm mt-1">
-                        {errors.displayName}
-                      </p>
-                    )}
+                  <div>
+                    <label
+                      htmlFor="email"
+                      className="block text-sm font-medium text-gray-700"
+                    >
+                      Email
+                    </label>
+                    <div className="relative">
+                      <Mail className="absolute left-3 top-3 h-5 w-5 text-blue-900" />
+                      <input
+                        id="email"
+                        type="email"
+                        placeholder="you@example.com"
+                        className={`w-full pl-12 pr-4 py-3 border rounded-xl focus:ring-blue-500 bg-gray-50 ${
+                          errors.email ? "border-red-500" : ""
+                        }`}
+                        value={data.email}
+                        onChange={(e) =>
+                          setData({ ...data, email: e.target.value })
+                        }
+                        disabled // It's best practice to disable email changes or handle them in a separate flow
+                      />
+                      {errors.email && (
+                        <p className="text-red-500 text-sm mt-1">
+                          {errors.email}
+                        </p>
+                      )}
+                    </div>
                   </div>
-
-                  <div className="relative">
-                    <Mail className="absolute left-3 top-3 h-5 w-5 text-blue-900" />
-                    <input
-                      type="email"
-                      placeholder="you@example.com"
-                      className={`w-full pl-12 pr-4 py-3 border rounded-xl focus:ring-blue-500 bg-gray-50 ${
-                        errors.email ? "border-red-500" : ""
-                      }`}
-                      value={data.email}
-                      onChange={(e) =>
-                        setData({ ...data, email: e.target.value })
-                      }
-                      required
-                    />
-                    {errors.email && (
-                      <p className="text-red-500 text-sm mt-1">
-                        {errors.email}
+                  <div>
+                    <label
+                      htmlFor="bio"
+                      className="block text-sm font-medium text-gray-700"
+                    >
+                      Bio
+                    </label>
+                    <div className="relative">
+                      <FileText className="absolute left-3 top-3 h-5 w-5 text-blue-900" />
+                      <textarea
+                        id="bio"
+                        placeholder="Tell us about yourself (160 characters max)"
+                        className={`w-full pl-12 pr-4 py-3 border rounded-xl focus:ring-blue-500 bg-gray-50 resize-none h-24 ${
+                          errors.bio ? "border-red-500" : ""
+                        }`}
+                        value={data.bio}
+                        onChange={(e) =>
+                          setData({ ...data, bio: e.target.value })
+                        }
+                        maxLength={160}
+                      />
+                      <p className="text-gray-500 text-sm mt-1">
+                        {data.bio.length}/160 characters
                       </p>
-                    )}
-                  </div>
-
-                  <div className="relative">
-                    <FileText className="absolute left-3 top-3 h-5 w-5 text-blue-900" />
-                    <textarea
-                      placeholder="Tell us about yourself (160 characters max)"
-                      className={`w-full pl-12 pr-4 py-3 border rounded-xl focus:ring-blue-500 bg-gray-50 resize-none h-24 ${
-                        errors.bio ? "border-red-500" : ""
-                      }`}
-                      value={data.bio}
-                      onChange={(e) =>
-                        setData({ ...data, bio: e.target.value })
-                      }
-                      maxLength={160}
-                    />
-                    <p className="text-gray-500 text-sm mt-1">
-                      {data.bio.length}/160 characters
-                    </p>
-                    {errors.bio && (
-                      <p className="text-red-500 text-sm mt-1">{errors.bio}</p>
-                    )}
+                      {errors.bio && (
+                        <p className="text-red-500 text-sm mt-1">
+                          {errors.bio}
+                        </p>
+                      )}
+                    </div>
                   </div>
                 </>
               )}
