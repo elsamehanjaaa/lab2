@@ -311,10 +311,7 @@ const CreateCourseForm = ({
     });
 
     try {
-      const parsedCookies = parse(cookies || "");
-      const token = parsedCookies.access_token || "";
-
-      const data = await courseUtils.create(formData, token);
+      const data = await courseUtils.create(formData, cookies);
       setLoading(false);
       onCourseCreated();
     } catch (error) {

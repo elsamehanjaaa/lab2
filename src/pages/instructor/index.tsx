@@ -15,9 +15,10 @@ import {
 import Link from "next/link";
 import Dashboard from "@/components/Instructor/Dashboard";
 import ManageStudents from "@/components/Instructor/ManageStudents";
-export const getServerSideProps: GetServerSideProps = async ({ req }) => {
-  const parsedCookies = parse(req.headers.cookie || "");
-  const access_token = parsedCookies["access_token"];
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const { req } = context;
+  const cookie = req.headers.cookie;
+  const access_token = parse(cookie || "")[`access_token`];
 
   if (!access_token) {
     return {
@@ -28,7 +29,7 @@ export const getServerSideProps: GetServerSideProps = async ({ req }) => {
     };
   }
 
-  const access = await instructorUtils.checkInstructorRole(access_token);
+  const access = await instructorUtils.checkInstructorRole(cookie || "");
 
   if (!access) {
     return {
@@ -41,7 +42,7 @@ export const getServerSideProps: GetServerSideProps = async ({ req }) => {
   const cookies = req.headers.cookie;
 
   return {
-    props: { cookies }, // Return an empty props object as a fallback
+    props: { cookies },
   };
 };
 export default function TeacherDashboard({ cookies }: { cookies: string }) {

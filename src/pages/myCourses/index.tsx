@@ -8,7 +8,7 @@ import Image from "next/image";
 
 // CORRECTED: 'categories' is now an array of strings
 interface Course {
-  id: string | number;
+  _id: string;
   slug: string;
   thumbnail_url: string;
   title: string;
@@ -84,7 +84,6 @@ const MyCoursesPage = ({ courses }: PageProps) => {
     let result = [...courses];
 
     // CORRECTED: Filter by checking if the category is INCLUDED in the array
-    console.log(result);
     if (filterCategory !== "All") {
       result = result.filter((course) =>
         course.categories.includes(filterCategory)
@@ -228,11 +227,11 @@ const MyCoursesPage = ({ courses }: PageProps) => {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
             {filteredAndSortedCourses.map((course) => (
               <div
-                key={course.id}
-                className="bg-white rounded-xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-2xl group hover:scale-105"
+                key={course._id}
+                className="bg-white rounded-xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-2xl group hover:scale-101"
               >
                 <Link
-                  href={`/learn/${course.slug}/${course.id}`}
+                  href={`/learn/${course.slug}/${course._id}`}
                   legacyBehavior
                 >
                   <a className="block">
@@ -242,7 +241,7 @@ const MyCoursesPage = ({ courses }: PageProps) => {
                         alt={course.title}
                         layout="fill"
                         objectFit="cover"
-                        className="transition-transform duration-300 group-hover:scale-110"
+                        className="transition-transform duration-300"
                       />
                     </div>
                     <div className="p-5">

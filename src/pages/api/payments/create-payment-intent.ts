@@ -8,7 +8,6 @@ export default async function handler(
   if (req.method === "POST") {
     try {
       const cookies = parse(req.headers.cookie || "");
-      const accessToken = cookies.access_token;
 
       const backendResponse = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/payments/create-checkout-session`,
@@ -16,7 +15,7 @@ export default async function handler(
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            ...(accessToken && { Authorization: `Bearer ${accessToken}` }),
+            cookie: req.headers.cookie || "",
           },
           body: JSON.stringify(req.body),
         }

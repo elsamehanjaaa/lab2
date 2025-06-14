@@ -22,9 +22,10 @@ interface InstructorFormData {
   publishTime: string;
 }
 
-export const getServerSideProps: GetServerSideProps = async ({ req }) => {
-  const cookies = parse(req.headers.cookie || "");
-  const access_token = cookies["access_token"];
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const cookies = context.req.headers.cookie as string;
+  const parsedCookies = parse(cookies);
+  const access_token = parsedCookies.access_token;
 
   if (!access_token) {
     return {
@@ -35,7 +36,7 @@ export const getServerSideProps: GetServerSideProps = async ({ req }) => {
     };
   }
 
-  const access = await instructorUtils.checkInstructorRole(access_token);
+  const access = await instructorUtils.checkInstructorRole(cookies);
 
   if (access) {
     return {

@@ -30,11 +30,11 @@ interface GetCoursesResponse {
   error?: string;
 }
 
-export const create = async (courseData: FormData, token: string) => {
+export const create = async (courseData: FormData, cookies: string) => {
   const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/courses`, {
     method: "POST",
     headers: {
-      Authorization: `Bearer ${token}`, // Authorization token
+      cookie: cookies || "",
     },
     body: courseData, // Directly send the FormData (no need to set Content-Type)
     credentials: "include", // Include credentials (if needed)
@@ -49,13 +49,17 @@ export const create = async (courseData: FormData, token: string) => {
   return data;
 };
 
-export const edit = async (id: string, courseData: FormData, token: string) => {
+export const edit = async (
+  id: string,
+  courseData: FormData,
+  cookie: string
+) => {
   const response = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/courses/${id}`,
     {
       method: "PATCH",
       headers: {
-        Authorization: `Bearer ${token}`, // Authorization token
+        cookie: cookie || "",
       },
       body: courseData, // Directly send the FormData (no need to set Content-Type)
       credentials: "include", // Include credentials (if needed)

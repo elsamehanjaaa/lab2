@@ -160,12 +160,7 @@ const EditCourseForm: React.FC<EditCourseFormProps> = ({
     });
 
     try {
-      const parsedCookies = parse(cookies);
-      const access_token = parsedCookies["access_token"];
-      if (!access_token) throw new Error("No access token found");
-
-      // Call the update endpoint here
-      const data = await courseUtils.edit(id, formData, access_token);
+      const data = await courseUtils.edit(id, formData, cookies);
       if (data) router.reload();
     } catch (error) {
       console.error("Error updating course:", error);

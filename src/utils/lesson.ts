@@ -14,7 +14,7 @@ export const getBySection = async (
   cookies: string
 ): Promise<{ lessons: Lesson[] }> => {
   try {
-    const user = await me();
+    const user = await me(cookies);
     const user_id = user.id;
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/lessons/getLessonsBySection`,

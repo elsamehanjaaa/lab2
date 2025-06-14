@@ -6,7 +6,7 @@ interface EnrollmentData {
 
 export const checkAccess = async (
   course_id: string,
-  access_token: string
+  cookies: string
 ): Promise<boolean> => {
   if (!course_id) {
     return false;
@@ -17,7 +17,7 @@ export const checkAccess = async (
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${access_token}`,
+        cookie: cookies || "",
       },
       body: JSON.stringify({ course_id }), // no user_id
     }
@@ -82,31 +82,7 @@ export const getByUser = async (user_id: string): Promise<{}> => {
     }
 
     const courses = await res.json();
-    console.log(courses);
 
-    const data = courses.map(
-      (course: {
-        _id: any;
-        title: any;
-        slug: any;
-        description: string;
-        progress: number;
-        categories: string[];
-        instructor: string;
-        thumbnail_url: string;
-      }) => {
-        return {
-          id: course._id,
-          title: course.title,
-          slug: course.slug,
-          progress: course.progress,
-          description: course.description,
-          categories: course.categories,
-          instructor: course.instructor,
-          thumbnail_url: course.thumbnail_url,
-        };
-      }
-    );
     return courses;
   } catch (error) {
     console.error("Fetch error:", error);

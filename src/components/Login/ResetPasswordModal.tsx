@@ -14,6 +14,7 @@ export default function ResetPasswordModal({
 }) {
   const [isLoading, setIsLoading] = useState(false);
   const [data, setData] = useState({ email: "" });
+  const [linkSent, setLinkSent] = useState(false);
 
   // Lock scroll when modal is open
   useEffect(() => {
@@ -41,7 +42,7 @@ export default function ResetPasswordModal({
       const result = await res.json();
 
       if (res.ok) {
-        console.log("link sent");
+        setLinkSent(true);
       } else {
         throw new Error(result.message || "Login failed");
       }
@@ -93,6 +94,11 @@ export default function ResetPasswordModal({
                 onChange={(e) => setData({ ...data, email: e.target.value })}
                 required
               />
+              {linkSent && (
+                <span className="text-green-400">
+                  Link has been sent to your email
+                </span>
+              )}
             </div>
 
             <button

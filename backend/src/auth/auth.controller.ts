@@ -216,7 +216,6 @@ export class AuthController {
     @Body() body: { newPassword: string },
   ) {
     const user = req.user as any;
-    return await this.authService.updatePassword(user.sub, body.newPassword);
   }
 
   @Post('checkUsername')

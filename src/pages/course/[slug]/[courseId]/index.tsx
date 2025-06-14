@@ -44,8 +44,9 @@ interface Categories {
 }
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  const cookies = parse(context.req.headers.cookie as string);
-  const access_token = cookies.access_token;
+  const cookies = context.req.headers.cookie as string;
+  const parsedCookies = parse(cookies);
+  const access_token = parsedCookies.access_token;
   let alreadyEnrolled = false;
   const { courseId } = context.query;
 
@@ -68,7 +69,10 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     };
   }
   if (access_token) {
-    alreadyEnrolled = await enrollmentUtils.checkAccess(courseId, access_token);
+    alreadyEnrolled = await enrollmentUtils.checkAccess(
+      courseId,
+      cookies as string
+    );
   }
   return {
     props: { course, alreadyEnrolled },

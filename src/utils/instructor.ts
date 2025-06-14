@@ -43,7 +43,7 @@ export const createTeacherProfile = async (
 };
 
 export const checkInstructorRole = async (
-  access_token: string
+  cookies: string
 ): Promise<boolean> => {
   const res = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/teachers/checkUser`,
@@ -51,7 +51,7 @@ export const checkInstructorRole = async (
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${access_token}`,
+        cookie: cookies || "", // Pass the cookie string, or an empty string if it's undefined
       },
       credentials: "include",
     }

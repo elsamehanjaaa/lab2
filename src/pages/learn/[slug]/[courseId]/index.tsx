@@ -44,7 +44,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     return { redirect: { destination: "/", permanent: false } };
   }
 
-  const parsedCookies = parse(req.headers.cookie || "");
+  const cookies = req.headers.cookie as string;
+  const parsedCookies = parse(cookies);
   const access_token = parsedCookies["access_token"];
 
   if (!access_token) {
@@ -53,13 +54,12 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     };
   }
 
-  const access = await enrollmentUtils.checkAccess(courseId, access_token);
+  const access = await enrollmentUtils.checkAccess(courseId, cookies);
   if (!access) {
     return {
       redirect: { destination: "/", permanent: false },
     };
   }
-  const cookies = req.headers.cookie || "";
   // ✅ Fetch course data here
   const course = await courseUtils.getById(courseId, cookies);
   if (!course) {

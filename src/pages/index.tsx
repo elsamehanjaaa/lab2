@@ -23,6 +23,7 @@ const IndexPage = () => {
         const access_token = hashParams.get("access_token");
         const refresh_token = hashParams.get("refresh_token");
         const type = hashParams.get("type");
+        console.log(type);
 
         if (type === "recovery" && access_token /* && refresh_token */) {
           try {
@@ -36,7 +37,7 @@ const IndexPage = () => {
           }
           // Clear the hash to prevent re-processing if the user stays on the page
           // or add more specific logic to ensure this runs only once.
-          window.location.hash = "";
+          // window.location.hash = "";
           return; // Exit after handling recovery to avoid conflicts
         }
       }
