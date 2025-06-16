@@ -30,6 +30,13 @@ export class TeachersController {
 
     return await this.teachersService.checkUser(user.id);
   }
+  @UseGuards(JwtAuthGuard)
+  @Post('getData')
+  async getData(@Req() req: Request) {
+    const user = req.user as any;
+
+    return await this.teachersService.getData(user.id);
+  }
 
   @Get()
   findAll() {

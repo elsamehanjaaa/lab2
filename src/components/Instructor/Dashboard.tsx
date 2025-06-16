@@ -38,7 +38,18 @@ const dummyStats = {
   averageRating: 4.6,
   averageMonthlyEarnings: averageEarnings,
 };
-const Dashboard = () => {
+
+interface ManageCoursesProps {
+  instructorData: { total_courses: number; total_students: number };
+  onGoToCourses: () => void; // Callback to switch to create course view
+  onGoToStudents: () => void; // Callback to switch to create course view
+}
+
+const Dashboard: React.FC<ManageCoursesProps> = ({
+  instructorData,
+  onGoToCourses,
+  onGoToStudents,
+}) => {
   const [animatedData, setAnimatedData] = useState(
     earningsData.map((item) => ({ ...item, earnings: 0 }))
   );
@@ -46,25 +57,30 @@ const Dashboard = () => {
   useEffect(() => {
     const timeout = setTimeout(() => {
       setAnimatedData(earningsData);
-    }, 300); // Delay before animating
+    }, 300);
 
     return () => clearTimeout(timeout);
   }, []);
+
   return (
     <div className="min-h-screen p-8 bg-gray-900 flex flex-col justify-between">
       <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-7xl mx-auto">
         {/* Stats Cards */}
-        <Card className="">
-          <CardContent className="p-4 ">
+        <Card>
+          <CardContent className="p-4 cursor-pointer" onClick={onGoToCourses}>
             <p className="text-white text-sm">Total Courses</p>
-            <h2 className="text-xl font-bold">{dummyStats.totalCourses}</h2>
+            <h2 className="text-xl font-bold">
+              {instructorData.total_courses}
+            </h2>
           </CardContent>
         </Card>
 
         <Card>
-          <CardContent className="p-4">
+          <CardContent className="p-4 cursor-pointer" onClick={onGoToStudents}>
             <p className=" text-sm">Total Students</p>
-            <h2 className="text-xl font-bold">{dummyStats.totalStudents}</h2>
+            <h2 className="text-xl font-bold">
+              {instructorData.total_students}
+            </h2>
           </CardContent>
         </Card>
 

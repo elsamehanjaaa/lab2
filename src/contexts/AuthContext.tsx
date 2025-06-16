@@ -50,18 +50,28 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [initialLoading, setInitialLoading] = useState<boolean>(true);
 
   const fetchUser = async () => {
-    // Renamed from fetchUserFromToken for clarity and potential reuse
-    setInitialLoading(true); // Use initialLoading here or a specific loading state if preferred
-    try {
-      const data = await authUtils.me();
+    if (!user) {
+      setInitialLoading(true);
+    }
 
-      if (data && data) {
-        setUser(data);
+    try {
+      let userData = await authUtils.me();
+
+      if (!userData) {
+        const recovered = await authUtils.recoverSession();
+
+        if (recovered) {
+          userData = await authUtils.me();
+        }
+      }
+
+      if (userData) {
+        setUser(userData);
       } else {
         setUser(null);
       }
     } catch (error) {
-      console.error("Error fetching user data:", error);
+      console.error("An error occurred during the fetch user process:", error);
       setUser(null);
     } finally {
       setInitialLoading(false);
@@ -69,17 +79,19 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   };
 
   useEffect(() => {
-    fetchUser(); // Initial fetch on mount
+    fetchUser();
   }, []);
 
   const login = async (credentials: Credentials) => {
     setLoading(true);
     try {
       await authUtils.login(credentials);
+
+      await fetchUser();
     } catch (error) {
-      setUser(null); // Ensure user is cleared on login failure
+      setUser(null);
       console.error("Login process failed:", error);
-      throw error; // Re-throw the error so the calling component (LoginModal) can catch it
+      throw error;
     } finally {
       setLoading(false);
     }

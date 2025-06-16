@@ -111,43 +111,42 @@ export class AuthController {
   }
 
   @Post('refresh')
-  async refreshToken(
-    @Body() body: { refresh_token: string },
-    @Res() res: Response,
-  ) {
-    if (!body.refresh_token) {
-      throw new HttpException('token not found', HttpStatus.UNAUTHORIZED);
+  async refreshToken(@Req() req: Request, @Res() res: Response) {
+    const refreshToken = req.cookies['refresh_token'];
+
+    if (!refreshToken) {
+      throw new HttpException(
+        'Refresh token not found in cookies',
+        HttpStatus.UNAUTHORIZED,
+      );
     }
 
-    const tokens = await this.authService.refreshToken(body.refresh_token);
+    const { session } = await this.authService.refreshSession(refreshToken);
 
-    res.cookie('access_token', tokens.access_token, {
+    if (!session || !session.access_token || !session.refresh_token) {
+      throw new HttpException(
+        'Invalid session returned from refresh',
+        HttpStatus.UNAUTHORIZED,
+      );
+    }
+
+    res.cookie('access_token', session.access_token, {
       httpOnly: false,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'strict',
       maxAge: 15 * 60 * 1000, // 15 minutes
     });
 
-    res.cookie('refresh_token', tokens.refresh_token, {
+    res.cookie('refresh_token', session.refresh_token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'strict',
       maxAge: 1 * 24 * 60 * 60 * 1000,
     });
     return res.status(HttpStatus.OK).json({
-      access_token: tokens.access_token,
-      refresh_token: tokens.refresh_token,
+      access_token: session.access_token,
+      refresh_token: session.refresh_token,
     });
-  }
-  @Post('refresh-session')
-  async refreshSession(@Body() { refresh_token }, @Res() res: Response) {
-    if (!refresh_token) {
-      throw new HttpException('token not found', HttpStatus.UNAUTHORIZED);
-    }
-
-    const tokens = await this.authService.refreshSession(refresh_token);
-
-    return res.status(HttpStatus.OK).json(tokens);
   }
 
   @Post('login-with-google')

@@ -23,7 +23,6 @@ const IndexPage = () => {
         const access_token = hashParams.get("access_token");
         const refresh_token = hashParams.get("refresh_token");
         const type = hashParams.get("type");
-        console.log(type);
 
         if (type === "recovery" && access_token /* && refresh_token */) {
           try {

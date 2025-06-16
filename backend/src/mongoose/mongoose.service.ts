@@ -68,7 +68,6 @@ export class MongooseService {
         .find(sql)
         .sort(sort || { _id: 1 })
         .exec();
-
       if (!data) {
         return {};
       }

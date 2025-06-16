@@ -51,7 +51,25 @@ export const checkInstructorRole = async (
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        cookie: cookies || "", // Pass the cookie string, or an empty string if it's undefined
+        cookie: cookies || "",
+      },
+      credentials: "include",
+    }
+  );
+
+  const data = await res.json();
+
+  return data;
+};
+
+export const getData = async (cookies: string): Promise<any> => {
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/teachers/getData`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        cookie: cookies || "",
       },
       credentials: "include",
     }

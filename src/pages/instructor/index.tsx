@@ -40,12 +40,19 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     };
   }
   const cookies = req.headers.cookie;
+  const instructorData = await instructorUtils.getData(cookie || "");
 
   return {
-    props: { cookies },
+    props: { cookies, instructorData },
   };
 };
-export default function TeacherDashboard({ cookies }: { cookies: string }) {
+export default function TeacherDashboard({
+  cookies,
+  instructorData,
+}: {
+  cookies: string;
+  instructorData: { total_courses: number; total_students: number };
+}) {
   const [activeTab, setActiveTab] = useState("Overview");
   const renderContent = () => {
     switch (activeTab) {
@@ -68,7 +75,13 @@ export default function TeacherDashboard({ cookies }: { cookies: string }) {
       case "manage-students":
         return <ManageStudents />;
       case "Overview":
-        return <Dashboard />;
+        return (
+          <Dashboard
+            onGoToCourses={() => setActiveTab("manage-courses")}
+            onGoToStudents={() => setActiveTab("manage-students")}
+            instructorData={instructorData}
+          />
+        );
       default:
         return (
           <div className="text-gray-500">Select an option from the sidebar</div>

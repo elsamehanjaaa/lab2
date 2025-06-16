@@ -6,6 +6,8 @@ import { MongooseService } from 'src/mongoose/mongoose.service';
 import { InjectModel } from '@nestjs/mongoose';
 import { Teachers } from 'src/schemas/teachers.schema';
 import { Model, Types } from 'mongoose';
+import { Courses } from 'src/schemas/courses.schema';
+import { Enrollments } from 'src/schemas/enrollments.schema';
 
 @Injectable()
 export class TeachersService {
@@ -14,6 +16,10 @@ export class TeachersService {
     private readonly mongooseService: MongooseService,
     @InjectModel(Teachers.name)
     private readonly TeachersModel: Model<Teachers>,
+    @InjectModel(Courses.name)
+    private readonly CoursesModel: Model<Courses>,
+    @InjectModel(Enrollments.name)
+    private readonly EnrollmentsModel: Model<Enrollments>,
   ) {}
   async create(createTeacherDto: CreateTeacherDto) {
     await this.supabaseService.updateData(
@@ -53,6 +59,44 @@ export class TeachersService {
     );
     if (data) return true;
     else return false;
+  }
+  async getData(instructor_id: string) {
+    // 1. Get all courses for the instructor in one query.
+    const coursesResult = await this.mongooseService.getDataBySQL(
+      this.CoursesModel,
+      {
+        instructor_id,
+      },
+    );
+
+    const courses: any[] = Array.isArray(coursesResult) ? coursesResult : [];
+
+    if (courses.length === 0) {
+      return { total_courses: 0, total_students: [] };
+    }
+
+    const course_ids = courses.map((course) => course._id);
+
+    const all_enrollments_result = await this.mongooseService.getDataBySQL(
+      this.EnrollmentsModel,
+      {
+        course_id: { $in: course_ids },
+      },
+    );
+    const all_enrollments: any[] = Array.isArray(all_enrollments_result)
+      ? all_enrollments_result
+      : [];
+
+    const total_students = new Set(
+      all_enrollments.map((enrollment) => enrollment.user_id),
+    );
+
+    const total_courses = courses.length;
+
+    return {
+      total_courses,
+      total_students: total_students.size,
+    };
   }
   findOne(id: number) {
     return `This action returns a #${id} teacher`;
