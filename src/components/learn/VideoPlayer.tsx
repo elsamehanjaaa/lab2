@@ -181,124 +181,132 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
   }, []);
 
   return (
-    <div
-      ref={containerRef}
-      className="w-9/12 mx-auto max-h-2xl rounded-lg overflow-hidden border border-gray-300 shadow bg-black relative"
-      onMouseEnter={() => setShowControls(true)}
-      onMouseLeave={() => setShowControls(false)}
-    >
-      <video ref={videoRef} className="w-full" src={src} />
-
-      <motion.div
-        className="absolute inset-0 flex flex-col justify-end gap-2 p-3 mt-auto h-36 "
-        initial={{ opacity: 0 }}
-        style={{
-          background: "linear-gradient(to top, rgba(0,0,0,1), rgba(0,0,0,0))",
-        }}
-        animate={{ opacity: showControls ? 1 : 0 }}
-        transition={{ duration: 0.2 }}
+    <div className="p-4">
+      <div
+        ref={containerRef}
+        className="m-4 mx-auto max-h-2xl rounded-lg overflow-hidden border border-gray-300 shadow bg-black relative"
+        onMouseEnter={() => setShowControls(true)}
+        onMouseLeave={() => setShowControls(false)}
       >
-        {/* Controls */}
+        <video ref={videoRef} className="w-full" src={src} />
 
-        <div className="flex items-center justify-between gap-3">
-          {/* Left group */}
-          <div className="flex gap-3 items-center">
-            <button
-              onClick={onPrev}
-              title="Previous Lesson"
-              className="cursor-pointer px-4 py-1 flex gap-1 rounded text-white"
-            >
-              <ArrowLeft /> Prev
-            </button>
+        <motion.div
+          className="absolute inset-0 flex flex-col justify-end gap-2 p-3 mt-auto h-36 "
+          initial={{ opacity: 0 }}
+          style={{
+            background: "linear-gradient(to top, rgba(0,0,0,1), rgba(0,0,0,0))",
+          }}
+          animate={{ opacity: showControls ? 1 : 0 }}
+          transition={{ duration: 0.2 }}
+        >
+          {/* Controls */}
 
-            <button
-              onClick={rewind}
-              title="Rewind 5s"
-              className="cursor-pointer text-white"
+          <div className="flex items-center justify-between gap-3">
+            {/* Left group */}
+            <div className="flex gap-3 items-center">
+              <button
+                onClick={onPrev}
+                title="Previous Lesson"
+                className="cursor-pointer px-4 py-1 flex gap-1 rounded text-white"
+              >
+                <ArrowLeft /> Prev
+              </button>
+
+              <button
+                onClick={rewind}
+                title="Rewind 5s"
+                className="cursor-pointer text-white"
+              >
+                <RotateCcw />
+              </button>
+              <button
+                onClick={togglePlay}
+                className="cursor-pointer text-white"
+              >
+                {isPlaying ? <Pause /> : <Play />}
+              </button>
+              <button
+                onClick={forward}
+                title="Forward 5s"
+                className="cursor-pointer text-white"
+              >
+                <RotateCw />
+              </button>
+              <button
+                onClick={onNext}
+                title="Next Lesson"
+                className="cursor-pointer px-4 py-1 flex gap-1 rounded text-white"
+              >
+                Next <ArrowRight />
+              </button>
+            </div>
+
+            {/* Playback speed */}
+            <select
+              value={speed}
+              onChange={handleSpeedChange}
+              className="bg-gray-700 px-2 py-1 rounded text-sm text-white"
             >
-              <RotateCcw />
-            </button>
-            <button onClick={togglePlay} className="cursor-pointer text-white">
-              {isPlaying ? <Pause /> : <Play />}
-            </button>
-            <button
-              onClick={forward}
-              title="Forward 5s"
-              className="cursor-pointer text-white"
-            >
-              <RotateCw />
-            </button>
-            <button
-              onClick={onNext}
-              title="Next Lesson"
-              className="cursor-pointer px-4 py-1 flex gap-1 rounded text-white"
-            >
-              Next <ArrowRight />
-            </button>
+              <option value="0.5">0.5x</option>
+              <option value="1">1x</option>
+              <option value="1.5">1.5x</option>
+              <option value="2">2x</option>
+            </select>
           </div>
 
-          {/* Playback speed */}
-          <select
-            value={speed}
-            onChange={handleSpeedChange}
-            className="bg-gray-700 px-2 py-1 rounded text-sm text-white"
-          >
-            <option value="0.5">0.5x</option>
-            <option value="1">1x</option>
-            <option value="1.5">1.5x</option>
-            <option value="2">2x</option>
-          </select>
-        </div>
-
-        <div className="flex items-center justify-between gap-2">
-          {/* Progress bar */}
-          <input
-            type="range"
-            min={0}
-            max={duration}
-            step={0.1}
-            value={progress}
-            onChange={handleProgressChange}
-            className="w-full accent-gray-400"
-          />
-          {/* Time */}
-          <div className="text-sm text-gray-300 w-20">
-            {formatTime(progress)} / {formatTime(duration)}
-          </div>
-        </div>
-        {/* Volume controls */}
-        <div className="flex items-center justify-between gap-2">
-          <div className="flex items-center gap-2">
-            <button onClick={toggleMute} className="cursor-pointer text-white">
-              {isMuted || volume === 0 ? (
-                <VolumeX />
-              ) : volume > 0 && volume < 0.33 ? (
-                <Volume />
-              ) : volume >= 0.33 && volume < 0.66 ? (
-                <Volume1 />
-              ) : (
-                <Volume2 />
-              )}
-            </button>
+          <div className="flex items-center justify-between gap-2">
+            {/* Progress bar */}
             <input
               type="range"
               min={0}
-              max={1}
-              step={0.01}
-              value={isMuted ? 0 : volume}
-              onChange={handleVolumeChange}
-              className="accent-gray-400"
+              max={duration}
+              step={0.1}
+              value={progress}
+              onChange={handleProgressChange}
+              className="w-full accent-gray-400"
             />
+            {/* Time */}
+            <div className="text-sm text-gray-300 w-20">
+              {formatTime(progress)} / {formatTime(duration)}
+            </div>
           </div>
-          <button
-            onClick={toggleFullscreen}
-            className="cursor-pointer text-white"
-            title="Toggle Fullscreen"
-          >
-            {isFullscreen ? <Minimize2 /> : <Maximize2 />}
-          </button>
-        </div>
-      </motion.div>
+          {/* Volume controls */}
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2">
+              <button
+                onClick={toggleMute}
+                className="cursor-pointer text-white"
+              >
+                {isMuted || volume === 0 ? (
+                  <VolumeX />
+                ) : volume > 0 && volume < 0.33 ? (
+                  <Volume />
+                ) : volume >= 0.33 && volume < 0.66 ? (
+                  <Volume1 />
+                ) : (
+                  <Volume2 />
+                )}
+              </button>
+              <input
+                type="range"
+                min={0}
+                max={1}
+                step={0.01}
+                value={isMuted ? 0 : volume}
+                onChange={handleVolumeChange}
+                className="accent-gray-400"
+              />
+            </div>
+            <button
+              onClick={toggleFullscreen}
+              className="cursor-pointer text-white"
+              title="Toggle Fullscreen"
+            >
+              {isFullscreen ? <Minimize2 /> : <Maximize2 />}
+            </button>
+          </div>
+        </motion.div>
+      </div>
     </div>
   );
 };

@@ -26,6 +26,7 @@ export default function App({ Component, pageProps }: AppProps) {
     "/instructor",
     "/404",
     "/join/instructor",
+    "/learn/[slug]/[courseId]",
   ];
 
   useHandleOAuthRedirect();

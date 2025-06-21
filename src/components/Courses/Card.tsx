@@ -68,7 +68,9 @@ const Card = ({
     // Added 'border' and 'border-slate-200' for a visible outline
     <div className="group flex h-full flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-md transition-all duration-300 ease-in-out hover:shadow-xl hover:scale-102">
       <Link
-        href={`/course/${course.slug}/${course._id}`}
+        href={`/${alreadyEnrolled ? "learn" : "course"}/${course.slug}/${
+          course._id
+        }`}
         className="flex flex-grow flex-col p-4"
       >
         <div className="relative mb-4 h-48 w-full overflow-hidden rounded-lg">
