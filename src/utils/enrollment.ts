@@ -63,7 +63,10 @@ export const enroll = async (courseId: string): Promise<any> => {
   }
 };
 
-export const getByUser = async (user_id: string): Promise<{}> => {
+export const getByUser = async (
+  user_id: string,
+  cookies: string
+): Promise<{}> => {
   try {
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/enrollments/getEnrollmentsByUser`,
@@ -71,6 +74,7 @@ export const getByUser = async (user_id: string): Promise<{}> => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          cookie: cookies || "",
         },
         body: JSON.stringify({ user_id }),
         credentials: "include",
@@ -87,5 +91,36 @@ export const getByUser = async (user_id: string): Promise<{}> => {
   } catch (error) {
     console.error("Fetch error:", error);
     return {};
+  }
+};
+export const getEnrolledCourses = async (
+  cookies: string
+): Promise<{ enrolledCourseIds: string[]; error?: string }> => {
+  try {
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/enrollments/getEnrolledCourses`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          cookie: cookies || "",
+        },
+        credentials: "include",
+      }
+    );
+
+    if (!res.ok) {
+      throw new Error(`HTTP Error! Status: ${res.status}`);
+    }
+
+    const data = await res.json();
+    return { enrolledCourseIds: data };
+  } catch (error) {
+    console.error("Fetch error:", error);
+    return {
+      enrolledCourseIds: [],
+      error:
+        error instanceof Error ? error.message : "An unknown error occurred",
+    };
   }
 };

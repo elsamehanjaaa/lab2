@@ -2,6 +2,10 @@ import React, { useEffect, useState } from "react";
 import Categories from "@/components/Courses/Categories";
 import Card from "@/components/Courses/Card";
 import * as courseUtils from "@/utils/course";
+import * as enrollmentUtils from "@/utils/enrollment"; // Assuming you have this utility
+import { GetServerSideProps } from "next";
+import { parse } from "cookie";
+import Link from "next/link"; // Import Link for the "Go to Course" button
 
 interface Course {
   title: string;
@@ -14,24 +18,77 @@ interface Course {
   _id: string;
 }
 
-const Index = () => {
-  const [courses, setCourses] = useState<Course[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
+// Define props type for the Index component
+interface IndexProps {
+  initialCourses: Course[];
+  enrolledCourseIds: string[];
+  error: string | null;
+}
 
-  useEffect(() => {
-    async function fetchCourses() {
-      const { courses, error } = await courseUtils.getAll();
-      if (error) {
-        setError(error);
-      } else {
-        setCourses(courses);
-      }
-      setLoading(false);
+export const getServerSideProps: GetServerSideProps<IndexProps> = async (
+  context
+) => {
+  const cookies = context.req.headers.cookie as string;
+  const parsedCookies = parse(cookies || ""); // Handle case where cookies might be undefined
+  const access_token = parsedCookies.access_token;
+
+  let initialCourses: Course[] = [];
+  let enrolledCourseIds: string[] = [];
+  let error: string | null = null;
+
+  try {
+    const coursesResponse = await courseUtils.getAll();
+    if (coursesResponse.error) {
+      error = coursesResponse.error;
+    } else if (coursesResponse.courses) {
+      initialCourses = coursesResponse.courses;
     }
 
-    fetchCourses();
-  }, []);
+    if (access_token && initialCourses.length > 0) {
+      const enrolledCoursesResponse = await enrollmentUtils.getEnrolledCourses(
+        cookies
+      ); // Assuming this returns an array of enrolled course IDs
+      if (enrolledCoursesResponse.error) {
+        console.error(
+          "Error fetching enrolled courses:",
+          enrolledCoursesResponse.error
+        );
+        // You might want to handle this error differently, e.g., show a message to the user
+      } else if (enrolledCoursesResponse.enrolledCourseIds) {
+        enrolledCourseIds = enrolledCoursesResponse.enrolledCourseIds;
+      }
+    }
+  } catch (err: any) {
+    console.error("Error in getServerSideProps:", err);
+    error = "Failed to fetch data. Please try again later.";
+  }
+
+  return {
+    props: {
+      initialCourses,
+      enrolledCourseIds,
+      error,
+    },
+  };
+};
+
+const Index = ({
+  initialCourses,
+  enrolledCourseIds,
+  error: initialError,
+}: IndexProps) => {
+  const [courses, setCourses] = useState<Course[]>(initialCourses);
+  const [loading, setLoading] = useState<boolean>(false); // No longer loading initially as data comes from SSR
+  const [error, setError] = useState<string | null>(initialError);
+
+  // If you still want to fetch courses on the client-side for some reason (e.g., filtering),
+  // you can keep the useEffect, but for initial display, getServerSideProps is enough.
+  // For simplicity, I'm assuming initialCourses from SSR is the primary source.
+  useEffect(() => {
+    if (initialError) {
+      setError(initialError);
+    }
+  }, [initialError]);
 
   return (
     <div>
@@ -60,7 +117,13 @@ const Index = () => {
 
       <div className="grid mt-4 grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-6 mb-8">
         {courses.length > 0 ? (
-          courses.map((course) => <Card key={course._id} course={course} />)
+          courses.map((course) => (
+            <Card
+              key={course._id}
+              course={course}
+              alreadyEnrolled={enrolledCourseIds.includes(course._id)}
+            />
+          ))
         ) : (
           <p className="col-span-full text-center text-xl">
             No courses available at the moment.

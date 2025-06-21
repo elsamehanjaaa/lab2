@@ -40,7 +40,10 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async (
       };
     }
 
-    const enrollmentsData = await enrollmentUtils.getByUser(String(user.id));
+    const enrollmentsData = await enrollmentUtils.getByUser(
+      String(user.id),
+      cookie || ""
+    );
     const courses = Array.isArray(enrollmentsData) ? enrollmentsData : [];
 
     return {

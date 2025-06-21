@@ -80,10 +80,18 @@ export class EnrollmentsController {
     return this.enrollmentsService.findOne(id);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Post('getEnrollmentsByUser')
-  async getByName(@Body() getEnrollmentsByUserDto: any) {
-    const { user_id } = getEnrollmentsByUserDto;
-    return this.enrollmentsService.getEnrollmentsByUser(user_id);
+  async getByName(@Req() req) {
+    const userId = (req.user as any).id;
+    return await this.enrollmentsService.getEnrollmentsByUser(userId);
+  }
+  @UseGuards(JwtAuthGuard)
+  @Post('getEnrolledCourses')
+  async getEnrolledCourses(@Req() req) {
+    const userId = (req.user as any).id;
+    const course_ids = await this.enrollmentsService.getEnrolledCourses(userId);
+    return course_ids;
   }
   @Post('check-access')
   @UseGuards(JwtAuthGuard)

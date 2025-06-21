@@ -20,7 +20,13 @@ interface Course {
   _id: string;
 }
 
-const Card = ({ course }: { course: Course }) => {
+const Card = ({
+  course,
+  alreadyEnrolled,
+}: {
+  course: Course;
+  alreadyEnrolled: boolean;
+}) => {
   const { isLoggedIn } = useAuth();
   const { addToCart } = useCart();
   const { setShowLogin } = useModalStore();
@@ -118,15 +124,24 @@ const Card = ({ course }: { course: Course }) => {
       </Link>
 
       <div className="px-4 pb-4 pt-2">
-        <button
-          onClick={handleAddToCart}
-          className="w-full flex items-center justify-center gap-2 rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white transition-all duration-300 ease-in-out hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-50"
-          disabled={!course.status}
-          type="button"
-        >
-          <ShoppingCartIcon size={16} />
-          Add to Cart
-        </button>
+        {alreadyEnrolled ? (
+          <Link
+            href={`/learn/${course?.slug}/${course?._id}`}
+            className="w-36 bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-4 rounded-xl transition duration-200 flex items-center justify-center gap-2 cursor-pointer"
+          >
+            Go to Course
+          </Link>
+        ) : (
+          <button
+            onClick={handleAddToCart}
+            className="w-36 bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-4 rounded-xl transition duration-200 flex items-center justify-center gap-2 cursor-pointer"
+            disabled={!course.status}
+            type="button"
+          >
+            <ShoppingCartIcon size={18} />
+            Add to Cart
+          </button>
+        )}
       </div>
     </div>
   );

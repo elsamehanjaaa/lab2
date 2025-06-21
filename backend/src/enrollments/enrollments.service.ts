@@ -131,6 +131,18 @@ export class EnrollmentsService {
 
     return coursesWithProgressAndCategories;
   }
+  async getEnrolledCourses(id: string): Promise<string[]> {
+    const enrollments: any[] = (await this.mongooseService.getDataBySQL(
+      this.EnrollmentsModel,
+      { user_id: id },
+    )) as any[];
+    if (!Array.isArray(enrollments) || enrollments.length === 0) {
+      return [];
+    }
+    const courseIds = enrollments.map((e: any) => e.course_id);
+
+    return courseIds;
+  }
   async getEnrollmentsByCourse(id: string): Promise<EnrollmentRecord[]> {
     // Fetch enrollments for the given course ID (these are raw from DB, without populated user)
     const rawEnrollments = await this.EnrollmentsModel.find({ course_id: id });
