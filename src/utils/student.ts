@@ -37,3 +37,29 @@ export const getStudentsFromIntructor = async (
 
   return data;
 };
+export const changeStudentStatus = async (
+  id: string,
+  status: string,
+  courses_ids: string[]
+): Promise<any> => {
+  if (!status) {
+    return null;
+  }
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/enrollments/updateStatus`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ id, status, courses_ids }),
+    }
+  );
+
+  if (!res.ok) {
+    return null;
+  }
+  const data = await res.json();
+
+  return data;
+};

@@ -23,6 +23,7 @@ import {
   ArrowUpDown,
   BookOpen,
   Ban,
+  Check,
 } from "lucide-react";
 import * as studentUtils from "@/utils/student"; // Assuming this utility fetches data
 
@@ -112,7 +113,7 @@ interface ProgressBarProps {
   progress: number;
 }
 const ProgressBar: React.FC<ProgressBarProps> = ({ progress }) => (
-  <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
+  <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-600">
     <div
       className="bg-blue-600 h-2.5 rounded-full"
       style={{ width: `${progress}%` }}
@@ -222,60 +223,43 @@ const StudentDetailModal: React.FC<StudentDetailModalProps> = ({
           </div>
         </div>
         <hr className="dark:border-gray-600" />
-        {student.enrolledCourses[0].enrolled_at && (
+        {student.joinDate && (
           <p>
             <strong className="text-gray-700 dark:text-gray-200">
               Platform Join Date:
             </strong>{" "}
-            {formatDate(student.enrolledCourses[0].enrolled_at)}
+            {formatDate(student.joinDate)}
           </p>
         )}
-        {typeof student.enrolledCourses[0].status !== "undefined" && (
+        {typeof student.status !== "undefined" && (
           <p>
             <strong className="text-gray-700 dark:text-gray-200">
               Overall Status:
             </strong>
             <span
               className={`px-2 py-0.5 text-xs font-medium rounded-full ml-2 ${
-                student.enrolledCourses[0].status === "Active"
+                student.status === "Active"
                   ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300"
-                  : student.enrolledCourses[0].status === "Suspended"
+                  : student.status === "Suspended"
                   ? "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300"
-                  : student.enrolledCourses[0].status === "Completed"
+                  : student.status === "Completed"
                   ? "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300"
                   : "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300"
               }`}
             >
-              {student.enrolledCourses[0].status}
+              {student.status}
             </span>
-            {/* Optional: Button to change overall status */}
-            {onUpdateStudentStatus && (
-              <button
-                onClick={() =>
-                  handleOverallStatusChange(
-                    student.enrolledCourses[0].status === "Active"
-                      ? "Suspended"
-                      : "Active"
-                  )
-                }
-                className="ml-2 text-xs text-blue-500 hover:underline"
-              >
-                Toggle Overall Status
-              </button>
-            )}
           </p>
         )}
-        {typeof student.enrolledCourses[0].progress !== "undefined" && (
+        {typeof student.progress !== "undefined" && (
           <div>
             <strong className="text-gray-700 dark:text-gray-200">
               Overall Progress:
             </strong>
             <div className="mt-1">
-              <ProgressBar
-                progress={student.enrolledCourses[0].progress || 0}
-              />
+              <ProgressBar progress={student.progress || 0} />
               <span className="text-xs text-gray-500 dark:text-gray-400">
-                {student.enrolledCourses[0].progress || 0}% complete
+                {student.progress || 0}% complete
               </span>
             </div>
           </div>
@@ -329,12 +313,21 @@ const StudentDetailModal: React.FC<StudentDetailModalProps> = ({
           )}
         </div>
         <div className="pt-4 flex flex-wrap gap-2 ">
-          <button
-            //   onClick={handleSuspendStudent()}
-            className="px-4 py-2 text-sm font-medium text-gray-900 bg-red-200 border border-gray-200 rounded-lg hover:bg-red-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:outline-none focus:ring-gray-200 dark:bg-red-700 dark:text-gray-300 dark:border-gray-600 dark:hover:text-white dark:hover:bg-red-600 dark:focus:ring-gray-500 flex items-center"
-          >
-            <Ban size={16} className="mr-1" /> Suspend Student
-          </button>
+          {student.status === "Active" && onUpdateStudentStatus ? (
+            <button
+              onClick={() => handleOverallStatusChange("Suspended")}
+              className="px-4 py-2 text-sm font-medium text-gray-900 bg-red-200 border border-gray-200 rounded-lg hover:bg-red-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:outline-none focus:ring-gray-200 dark:bg-red-700 dark:text-gray-300 dark:border-gray-600 dark:hover:text-white dark:hover:bg-red-600 dark:focus:ring-gray-500 flex items-center"
+            >
+              <Ban size={16} className="mr-1" /> Suspend Student
+            </button>
+          ) : (
+            <button
+              onClick={() => handleOverallStatusChange("Active")}
+              className="px-4 py-2 text-sm font-medium text-gray-900 bg-green-200 border border-green-200 rounded-lg hover:bg-green-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:outline-none focus:ring-gray-200 dark:bg-green-700 dark:text-gray-300 dark:border-gray-600 dark:hover:text-white dark:hover:bg-green-600 dark:focus:ring-gray-500 flex items-center"
+            >
+              <Check size={16} className="mr-1" /> Activate Student
+            </button>
+          )}
         </div>
       </div>
     </Modal>
@@ -388,16 +381,17 @@ export default function ManageStudentsPage() {
             console.warn("Skipping invalid item from backend:", item);
             return null; // Skip this item if it's not in the expected shape
           }
+
           return {
             id: item.student.id,
             name: item.student.name,
             email: item.student.email,
             avatarUrl: item.student.avatarUrl,
-            joinDate: item.student.joinDate
-              ? new Date(item.student.joinDate).toISOString()
+            joinDate: item.enrolledCourses[0].enrolled_at
+              ? new Date(item.enrolledCourses[0].enrolled_at).toISOString()
               : undefined,
-            progress: item.student.progress, // Overall progress
-            status: item.student.status, // Overall status
+            progress: item.enrolledCourses[0].progress, // Overall progress
+            status: item.enrolledCourses[0].status, // Overall status
             enrolledCourses: Array.isArray(item.enrolledCourses)
               ? item.enrolledCourses.map((ec) => ({
                   id: ec.id,
@@ -439,9 +433,42 @@ export default function ManageStudentsPage() {
     studentId: string,
     newStatus: StudentStatus
   ) => {
-    alert(
-      `Overall status update for student ${studentId} to ${newStatus} is a placeholder.`
+    const course_ids =
+      students
+        .find((student) => student.id === studentId)
+        ?.enrolledCourses.map((course) => course.id) || [];
+    const res = await studentUtils.changeStudentStatus(
+      studentId,
+      newStatus,
+      course_ids
     );
+    if (res) {
+      setStudents((prevStudents) => {
+        const newStudents = prevStudents.map((student) => {
+          if (student.id === studentId) {
+            const updatedStudent = {
+              ...student,
+              status: newStatus,
+              // Also update the status in all enrolled courses for consistency
+              enrolledCourses: student.enrolledCourses.map((course) => ({
+                ...course,
+                status: newStatus,
+              })),
+            };
+
+            // If the updated student is the one in the modal, update the modal's state
+            if (selectedStudent?.id === studentId) {
+              setSelectedStudent(updatedStudent);
+            }
+            return updatedStudent;
+          }
+          return student;
+        });
+        return newStudents;
+      });
+    } else {
+      alert("Failed to update student status. Please try again.");
+    }
   };
 
   const handleAddStudent = async (newStudentData: NewStudentData) => {
@@ -752,12 +779,12 @@ export default function ManageStudentsPage() {
                       key !== "actions"
                         ? "cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600"
                         : ""
-                    } 
-                                  ${
-                                    key === "email"
-                                      ? "hidden md:table-cell"
-                                      : ""
-                                  } ${
+                    }  
+                                           ${
+                                             key === "email"
+                                               ? "hidden md:table-cell"
+                                               : ""
+                                           } ${
                       key === "joinDate" ? "hidden lg:table-cell" : ""
                     } ${key === "progress" ? "hidden sm:table-cell" : ""}`}
                     onClick={() =>
@@ -821,21 +848,16 @@ export default function ManageStudentsPage() {
                       {student.email}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 hidden lg:table-cell">
-                      {student.enrolledCourses[0].enrolled_at
-                        ? formatDate(student.enrolledCourses[0].enrolled_at)
-                        : "N/A"}
+                      {student.joinDate ? formatDate(student.joinDate) : "N/A"}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap hidden sm:table-cell">
-                      {typeof student.enrolledCourses[0].progress !==
-                      "undefined" ? (
+                      {typeof student.progress !== "undefined" ? (
                         <div className="flex items-center">
                           <div className="w-24 mr-2">
-                            <ProgressBar
-                              progress={student.enrolledCourses[0].progress}
-                            />
+                            <ProgressBar progress={student.progress} />
                           </div>
                           <span className="text-sm text-gray-500 dark:text-gray-300">
-                            {student.enrolledCourses[0].progress}%
+                            {student.progress}%
                           </span>
                         </div>
                       ) : (
@@ -843,21 +865,19 @@ export default function ManageStudentsPage() {
                       )}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      {student.enrolledCourses[0].status ? (
+                      {student.status ? (
                         <span
                           className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                            student.enrolledCourses[0].status === "Active"
+                            student.status === "Active"
                               ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300"
-                              : student.enrolledCourses[0].status ===
-                                "Suspended"
+                              : student.status === "Suspended"
                               ? "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300"
-                              : student.enrolledCourses[0].status ===
-                                "Completed"
+                              : student.status === "Completed"
                               ? "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300"
                               : "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300"
                           }`}
                         >
-                          {student.enrolledCourses[0].status}
+                          {student.status}
                         </span>
                       ) : (
                         "N/A"

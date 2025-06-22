@@ -221,4 +221,22 @@ export class EnrollmentsController {
       );
     }
   }
+
+  @Patch(':id')
+  async update(
+    @Body() updateEnrollmentDto: UpdateEnrollmentDto,
+    @Param('id') id: string,
+  ) {
+    return this.enrollmentsService.update(updateEnrollmentDto, id);
+  }
+  @Post('updateStatus')
+  async updateStatus(
+    @Body() body: { id: string; status: string; courses_ids: string[] },
+  ) {
+    return this.enrollmentsService.updateStatus(
+      body.status,
+      body.id,
+      body.courses_ids,
+    );
+  }
 }

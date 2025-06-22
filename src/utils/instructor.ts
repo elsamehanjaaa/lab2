@@ -15,13 +15,11 @@ export const createTeacherProfile = async (
   teacher: TeacherProfile
 ): Promise<any> => {
   try {
-    const user = await me();
-
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/teachers`,
       {
         method: "POST",
-        body: JSON.stringify({ userId: user.id, ...teacher }),
+        body: JSON.stringify({ teacher }),
         credentials: "include",
         headers: {
           "Content-Type": "application/json",

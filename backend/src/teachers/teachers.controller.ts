@@ -19,9 +19,14 @@ import { JwtAuthGuard } from 'src/jwt-strategy/jwt-auth.guard';
 export class TeachersController {
   constructor(private readonly teachersService: TeachersService) {}
 
+  @UseGuards(JwtAuthGuard)
   @Post()
-  async create(@Body() createTeacherDto: CreateTeacherDto) {
-    return await this.teachersService.create(createTeacherDto);
+  async create(
+    @Body() createTeacherDto: CreateTeacherDto,
+    @Req() req: Request,
+  ) {
+    const user = req.user as any;
+    return await this.teachersService.create(createTeacherDto, user.id);
   }
   @UseGuards(JwtAuthGuard)
   @Post('checkUser')

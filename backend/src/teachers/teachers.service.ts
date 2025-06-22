@@ -21,11 +21,11 @@ export class TeachersService {
     @InjectModel(Enrollments.name)
     private readonly EnrollmentsModel: Model<Enrollments>,
   ) {}
-  async create(createTeacherDto: CreateTeacherDto) {
+  async create(createTeacherDto: CreateTeacherDto, userId: string) {
     await this.supabaseService.updateData(
       'profiles',
       { role: 'instructor' },
-      createTeacherDto.userId,
+      userId,
     );
     const { data, error } = await this.supabaseService.insertData(
       'teachers',

@@ -78,7 +78,10 @@ export class EnrollmentsService {
   }
   async getEnrollmentsByUser(id: string) {
     // Fetch initial data
-    const enrollments = await this.EnrollmentsModel.find({ user_id: id });
+    const enrollments = await this.EnrollmentsModel.find({
+      user_id: id,
+      status: 'Active',
+    });
     const courseIds = enrollments.map((e) => e.course_id);
     const courses = await this.CoursesModel.find({ _id: { $in: courseIds } });
 
@@ -230,6 +233,7 @@ export class EnrollmentsService {
     const access = await this.EnrollmentsModel.findOne({
       user_id: id,
       course_id,
+      status: 'Active',
     });
 
     if (!access) return false;
@@ -299,6 +303,110 @@ export class EnrollmentsService {
         progress: progressPercentage,
       },
     );
+  }
+  async update(updateEnrollmentDto: UpdateEnrollmentDto, id: string) {
+    const { data, error } = await this.supabaseService.updateData(
+      'enrollments',
+      updateEnrollmentDto,
+      id,
+    );
+
+    if (error) {
+      console.error('Error updating data in Supabase:', error);
+      throw error;
+    }
+
+    // Update the section in MongoDB
+    const mongo = await this.mongooseService.updateData(
+      this.EnrollmentsModel,
+      id,
+      {
+        ...updateEnrollmentDto,
+      },
+    );
+
+    if (!mongo) {
+      console.error('Error updating data in MongoDB:', error);
+      throw error;
+    }
+
+    return data;
+  }
+  async updateStatus(status: string, id: string, course_ids: string[]) {
+    const results = await Promise.all(
+      course_ids.map(async (course_id) => {
+        try {
+          const enrollment = await this.EnrollmentsModel.findOne({
+            user_id: id,
+            course_id,
+          });
+
+          if (!enrollment) {
+            console.error(
+              `Enrollment not found for user_id: ${id}, course_id: ${course_id}`,
+            );
+            return {
+              success: false,
+              course_id,
+              message: 'Enrollment not found',
+            };
+          }
+
+          const { data: supabaseData, error: supabaseError } =
+            await this.supabaseService.updateData(
+              'enrollments',
+              { status },
+              enrollment._id,
+            );
+
+          if (supabaseError) {
+            console.error(
+              `Error updating Supabase for course_id ${course_id}:`,
+              supabaseError,
+            );
+            return {
+              success: false,
+              course_id,
+              error: supabaseError,
+              database: 'Supabase',
+            };
+          }
+
+          const mongoUpdateResult = await this.mongooseService.updateData(
+            this.EnrollmentsModel,
+            enrollment._id,
+            { status: status },
+          );
+
+          if (!mongoUpdateResult) {
+            console.error(
+              `Error updating MongoDB for course_id ${course_id}: No document modified.`,
+            );
+            return {
+              success: false,
+              course_id,
+              message: 'MongoDB update failed or no document modified',
+              database: 'MongoDB',
+            };
+          }
+
+          return { success: true, course_id, supabaseData, mongoUpdateResult };
+        } catch (error) {
+          console.error(
+            `An unexpected error occurred for course_id ${course_id}:`,
+            error,
+          );
+          return {
+            success: false,
+            course_id,
+            error,
+            message: 'Unexpected error during update',
+          };
+        }
+      }),
+    );
+
+    return results;
   }
   async remove(id: string) {
     await this.supabaseService.deleteData('enrollments', id);
