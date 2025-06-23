@@ -370,38 +370,46 @@ export class CoursesService {
       this.CoursesModel,
       id,
     );
-    if (!course) return [];
 
-    const auth = await this.supabaseService.auth();
-    const user = await auth.admin.getUserById(
-      (course as Courses).instructor_id,
-    );
+    if (!course) {
+      throw new NotFoundException(`Course with ID "${id}" not found.`);
+    }
 
-    const { instructor_id, categories, ...courseWithoutInstructorId } =
-      course.toObject();
+    const {
+      instructor_id,
+      categories: categoryIds,
+      ...courseObject
+    } = course.toObject();
 
-    const fetchedCategories = await Promise.all(
-      course.categories.map(async (id) => {
-        const category = await this.categoriesService.findOne(id.toString());
-        return {
-          id: category?._id,
-          name: category?.name,
-          slug: category?.slug,
-        };
-      }),
-    );
+    const [userArr, fetchedCategories, details] = await Promise.all([
+      this.supabaseService.getDataById('profiles', instructor_id),
+      await Promise.all(
+        course.categories.map(async (id) => {
+          const category = await this.categoriesService.findOne(id.toString());
+          return {
+            id: category?._id,
+            name: category?.name,
+            slug: category?.slug,
+          };
+        }),
+      ),
+      this.courseDetailsService.findOne(id),
+    ]);
 
-    const details = await this.courseDetailsService.findOne(id);
-    courseWithoutInstructorId.categories = fetchedCategories;
-    courseWithoutInstructorId.learn = details?.learn;
-    courseWithoutInstructorId.requirements = details?.requirements;
-    courseWithoutInstructorId.fullDescription = details?.description;
-    courseWithoutInstructorId.instructor_name =
-      user.data.user?.user_metadata.full_name || 'Unknown';
+    const instructor =
+      Array.isArray(userArr) && userArr.length > 0 ? userArr[0] : {};
 
-    return courseWithoutInstructorId;
+    return {
+      ...courseObject,
+      categories: fetchedCategories,
+      learn: details?.learn,
+      requirements: details?.requirements,
+      fullDescription: details?.description,
+      instructor_name:
+        instructor.username || instructor.email || 'Unknown Instructor',
+      instructor_bio: instructor.bio || 'No Bio',
+    };
   }
-
   async getCoursesByInstructor(instructor_id: string): Promise<Courses[]> {
     try {
       // Find courses with the exact instructor_id

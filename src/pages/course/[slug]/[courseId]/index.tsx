@@ -23,7 +23,7 @@ interface Course {
   thumbnail_url?: string;
   instructor_name?: string;
   instructorPicture?: string;
-  instructorBio?: string;
+  instructor_bio?: string;
   categories?: Categories[];
   updatedAt?: string;
   status: boolean;
@@ -223,7 +223,7 @@ const Index = ({
                   <h4 className="text-lg font-bold">
                     {course.instructor_name}
                   </h4>
-                  <p className="text-gray-600">bio</p>
+                  <p className="text-gray-600">{course.instructor_bio}</p>
                 </div>
               </div>
             </div>

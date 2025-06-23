@@ -131,7 +131,7 @@ const Hero = () => {
 
       {/* Features Section */}
       <div className="bg-white py-24">
-        <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-8xl mx-10 px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 place-items-center">
             <Block
               icon={BookOpen}
@@ -182,7 +182,7 @@ const Hero = () => {
             Featured Courses
           </h2>
           {/* Responsive grid for courses */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 mx-8">
             {courses
               .slice(0, 4)
               .sort((a, b) => a.rating - b.rating)
@@ -226,131 +226,6 @@ const Hero = () => {
         </div>
       </div>
 
-      {/* Trending Now Section */}
-      <section className="bg-gray-50 py-10 px-4 sm:px-6 md:px-10 lg:px-40">
-        <h2 className="text-3xl font-bold mb-6">Trending Now</h2>
-        {/* Adjusted to 1 column on mobile, 2 on small screens, 4 on large */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-          {/* ChatGPT section */}
-          <div>
-            <h3 className="text-xl font-bold mb-2">ChatGPT is a top skill</h3>
-            <Link
-              href="/courses"
-              className="text-purple-600 font-medium hover:underline"
-            >
-              See ChatGPT courses →
-            </Link>
-            <p className="text-gray-500 mt-1">4,345,758 learners</p>
-
-            <button className="mt-6 px-4 py-2 border border-purple-600 text-purple-700 rounded-md hover:bg-purple-50 transition">
-              <Link href="/courses">Show all trending skills →</Link>
-            </button>
-          </div>
-
-          {/* Development */}
-          <div>
-            <h4 className="text-lg font-bold mb-3">Development</h4>
-            <ul className="space-y-2">
-              <li>
-                <Link
-                  href="/courses"
-                  className="text-purple-700 font-medium hover:underline"
-                >
-                  Python →
-                </Link>
-                <p className="text-sm text-gray-500">47,815,126 learners</p>
-              </li>
-              <li>
-                <Link
-                  href="/courses"
-                  className="text-purple-700 font-medium hover:underline"
-                >
-                  Web Development →
-                </Link>
-                <p className="text-sm text-gray-500">14,015,184 learners</p>
-              </li>
-              <li>
-                <Link
-                  href="/courses"
-                  className="text-purple-700 font-medium hover:underline"
-                >
-                  Data Science →
-                </Link>
-                <p className="text-sm text-gray-500">7,793,156 learners</p>
-              </li>
-            </ul>
-          </div>
-
-          {/* Design */}
-          <div>
-            <h4 className="text-lg font-bold mb-3">Design</h4>
-            <ul className="space-y-2">
-              <li>
-                <Link
-                  href="/courses"
-                  className="text-purple-700 font-medium hover:underline"
-                >
-                  Blender →
-                </Link>
-                <p className="text-sm text-gray-500">2,913,078 learners</p>
-              </li>
-              <li>
-                <Link
-                  href="/courses"
-                  className="text-purple-700 font-medium hover:underline"
-                >
-                  Graphic Design →
-                </Link>
-                <p className="text-sm text-gray-500">4,495,153 learners</p>
-              </li>
-              <li>
-                <Link
-                  href="/courses"
-                  className="text-purple-700 font-medium hover:underline"
-                >
-                  UX Design →
-                </Link>
-                <p className="text-sm text-gray-500">2,071,077 learners</p>
-              </li>
-            </ul>
-          </div>
-
-          {/* Business */}
-          <div>
-            <h4 className="text-lg font-bold mb-3">Business</h4>
-            <ul className="space-y-2">
-              <li>
-                <Link
-                  href="/courses"
-                  className="text-purple-700 font-medium hover:underline"
-                >
-                  Project Management (PMP) →
-                </Link>
-                <p className="text-sm text-gray-500">2,570,660 learners</p>
-              </li>
-              <li>
-                <Link
-                  href="/courses"
-                  className="text-purple-700 font-medium hover:underline"
-                >
-                  Microsoft Power BI →
-                </Link>
-                <p className="text-sm text-gray-500">4,638,884 learners</p>
-              </li>
-              <li>
-                <Link
-                  href="/courses"
-                  className="text-purple-700 font-medium hover:underline"
-                >
-                  Project Management →
-                </Link>
-                <p className="text-sm text-gray-500">3,984,755 learners</p>
-              </li>
-            </ul>
-          </div>
-        </div>
-      </section>
-
       {/* Assessment and Resume Section */}
       <div className="bg-gray-50 py-20">
         <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -364,9 +239,12 @@ const Hero = () => {
               <p className="text-gray-700">
                 Discover your career strengths & weaknesses
               </p>
-              <button className="bg-green-600 hover:bg-green-700 text-white font-semibold px-6 py-3 rounded">
-                Take The Free Personality Assessment
-              </button>
+              <Link
+                href="/courses"
+                className="bg-green-600 hover:bg-green-700 text-white font-semibold px-6 py-3 rounded"
+              >
+                Get Started with Assessment
+              </Link>
             </div>
             <div className="hidden md:block md:ml-6 mt-6 md:mt-0">
               <Image
@@ -384,12 +262,13 @@ const Hero = () => {
               <h2 className="text-2xl font-bold text-gray-800">
                 Get hired for your dream job!
               </h2>
-              <p className="text-gray-700">
-                Build your free resumé in minutes!
-              </p>
-              <button className="bg-green-600 hover:bg-green-700 text-white font-semibold px-6 py-3 rounded">
-                Create My Professional Resumé
-              </button>
+              <p className="text-gray-700">Get Your Own Professional Title</p>
+              <Link
+                href="/courses"
+                className="bg-green-600 hover:bg-green-700 text-white font-semibold px-6 py-3 rounded"
+              >
+                Create My Certificate
+              </Link>
             </div>
             <div className="hidden md:block md:ml-6 mt-6 md:mt-0">
               <Image
@@ -449,9 +328,12 @@ const Hero = () => {
                 Over 45 million learners have already taken the first step
                 toward their future. Start your journey today.
               </p>
-              <button className="bg-white text-blue-800 px-8 py-4 rounded-lg font-semibold text-lg shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 self-start">
+              <Link
+                href="/courses"
+                className="bg-white text-blue-800 px-8 py-4 rounded-lg font-semibold text-lg shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 self-start"
+              >
                 Get Started
-              </button>
+              </Link>
             </div>
           </div>
         </div>
